@@ -33,7 +33,7 @@
                 [color]="'primary'"
                 (click)="createImportacion()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Add</span>
+                <span class="ml-2 mr-1">Crear</span>
             </button>
         </div>
     </div>
@@ -47,87 +47,50 @@
                 <ng-container *ngIf="importaciones.length > 0; else noImportaciones">
                     <div class="grid">
                         <!-- Header -->
-                        <div
-                            class="inventory-grid z-5 sticky top-0 grid gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
-                            matSort
-                            matSortDisableClear>
-                            <div
-                                class="hidden md:block"
-                                [mat-sort-header]="'estado'">
+                        <div class="inventory-grid z-5 sticky top-0 grid gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
+                            <div class="hidden md:block" [mat-sort-header]="'estado'">
                                 Estado
                             </div>
-                            <div [mat-sort-header]="'ano'">Año</div>
-                            <div
-                                class="hidden md:block"
-                                [mat-sort-header]="'mes'">
+                            <div class="hidden md:block" [mat-sort-header]="'ano'">Año</div>
+                            <div class="hidden md:block" [mat-sort-header]="'mes'">
                                 Mes
                             </div>
-                            <div
-                                class="hidden md:block"
-                                [mat-sort-header]="'solicitud'">
+                            <div class="hidden md:block" [mat-sort-header]="'vue'">
                                 Nro Solicitud
                             </div>
-                            <div
-                                class="hidden md:block"
-                                [mat-sort-header]="'active'">
+                            <div class="hidden md:block" [mat-sort-header]="'proveedor'">
                                 Proveedor
                             </div>
-                            <div class="hidden sm:block">Details</div>
                         </div>
                         <!-- Rows -->
                         <ng-container *ngIf="(importaciones$ | async) as importaciones">
-                            <ng-container *ngFor="let importacion of importaciones$; trackBy: trackByFn">
+                            <ng-container *ngFor="let importa of importaciones ; trackBy: trackByFn">
                                 <div class="inventory-grid grid items-center gap-4 py-2 px-6 md:px-12 border-b">
-
-
 
                                     <!-- SKU -->
                                     <div class="hidden md:block truncate">
-                                        {{importacion.status}}
+                                        {{importa.status}}
                                     </div>
 
-                                    <!-- Name -->
-                                    <div class="md:block truncate">
-                                        {{importacion.vue}}
+                                    <div class="hidden md:block truncate">
+                                        {{importa.ano}}
                                     </div>
 
-                                    <!-- Price -->
-                                    <div class="hidden sm:block">
-                                        {{importacion.importador }}
+                                    <div class="hidden md:block truncate">
+                                        {{importa.mes}}
                                     </div>
 
-
-                                    <!-- Stock -->
-                                    <div class="hidden lg:flex items-center">
-                                        <div class="min-w-4">{{importacion.stock}}</div>
-
+                                    <div class="hidden md:block truncate">
+                                        {{importa.vue}}
                                     </div>
-
-                                             <!-- Stock -->
-                                    <div class="hidden lg:flex items-center">
-                                        <div class="min-w-4">{{importacion.ano}}</div>
-
+                                    <div class="hidden md:block truncate">
+                                        {{importa.proveedor}}
                                     </div>
-
-
                                 </div>
-                                <div class="grid">
-                                    <ng-container *ngIf="selectedImport?.id === importacion.id">
-                                        <ng-container *ngTemplateOutlet="rowDetailsTemplate; context: {$implicit: importacion}"></ng-container>
-                                    </ng-container>
-                                </div>
+
                             </ng-container>
                         </ng-container>
                     </div>
-
-                    <mat-paginator
-                        class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
-                        [ngClass]="{'pointer-events-none': isLoading}"
-                        [length]="pagination.length"
-                        [pageIndex]="pagination.page"
-                        [pageSize]="pagination.size"
-                        [pageSizeOptions]="[5, 10, 25, 100]"
-                        [showFirstLastButtons]="true"></mat-paginator>
 
                 </ng-container>
             </ng-container>

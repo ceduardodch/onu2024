@@ -17,7 +17,8 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { ImportacionService } from '../../service/importacion.service';
 import {  InventoryPagination, InventoryImportacion} from '../../model/importacion.types';
 import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } from 'rxjs';
-
+import { KeyValuePipe } from '@angular/common'; // Import KeyValuePipe
+import { Router } from '@angular/router'; // Import Router
 @Component({
     selector       : 'importacion-list',
     templateUrl    : './importacion.component.html',
@@ -25,18 +26,18 @@ import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } f
         /* language=SCSS */
         `
             .inventory-grid {
-                grid-template-columns: 48px auto 40px;
+                grid-template-columns: 80px 80px 120px;
 
                 @screen sm {
-                    grid-template-columns: 48px auto 112px 72px;
+                    grid-template-columns: 80px 80px 80px 180px;
                 }
 
                 @screen md {
-                    grid-template-columns: 48px 112px auto 112px 72px;
+                    grid-template-columns: 80px 80px 80px 180px 220px;
                 }
 
                 @screen lg {
-                    grid-template-columns: 48px 112px auto 112px 96px 96px 72px;
+                    grid-template-columns: 80px 80px 80px 180px 220px 96px 72px;
                 }
             }
         `,
@@ -72,6 +73,7 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: UntypedFormBuilder,
         private _importService: ImportacionService,
+        private router: Router,
     )
     {
     }
@@ -93,10 +95,6 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
             ano              : [''],
 
         });
-
-
-
-
 
         // Get the pagination
         this._importService.pagination$
@@ -141,8 +139,6 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
      */
     ngAfterViewInit(): void
     {
-        console.log('this._paginator', this._paginator);
-        console.log('this._sort', this._sort);
         if ( this._sort && this._paginator )
         {
             // Set the initial sort
@@ -267,18 +263,8 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
      */
     createImportacion(): void
     {
-        // Create the
-        this._importService.createImportacion().subscribe((newImportacion) =>
-        {
-            // Go to new
-            this.selectedImport = newImportacion;
+            this.router.navigate(['/example/crear-importacion']);
 
-            // Fill the form
-            this.selectedImportForm.patchValue(newImportacion);
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
     }
 
     /**
