@@ -16,12 +16,11 @@ import { Router } from '@angular/router'; // Import Router
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Observable, Subject, debounceTime, map, merge, switchMap, takeUntil } from 'rxjs';
-import { InventoryImportacion, InventoryPagination } from '../../model/importacion.types';
-import { ImportacionService } from '../../service/importacion.service';
-
+import { InventoryExportacion, InventoryPagination } from '../../model/exportacion.types';
+import { ExportacionService } from '../../service/exportacion.service';
 @Component({
-    selector       : 'importacion-list',
-    templateUrl    : './importacion.component.html',
+    selector       : 'exportacion-list',
+    templateUrl    : './exportacion.component.html',
     styles         : [
         /* language=SCSS */
         `
@@ -48,18 +47,19 @@ import { ImportacionService } from '../../service/importacion.service';
     standalone     : true,
     imports        : [NgIf, MatProgressBarModule, MatFormFieldModule, MatIconModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatSortModule, NgFor, NgTemplateOutlet, MatPaginatorModule, NgClass, MatSlideToggleModule, MatSelectModule, MatOptionModule, MatCheckboxModule, MatRippleModule, AsyncPipe, CurrencyPipe],
 })
-export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestroy
+export class ExportacionListComponent implements OnInit, AfterViewInit, OnDestroy
 {
     @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
 
-    importaciones$: Observable<InventoryImportacion[]>;
+    exportaciones$: Observable<InventoryExportacion[]>;
+
 
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
     pagination: InventoryPagination;
     searchInputControl: UntypedFormControl = new UntypedFormControl();
-    selectedImport: InventoryImportacion | null = null;
+    selectedImport: InventoryExportacion | null = null;
     selectedImportForm: UntypedFormGroup;
     tagsEditMode: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -71,7 +71,7 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: UntypedFormBuilder,
-        private _importService: ImportacionService,
+        private _importService: ExportacionService,
         private router: Router,
     )
     {
@@ -108,7 +108,7 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
             });
 
         // Get the
-        this.importaciones$ = this._importService.importaciones$;
+        this.exportaciones$ = this._importService.exportaciones$;
 
         // Subscribe to search input field value changes
         this.searchInputControl.valueChanges
@@ -120,7 +120,7 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
                     this.closeDetails();
                     this.isLoading = true;
                     console.log('query', query);
-                    return this._importService.getImportaciones(0, 10, 'vue', 'asc', query);
+                    return this._importService.getExportaciones(0, 10, 'vue', 'asc', query);
                 }),
                 map(() =>
                 {
@@ -168,7 +168,7 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
                 {
                     this.closeDetails();
                     this.isLoading = true;
-                    return this._importService.getImportaciones(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
+                    return this._importService.getExportaciones(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
                 }),
                 map(() =>
                 {
@@ -209,13 +209,13 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
 
         // Get the  by id
         this._importService.getImportsById(importId)
-            .subscribe((importacion) =>
+            .subscribe((exportacion) =>
             {
                 // Set the selected
-                this.selectedImport = importacion;
+                this.selectedImport = exportacion;
 
                 // Fill the form
-                this.selectedImportForm.patchValue(importacion);
+                this.selectedImportForm.patchValue(exportacion);
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -260,25 +260,25 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
     /**
      * Create
      */
-    createImportacion(): void
+    createExportacion(): void
     {
-            this.router.navigate(['/example/crear-importacion']);
+            this.router.navigate(['/example/crear-exportacion']);
 
     }
 
     /**
      * Update the selected  using the form data
      */
-    updateSelectedImportacion(): void
+    updateSelectedExportacion(): void
     {
         // Get the  object
-        const importacion = this.selectedImportForm.getRawValue();
+        const exportacion = this.selectedImportForm.getRawValue();
 
         // Remove the currentImageIndex field
-        delete importacion.currentImageIndex;
+        delete exportacion.currentImageIndex;
 
         // Update the  on the server
-        this._importService.updateImportacion(importacion.id, importacion).subscribe(() =>
+        this._importService.updateExportacion(exportacion.id, exportacion).subscribe(() =>
         {
             // Show a success message
             this.showFlashMessage('success');
@@ -288,7 +288,7 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
     /**
      * Delete the selected prouct using the form data
      */
-    deleteSelectedImportacion(): void
+    deleteSelectedExportacion(): void
     {
         // Open the confirmation dialog
         const confirmation = this._fuseConfirmationService.open({
@@ -308,10 +308,10 @@ export class ImportacionListComponent implements OnInit, AfterViewInit, OnDestro
             if ( result === 'confirmed' )
             {
                 // Get the  object
-                const importacion = this.selectedImportForm.getRawValue();
+                const exportacion = this.selectedImportForm.getRawValue();
 
                 // Delete the  on the server
-                this._importService.deleteImportacion(importacion.id).subscribe(() =>
+                this._importService.deleteExportacion(exportacion.id).subscribe(() =>
                 {
                     // Close the details
                     this.closeDetails();

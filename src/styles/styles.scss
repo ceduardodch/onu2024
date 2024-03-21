@@ -1,4 +1,22 @@
 /* ----------------------------------------------------------------------------------------------------- */
-/*  @ Import/write your custom styles here.
-/*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
+/*  Import your custom styles here.                                                                      */
+/*  Styles from this file will override 'vendors.scss' and Tailwind's base styles.                       */
 /* ----------------------------------------------------------------------------------------------------- */
+
+/* Import third-party styles from vendors.scss */
+@import 'vendors';
+
+/* Import Tailwind styles */
+@import 'tailwind';
+
+/* Your custom styles go here */
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Continue with more custom styles */

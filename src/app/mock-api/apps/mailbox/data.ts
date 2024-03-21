@@ -104,7 +104,7 @@ export const mails = [
             'Graham Belltower <graham.belltower@company.com>',
         ],
         bcc        : [
-            'Julie T. <julie.t@company.com>',
+            'DIEGOOOOOOOOOOO',
         ],
         date       : now.set({
             hour  : 20,

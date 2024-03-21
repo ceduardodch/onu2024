@@ -1,15 +1,15 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { RouterModule } from '@angular/router'; // Import RouterModule
+import { RouterModule } from '@angular/router'; // Export RouterModule
 
 @Component({
-    selector     : 'example',
+    selector     : 'exportacion',
     standalone   : true,
     templateUrl  : './example.component.html',
     imports: [RouterModule],
 
     encapsulation: ViewEncapsulation.None,
 })
-export class ExampleComponent
+export class ExpComponent
 {
     /**
      * Constructor
@@ -18,4 +18,3 @@ export class ExampleComponent
     {
     }
 }
-

@@ -24,6 +24,24 @@
                 alt="Logo image">
         </div>
     </ng-container>
+
+    <div class="dashboard">
+        <div class="status-buttons">
+          <button class="approved">Aprobado</button>
+          <button class="rejected">Rechazado</button>
+        </div>
+      
+        <div class="dates-section">
+          <h2>Fechas</h2>
+          <!-- Contenido de fechas aquí -->
+        </div>
+      
+        <div class="summary-section">
+          <h2>Resumen</h2>
+          <!-- Contenido de resumen aquí -->
+        </div>
+      </div>
+      
 </fuse-vertical-navigation>
 
 <!-- Wrapper -->
@@ -37,22 +55,6 @@
             (click)="toggleNavigation('mainNavigation')">
             <mat-icon [svgIcon]="'heroicons_outline:bars-3'"></mat-icon>
         </button>
-        <!-- Components -->
-        <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
-            <languages></languages>
-            <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
-            <search [appearance]="'bar'"></search>
-            <shortcuts></shortcuts>
-            <messages></messages>
-            <notifications></notifications>
-            <button
-                class="lg:hidden"
-                mat-icon-button
-                (click)="quickChat.toggle()">
-                <mat-icon [svgIcon]="'heroicons_outline:chat-bubble-left-right'"></mat-icon>
-            </button>
-            <user></user>
-        </div>
     </div>
 
     <!-- Content -->
@@ -68,6 +70,3 @@
     </div>
 
 </div>
-
-<!-- Quick chat -->
-<quick-chat #quickChat="quickChat"></quick-chat>

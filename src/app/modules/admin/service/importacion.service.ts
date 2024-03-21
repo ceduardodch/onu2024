@@ -1,15 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { InventoryPagination, InventoryImportacion } from '../model/importacion.types';
-import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, filter, map, of, switchMap, take, tap, throwError } from 'rxjs';
+import { InventoryImportacion, InventoryPagination } from '../model/importacion.types';
 
 @Injectable({providedIn: 'root'})
 export class ImportacionService
 {
     // Private
-    private _pagination: BehaviorSubject<InventoryPagination | null> = new BehaviorSubject(null);
-    private _importacion: BehaviorSubject<InventoryImportacion | null> = new BehaviorSubject(null);
-    private _importaciones: BehaviorSubject<InventoryImportacion[] | null> = new BehaviorSubject(null);
+    private _pagination = new BehaviorSubject <InventoryPagination | null>(null) ;
+    private _importacion = new BehaviorSubject<InventoryImportacion | null>(null);
+    private _importaciones = new BehaviorSubject<InventoryImportacion[] | null>(null);
 
     /**
      * Constructor
@@ -21,19 +21,19 @@ export class ImportacionService
     /**
      * Getter for pagination
      */
-    get pagination$(): Observable<InventoryPagination>
+    get pagination$(): Observable<InventoryPagination | null>
     {
         return this._pagination.asObservable();
     }
 
 
-    get importacion$(): Observable<InventoryImportacion>
+    get importacion$(): Observable<InventoryImportacion | null>
     {
         return this._importacion.asObservable();
     }
 
 
-    get importaciones$(): Observable<InventoryImportacion[]>
+    get importaciones$(): Observable<InventoryImportacion[] | null>
     {
         return this._importaciones.asObservable();
     }
@@ -57,6 +57,10 @@ export class ImportacionService
                 search,
             },
         }).pipe(
+            catchError(error => {
+                console.error('Error al obtener importaciones', error);
+                return throwError(() => new Error('Error al obtener importaciones'));
+            }),
             tap((response) =>
             {
                 console.log('response', response);
@@ -119,6 +123,10 @@ export class ImportacionService
                 id,
                 importacion,
             }).pipe(
+                catchError(error => {
+                    console.error('Error al actualizar importaciones', error);
+                    return throwError(() => new Error('Error al actualizar importaciones'));
+                }),
                 map((updatedImportacion) =>
                 {
                     const index = importaciones.findIndex(item => item.id === id);

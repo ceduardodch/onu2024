@@ -1,3 +1,4 @@
+
 <div class="flex flex-col flex-auto min-w-0">
 
     <!-- Header -->
@@ -6,7 +7,7 @@
             <!-- Breadcrumbs -->
             <div class="flex flex-wrap items-center font-medium">
                 <div>
-                    <a class="whitespace-nowrap text-primary-500">Importaciones</a>
+                    <a class="whitespace-nowrap text-primary-500">Exportacion</a>
                 </div>
                 <div class="flex items-center ml-1 whitespace-nowrap">
                     <mat-icon
@@ -37,27 +38,6 @@
                             [svgIcon]="'heroicons_solid:envelope'"></mat-icon>
                     </mat-form-field>
 
-                    <mat-form-field class="flex-1">
-                        <input
-                            matInput
-                            [placeholder]="'Importador'">
-                        <mat-icon
-                            class="icon-size-5"
-                            matPrefix>
-                            search
-                        </mat-icon>                                              
-                    </mat-form-field>
-
-                    <button                       
-                    mat-icon-button
-                    color="primary"
-                    >
-                        <mat-icon>search</mat-icon>
-                    </button>
-
-                    
-                </div>
-                <div class="flex gap-4">
                     <mat-form-field class="flex-1 ">
                         <mat-select [placeholder]="'Proveedor'">
                             <mat-option value="language-1">ABROINDUSTRIES INC</mat-option>
@@ -69,6 +49,22 @@
                             matPrefix
                             [svgIcon]="'heroicons_solid:language'"></mat-icon>
                     </mat-form-field>
+                    
+                </div>
+                <div class="flex gap-4">                   
+
+                    <mat-form-field class="flex-1 ">
+                        <mat-select [placeholder]="'Importador'">
+                            <mat-option value="country-1">ABROAHDESIVOS DEL ECUADOR</mat-option>
+                            <mat-option value="country-2">ACESCO ECUADOR S.A.</mat-option>
+                            <mat-option value="country-3">AISLAPOL S.A.</mat-option>
+                        </mat-select>
+                        <mat-icon
+                            class="icon-size-5"
+                            matPrefix
+                            [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
+                    </mat-form-field>
+
                     <mat-form-field class="flex-1">
 
                     <mat-select [placeholder]="'Pais'">
@@ -77,102 +73,56 @@
                         <mat-option value="language-3">ECUADOR</mat-option>
                     </mat-select>
                 </mat-form-field>
-                
-                </div>        
-                                
-                    <div class="status-buttons">
-                        <button mat-icon-button color="primary" class="approved">
-                          Aprobado
-                          
-                        </button>
-                                            
-                        <button mat-icon-button color="primary" class="rejected">
-                          Rechazado
-                          
-                        </button>
-                    
-                  
-                        <div class="dates-section">
-                        <h2>Fechas</h2>
-                        <!-- Contenido de fechas aquí -->
-                        </div>
-                  
-                        <div class="summary-section">
-                        <h2>Resumen</h2>
-                        <!-- Contenido de resumen aquí -->
-                        </div>
-                  </div>
+
+                </div>
+
 
                 <mat-divider class="mt-6 mb-10"></mat-divider>
 
-                <p class="text-lg font-medium">Proforma</p>
+                <p class="text-lg font-medium">Profile</p>
                 <p class="text-secondary mb-6">
-                    Lista de productos
+                    People here will get to know you with this information
                 </p>
                 <div class="flex flex-col gt-xs:flex-row">
                     <mat-form-field class="flex-auto gt-xs:pr-3">
                         <input
                             matInput
-                            [placeholder]="'Producto'">                        
+                            [placeholder]="'First name'">
+                        <mat-icon
+                            class="icon-size-5"
+                            matPrefix
+                            [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>
                     </mat-form-field>
                     <mat-form-field class="flex-auto gt-xs:pl-3">
                         <input
                             matInput
-                            [placeholder]="'Subpartida'">                        
+                            [placeholder]="'Last name'">
+                        <mat-icon
+                            class="icon-size-5"
+                            matPrefix
+                            [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>
                     </mat-form-field>
-                    <mat-form-field class="flex-auto gt-xs:pr-3">
-                        <input
-                            matInput
-                            [placeholder]="'Valor CIF'">                        
-                    </mat-form-field>
-                    <mat-form-field class="flex-auto gt-xs:pl-3">
-                        <input
-                            matInput
-                            [placeholder]="'Valor FOB'">                        
-                    </mat-form-field>
-                    <mat-form-field class="flex-auto gt-xs:pr-3">
-                        <input
-                            matInput
-                            [placeholder]="'Peso Kg PAO'">                        
-                    </mat-form-field>
-                    <mat-form-field class="flex-auto gt-xs:pl-3">
-                        <input
-                            matInput
-                            [placeholder]="'EQ TM CO2'">                        
-                    </mat-form-field>
-                    <mat-form-field class="flex-auto gt-xs:pl-3">
-                        <input
-                            matInput
-                            [placeholder]="'Observación'">                        
-                    </mat-form-field>                    
-                    
                 </div>
-                <div>
-                    <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageIndex]="pageIndex"
-                    (page)="handlePage($event)">
-                    </mat-paginator>     
-                    <table mat-table [dataSource]="getPaginatedData()" class="mat-elevation-z8">
-                      <!-- Columnas definidas en displayedColumns -->
-                      <ng-container matColumnDef="nombre">
-                        <th mat-header-cell *matHeaderCellDef> Nombre </th>
-                        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
-                      </ng-container>
-                  
-                      <ng-container matColumnDef="ruc">
-                        <th mat-header-cell *matHeaderCellDef> RUC </th>
-                        <td mat-cell *matCellDef="let element"> {{element.ruc}} </td>
-                      </ng-container>
-                  
-                      <ng-container matColumnDef="usuarioImportador">
-                        <th mat-header-cell *matHeaderCellDef> Usuario Importador </th>
-                        <td mat-cell *matCellDef="let element"> {{element.usuarioImportador}} </td>
-                      </ng-container>
-                  
-                      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                    </table>                                                 
-                    
-                  </div>                
+                <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <input
+                            matInput
+                            [placeholder]="'Username'">
+                        <span matPrefix>www.example.com/</span>
+                    </mat-form-field>
+                </div>
+                <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <textarea
+                            matInput
+                            [placeholder]="'About'"
+                            [rows]="3"></textarea>
+                        <mat-icon
+                            class="icon-size-5"
+                            matPrefix
+                            [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                    </mat-form-field>
+                </div>
 
                 <mat-divider class="mt-6 mb-10"></mat-divider>
 
@@ -240,4 +190,3 @@
         </div>
     </div>
 </div>
-
