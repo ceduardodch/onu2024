@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule, MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,29 +31,10 @@ import { PageEvent } from '@angular/material/paginator';
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations     : fuseAnimations,
     standalone     : true,
-    //styleUrls: ['./crear-importacion.component.scss'],
-    styles         : [
-      /* language=SCSS */
-      `
-          .inventory-grid {
-              grid-template-columns: 80px 80px 120px;
-
-              @screen sm {
-                  grid-template-columns: 80px 80px 80px 180px;
-              }
-
-              @screen md {
-                  grid-template-columns: 80px 80px 80px 180px 220px;
-              }
-
-              @screen lg {
-                  grid-template-columns: 80px 80px 80px 180px 220px 96px 72px;
-              }
-          }
-      `,
-  ],
+    styleUrls: ['./crear-importacion.component.scss'],
+    
     imports        : [
-      MatIconModule,
+      MatFormFieldModule, MatInputModule, MatDatepickerModule, MatButtonModule,
       MatButtonModule,
       CommonModule,MatDividerModule,NgIf,
       MatRadioModule, MatProgressBarModule, 
@@ -71,6 +53,7 @@ export class CrearImportacionComponent {
     nombre: string;
     ruc: string;
     usuarioImportador: string;
+    selectedButton: string = '';
 
   dataSource: any[]=[];
   displayedColumns: string[] = ['nombre', 'ruc', 'usuarioImportador'];
