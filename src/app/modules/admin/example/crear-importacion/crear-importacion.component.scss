@@ -73,3 +73,15 @@
 .custom-button:active {
   background-color: #283593; /* Cambia el color de fondo cuando se presiona el botón */
 }
+.container {
+  display: flex;
+  width: 100%; /* Esto asegura que el contenedor ocupe el ancho total de su contenedor padre */
+}
+
+.side-left {
+  flex: 1; /* Ocupará 1 parte del espacio disponible */
+}
+
+.side-right {
+  flex: 4; /* Ocupará 4 partes del espacio disponible */
+}

@@ -19,15 +19,14 @@
 
         </div>
     </div>
-    <form class="flex flex-auto mt-2 px-6 pt-5 bg-white shadow-md rounded-md overflow-hidden">
+    
+    <form class="flex flex-auto mt-2 px-6 pt-5 shadow-md rounded-md overflow-hidden">
         
        <!-- Main -->
-       <div class="flex flex-auto lg:flex-row gap-4">
-
-        
+       <div class="flex flex-auto lg:flex-row gap-4">        
         <div class="flex-auto lg:w-3/4">
 
-                <div class="flex gap-4 bg-gray-100 p-1 rounded-md">
+                <div class="flex gap-4 p-1 rounded-md dark:bg-gray-700">
                     <mat-form-field class="flex-1">
                         <input
                             matInput
@@ -51,7 +50,7 @@
                     </mat-form-field>
   
                 </div>
-                <div class="flex gap-4 bg-gray-100 p-1 rounded-md">
+                <div class="flex gap-4 p-1 rounded-md dark:bg-gray-700">
                     <mat-form-field class="flex-1 ">
                         <mat-select [placeholder]="'Proveedor'">
                             <mat-option value="language-1">ABROINDUSTRIES INC</mat-option>
@@ -71,22 +70,24 @@
                         <mat-option value="language-3">ECUADOR</mat-option>
                     </mat-select>
                 </mat-form-field>                
-                </div>        
-
-                <p class="border-t -mx-8 px-8 py-5   ">Proforma</p>
-                <p class="text-secondary mb-6">
-                    Lista de productos
-                </p>
-
-                <div class="w-full border-t -mx-8 px-8 py-5 bg-gray-50 dark:bg-gray-700">
+                </div>       
+                <div class="w-full border-t  px-5 py-5 dark:bg-gray-700">
+                  <p>Proforma</p>
+                  <div class="flex items-center justify-between">
+                    <p class="text-secondary mb-2 text-lg">Lista de productos</p>
+                    <div class="flex items-center">
+                      <div class=" mt-8 px-8 py-0">
+                        <button mat-icon-button color="primary">
+                          <mat-icon>add</mat-icon> Nuevo
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
                     <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageIndex]="pageIndex"
                     (page)="handlePage($event)">
                     </mat-paginator>     
-                    <div class="flex items-center justify-end border-t -mx-8 mt-8 px-8 py-5 bg-gray-50 dark:bg-gray-700">
-                        <button mat-icon-button color="primary">
-                            <mat-icon>add</mat-icon> Nuevo
-                        </button>
-                    </div>
+                    
                     <table mat-table [dataSource]="getPaginatedData()" class="mat-elevation-z8">
                       <!-- Columnas definidas en displayedColumns -->
                       <ng-container matColumnDef="nombre">
@@ -135,10 +136,10 @@
                     
                   </div>                
 
-                <mat-divider class="mt-6 mb-10"></mat-divider>
+                
 
-                <p class="text-lg font-medium">Lista de fichas técnicas</p>
-                <div class="w-full border-t -mx-8 px-8 py-5 bg-gray-50 dark:bg-gray-700">
+                <p class="text-lg font-medium mb-2 text-lg">Lista de fichas técnicas</p>
+                <div class="w-full border-t mx-auto px-5 py-5 bg-gray-50 dark:bg-gray-700">
                       <table mat-table [dataSource]="getPaginatedData()" class="mat-elevation-z8">
                       <!-- Columnas definidas en displayedColumns -->
                       <ng-container matColumnDef="nombre">
@@ -161,18 +162,6 @@
                     </table>                                                 
                     
                   </div>      
-
-                <div class="flex items-center justify-end border-t -mx-8 mt-8 px-8 py-5 bg-gray-50 dark:bg-gray-700">
-                    <button mat-button>
-                        Cancel
-                    </button>
-                    <button 
-                    class="custom-button" 
-                    mat-flat-button [color]="'primary'">
-                    Save
-                </button>
-
-                </div>
             
         </div>
         </div>
@@ -180,7 +169,7 @@
         <div class="flex flex-auto lg:flex-row gap-8">
         <mat-divider class="mt-6 mb-10"></mat-divider>
 
-        <div class="w-full border-t -mx-8 px-8 py-5 bg-gray-50 dark:bg-gray-700">            
+        <div class="w-full mx-auto px-5 py-5 w-1/3 dark:bg-gray-700 ">            
             <ng-container>
                 <div class="status-buttons flex w-full justify-start">
                     <button [ngClass]="{'selected': selectedButton === 'approved'}" (click)="selectedButton = 'approved'" mat-flat-button color="primary" class="px-6 ml-3">
@@ -195,7 +184,7 @@
                 <mat-divider class="mt-6 mb-10"></mat-divider>
               
                 <div class="dates-section">                    
-                    <mat-form-field color="accent">
+                    <mat-form-field color="accent" class="w-full max-w-md">
                         <mat-label>Fecha de solicitud</mat-label>
                         <input matInput [matDatepicker]="picker1">
                         <mat-hint>MM/DD/YYYY</mat-hint>
@@ -203,7 +192,7 @@
                         <mat-datepicker #picker1></mat-datepicker>
                       </mat-form-field>
                       
-                      <mat-form-field color="accent">
+                      <mat-form-field color="accent" class="w-full max-w-md">
                         <mat-label>Fecha de autorizacion</mat-label>
                         <input matInput [matDatepicker]="picker2">
                         <mat-hint>MM/DD/YYYY</mat-hint>
