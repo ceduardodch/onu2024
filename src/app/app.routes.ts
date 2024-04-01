@@ -75,6 +75,8 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
+            {path: 'users', loadChildren: () => import('app/modules/admin/users/users.routes')}, // Import the missing module here
+
         ]
     },
 
