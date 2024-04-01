@@ -1,7 +1,36 @@
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+@use '/src/styles/styles.scss';
+@use '/src/styles/variables/typography.scss' as type;
+
+.form-container {
+  @apply flex flex-auto mt-2 px-6 pt-5 shadow-md rounded-md overflow-hidden;
+}
+
+.main-content {
+  @apply flex flex-auto lg:flex-row gap-4;
+}
+
+.main-section {
+  @apply flex-auto lg:w-3/4;
+}
+
+.field-container {
+  @apply flex gap-4 p-1 rounded-md dark:bg-gray-700;
+}
+
+.mat-form-field {
+  @apply flex-1;
+}
+
+.icon-size {
+  // Aquí aplicarías el tamaño correspondiente al icono,
+  // por ejemplo, si 'icon-size-5' es 20px, sería algo como:
+  font-size: 20px; // Esto es un ejemplo, ajusta al tamaño real que necesitas
+}
+
+
+
 
 .selected {
     background-color: chartreuse; /* Cambia este color según tu preferencia */

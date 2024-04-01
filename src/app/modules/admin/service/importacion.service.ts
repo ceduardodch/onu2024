@@ -99,7 +99,7 @@ export class ImportacionService
     {
         return this.importaciones$.pipe(
             take(1),
-            switchMap(importaciones => this._httpClient.post<InventoryImportacion>('api/apps/ecommerce/inventory/importaciones', {}).pipe(
+            switchMap(importaciones => this._httpClient.post<InventoryImportacion>('api/apps/ecommerce/inventory/importacione', {}).pipe(
                 map((newImportacion) =>
                 {
                     this._importaciones.next([newImportacion, ...importaciones]);

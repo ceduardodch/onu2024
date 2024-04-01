@@ -19,7 +19,7 @@ import { Observable, Subject, debounceTime, map, merge, switchMap, takeUntil } f
 import { InventoryExportacion, InventoryPagination } from '../../model/exportacion.types';
 import { ExportacionService } from '../../service/exportacion.service';
 @Component({
-    selector       : 'exportacion-list',
+    selector       : 'exportacion',
     templateUrl    : './exportacion.component.html',
     styles         : [
         /* language=SCSS */
