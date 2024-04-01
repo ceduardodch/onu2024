@@ -1,0 +1,30 @@
+<div>
+    <h1>Paises</h1>
+    <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
+        <ng-container *ngIf="(paises ) as paises">
+            <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
+                <div [mat-sort-header]="'name'">Country</div>
+                
+                <div>Acciones</div> <!-- Columna para acciones -->
+            </div>
+            <!-- Rows -->
+            <ng-container *ngFor="let pais of paises">
+                <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                    <div class="truncate">{{pais.name}}</div>                    
+                    <div>
+                        <!-- Botón para editar la fila -->
+                        <button (click)="editPais(pais)">Editar</button>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- Fila para agregar un nuevo usuario -->
+            <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                <input [(ngModel)]="newPais.name" placeholder="Country">                
+                <div>
+                    <!-- Botón para guardar el nuevo usuario -->
+                    <button (click)="addUser()">Guardar</button>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>

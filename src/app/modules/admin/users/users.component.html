@@ -1,0 +1,38 @@
+<div>
+    <h1>Users</h1>
+    <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
+        <ng-container *ngIf="(users ) as users">
+            <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
+                <div [mat-sort-header]="'name'">Usuario</div>
+                <div [mat-sort-header]="'email'">Email</div>
+                <div [mat-sort-header]="'phone'">Telefono</div>
+                <div [mat-sort-header]="'company'">Empresa</div>
+                <div>Acciones</div> <!-- Columna para acciones -->
+            </div>
+            <!-- Rows -->
+            <ng-container *ngFor="let user of users">
+                <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                    <div class="truncate">{{user.name}}</div>
+                    <div class="truncate">{{user.email}}</div>
+                    <div class="truncate">{{user.phone}}</div>
+                    <div class="truncate">{{user.company}}</div>
+                    <div>
+                        <!-- Botón para editar la fila -->
+                        <button (click)="editUser(user)">Editar</button>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- Fila para agregar un nuevo usuario -->
+            <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                <input [(ngModel)]="newUser.name" placeholder="Nombre">
+                <input [(ngModel)]="newUser.email" placeholder="Email">
+                <input [(ngModel)]="newUser.phone" placeholder="Telefono">
+                <input [(ngModel)]="newUser.company" placeholder="Empresa">
+                <div>
+                    <!-- Botón para guardar el nuevo usuario -->
+                    <button (click)="addUser()">Guardar</button>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
