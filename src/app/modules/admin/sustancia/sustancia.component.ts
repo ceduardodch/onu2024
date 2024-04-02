@@ -1,12 +1,44 @@
-import { Component } from '@angular/core';
+import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Sustancia } from './sustancia.model'; // Import the 'User' class from the appropriate file
+import { SustanciaService } from './sustancia.service';
+
 
 @Component({
-  selector: 'app-sustancia',
+  selector: 'app-sustancias',
   standalone: true,
-  imports: [],
+  imports        : [NgIf, NgFor, NgTemplateOutlet, NgClass, AsyncPipe, CurrencyPipe,FormsModule],
   templateUrl: './sustancia.component.html',
   styleUrl: './sustancia.component.scss'
 })
-export class SustanciaComponent {
+export class SustanciasComponent implements OnInit{
+        sustancias: Sustancia[] = []; // Cambiado a array regular para manejar la lista de usuarios
+        newSustancia:Sustancia = {
+          id:0, name: '', subpartida: '',pao:'', pcg: '', grupos_sust: '',activo:'', cupo_prod: '', created_at: '',updated_at: ''};
 
+
+        constructor(private _sustanciaService: SustanciaService) { }
+
+        ngOnInit(): void {
+
+            this._sustanciaService.getSustancias().subscribe((sustancias: Sustancia[]) => {
+                this.sustancias = (sustancias);
+            });
+            }
+
+            addSustancia(): void {
+                console.log();
+                this._sustanciaService.addSustancia(this.newSustancia).subscribe((sustancia: Sustancia) => {
+                  this.sustancias.push(sustancia);
+                });
+              }
+  editSustancia(sustancia) {
+    // Aquí va tu código para editar el usuario
+  }
 }
+
+function subscribe(arg0: (sustancia: Sustancia) => void) {
+    throw new Error('Function not implemented.');
+}
+

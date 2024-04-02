@@ -1,9 +1,8 @@
-import { Component,OnInit } from '@angular/core';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { ImportadorService } from './importador.service';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Importador } from './importador.model'; // Import the 'User' class from the appropriate file
-import { Observable, of } from 'rxjs'; // Import the 'Observable' class from the appropriate package
+import { ImportadorService } from './importador.service';
 
 
 @Component({
@@ -15,7 +14,8 @@ import { Observable, of } from 'rxjs'; // Import the 'Observable' class from the
 })
 export class ImportadorsComponent implements OnInit{
         importadors: Importador[] = []; // Cambiado a array regular para manejar la lista de usuarios
-        newImportador:Importador = {id:0, name: '', ruc: '',user_import:'', created_at: '',updated_at: ''};
+        newImportador:Importador = {
+          id:0, name: '', ruc: '',user_import:'', created_at: '',updated_at: ''};
 
 
         constructor(private _importadorService: ImportadorService) { }

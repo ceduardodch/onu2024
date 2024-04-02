@@ -1,1 +1,54 @@
-<p>sustancia works!</p>
+<div>
+    <h1>Sustancia</h1>
+    <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
+        <ng-container *ngIf="(sustancias ) as sustancias">
+            <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
+                <div [mat-sort-header]="'name'">Nombre</div>
+                <div [mat-sort-header]="'subpartida'">Subpartida</div>
+                <div [mat-sort-header]="'pao'">PAO</div>
+                <div [mat-sort-header]="'pcg'">PCG</div>
+                <div [mat-sort-header]="'grupos_sust'">Grupo de sustancia</div>
+                <div [mat-sort-header]="'activo'">Activo</div>
+                <div [mat-sort-header]="'cupo_prod'">Cupo producto</div>
+                <div [mat-sort-header]="'created_at'">Creado</div>
+                <div [mat-sort-header]="'updated_at'">Actualizado</div>
+                
+                <div>Acciones</div> <!-- Columna para acciones -->
+            </div>
+            <!-- Rows -->
+            <ng-container *ngFor="let importador of importadors">
+                <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                    <div class="truncate">{{importador.name}}</div>
+                    <div class="truncate">{{importador.subpartida}}</div>
+                    <div class="truncate">{{importador.pao}}</div>
+                    <div class="truncate">{{importador.pcg}}</div>
+                    <div class="truncate">{{importador.grupos_sust}}</div>
+                    <div class="truncate">{{importador.activo}}</div>
+                    <div class="truncate">{{importador.cupo_prod}}</div>
+                    <div class="truncate">{{importador.created_at}}</div>
+                    <div class="truncate">{{importador.updated_at}}</div>   
+                    <div>
+                        <!-- Botón para editar la fila -->
+                        <button (click)="editImportador(importador)">Editar</button>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- Fila para agregar un nuevo sustancia -->
+            <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                <input [(ngModel)]="newImportador.name" placeholder="Nombre">
+                <input [(ngModel)]="newImportador.subpartida" placeholder="Subpartida">
+                <input [(ngModel)]="newImportador.pao" placeholder="PAO">
+                <input [(ngModel)]="newImportador.pcg" placeholder="PCG">
+                <input [(ngModel)]="newImportador.grupos_sust" placeholder="Grupo de sustancia">
+                <input [(ngModel)]="newImportador.activo" placeholder="Activo">
+                <input [(ngModel)]="newImportador.cupo_prod" placeholder="Cupo Producto">
+                <input [(ngModel)]="newImportador.created_at" placeholder="Creado">
+                <input [(ngModel)]="newImportador.updated_at" placeholder="Modificado">  
+                <div>
+                    <!-- Botón para guardar el nuevo sustancia -->
+                    <button (click)="addImportador()">Guardar</button>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
