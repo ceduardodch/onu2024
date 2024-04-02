@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { UsersComponent } from './users.component';
+import { ImportadorsComponent } from './importador.component';
 //
 const routes: Routes = [
     {
         path: '', // quita la barra al principio
-        component: UsersComponent,
+        component: ImportadorsComponent,
     },
 ];
 

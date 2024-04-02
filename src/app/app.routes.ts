@@ -80,7 +80,7 @@ export const appRoutes: Route[] = [
             {path: 'paises', loadChildren: () => import('app/modules/admin/pais/pais.routes')},
             {path: 'producto', loadChildren: () => import('app/modules/admin/pais/pais.routes')},
             {path: 'sustancia', loadChildren: () => import('app/modules/admin/pais/pais.routes')},
-            {path: 'importador', loadChildren: () => import('app/modules/admin/pais/pais.routes')},
+            {path: 'importador', loadChildren: () => import('app/modules/admin/importador/importador.routes')},
         ]
     },
 
