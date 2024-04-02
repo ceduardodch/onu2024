@@ -10,9 +10,7 @@
                 <div [mat-sort-header]="'grupos_sust'">Grupo de sustancia</div>
                 <div [mat-sort-header]="'activo'">Activo</div>
                 <div [mat-sort-header]="'cupo_prod'">Cupo producto</div>
-                <div [mat-sort-header]="'created_at'">Creado</div>
-                <div [mat-sort-header]="'updated_at'">Actualizado</div>
-                
+                                
                 <div>Acciones</div> <!-- Columna para acciones -->
             </div>
             <!-- Rows -->
@@ -25,8 +23,7 @@
                     <div class="truncate">{{sustancia.grupos_sust}}</div>
                     <div class="truncate">{{sustancia.activo}}</div>
                     <div class="truncate">{{sustancia.cupo_prod}}</div>
-                    <div class="truncate">{{sustancia.created_at}}</div>
-                    <div class="truncate">{{sustancia.updated_at}}</div>   
+                    
                     <div>
                         <!-- Botón para editar la fila -->
                         <button (click)="editSustancia(sustancia)">Editar</button>
@@ -42,8 +39,7 @@
                 <input [(ngModel)]="newSustancia.grupos_sust" placeholder="Grupo de sustancia">
                 <input [(ngModel)]="newSustancia.activo" placeholder="Activo">
                 <input [(ngModel)]="newSustancia.cupo_prod" placeholder="Cupo Producto">
-                <input [(ngModel)]="newSustancia.created_at" placeholder="Creado">
-                <input [(ngModel)]="newSustancia.updated_at" placeholder="Modificado">  
+                
                 <div>
                     <!-- Botón para guardar el nuevo sustancia -->
                     <button (click)="addSustancia()">Guardar</button>

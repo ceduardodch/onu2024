@@ -6,8 +6,6 @@
                 <div [mat-sort-header]="'name'">Nombre</div>
                 <div [mat-sort-header]="'ruc'">RUC</div>
                 <div [mat-sort-header]="'user_import'">Usuario Importador</div>
-                <div [mat-sort-header]="'created_at'">Creado</div>
-                <div [mat-sort-header]="'updated_at'">Actualizado</div>
                 
                 <div>Acciones</div> <!-- Columna para acciones -->
             </div>
@@ -17,8 +15,7 @@
                     <div class="truncate">{{importador.name}}</div>
                     <div class="truncate">{{importador.ruc}}</div>
                     <div class="truncate">{{importador.user_import}}</div>
-                    <div class="truncate">{{importador.created_at}}</div>
-                    <div class="truncate">{{importador.updated_at}}</div>   
+
                     <div>
                         <!-- Botón para editar la fila -->
                         <button (click)="editImportador(importador)">Editar</button>
@@ -30,8 +27,7 @@
                 <input [(ngModel)]="newImportador.name" placeholder="Nombre">
                 <input [(ngModel)]="newImportador.ruc" placeholder="RUC">
                 <input [(ngModel)]="newImportador.user_import" placeholder="Usuario Importador">
-                <input [(ngModel)]="newImportador.created_at" placeholder="Creado">
-                <input [(ngModel)]="newImportador.updated_at" placeholder="Modificado">  
+
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
                     <button (click)="addImportador()">Guardar</button>

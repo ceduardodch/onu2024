@@ -1,9 +1,8 @@
-import { Component,OnInit } from '@angular/core';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { UserService } from './user.service';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from './user.model'; // Import the 'User' class from the appropriate file
-import { Observable, of } from 'rxjs'; // Import the 'Observable' class from the appropriate package
+import { UserService } from './user.service';
 
 
 @Component({
@@ -15,7 +14,7 @@ import { Observable, of } from 'rxjs'; // Import the 'Observable' class from the
 })
 export class UsersComponent implements OnInit{
         users: User[] = []; // Cambiado a array regular para manejar la lista de usuarios
-        newUser:User = {id:0, name: '', email: '',password:'', phone: '', company: '', address: '', created_at: '',updated_at: ''};
+        newUser:User = {name: '', email: '',password:'', phone: '', company: '', address: ''};
 
 
         constructor(private _userService: UserService) { }
@@ -31,6 +30,7 @@ export class UsersComponent implements OnInit{
                 console.log();
                 this._userService.addUser(this.newUser).subscribe((user: User) => {
                   this.users.push(user);
+                  
                 });
               }
   editUser(user) {

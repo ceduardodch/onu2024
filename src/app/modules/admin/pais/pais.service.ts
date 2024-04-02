@@ -17,4 +17,11 @@ export class PaisService {
   addPais(pais: Pais): Observable<Pais> {
     return this.http.post<Pais>(this.apiUrl, pais);
   }
+  updatePais(id: number, pais: Pais): Observable<Pais> {
+    return this.http.put<Pais>(`${this.apiUrl}/${id}`, { name: pais.name });
+  }
+  deletePais(id: number): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.delete(url);
+  }
 }

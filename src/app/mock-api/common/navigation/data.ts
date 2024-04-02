@@ -37,14 +37,6 @@ export const defaultNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:user',
         link : '/importadors'
     },
-    {
-        id   : 'appis',
-        title: 'appis',
-        type : 'basic',
-        icon : 'heroicons_outline:user',
-        link : '/appis'
-    }
-
 ];
 export const compactNavigation: FuseNavigationItem[] = [
     {

@@ -4,27 +4,32 @@
         <ng-container *ngIf="(paises ) as paises">
             <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
                 <div [mat-sort-header]="'name'">Country</div>
-                <div [mat-sort-header]="'created_at'">Creado</div>
-                <div [mat-sort-header]="'updated_at'">Actualizado</div>
                 <div>Acciones</div> <!-- Columna para acciones -->
             </div>
             <!-- Rows -->
-            <ng-container *ngFor="let pais of paises">
+            <ng-container *ngFor="let pais of paises; let i = index " class="mb-4">
                 <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                    <div class="truncate">{{pais.name}}</div> 
-                    <div class="truncate">{{pais.created_at}}</div>
-                    <div class="truncate">{{pais.updated_at}}</div>                   
-                    <div>
-                        <!-- Botón para editar la fila -->
-                        <button (click)="editPais(pais)">Editar</button>
+                    <!-- Solo mostrar campos si no se está editando este país en particular -->
+                    <div *ngIf="selectedPais?.id !== pais.id" class="truncate">{{ pais.name }}</div>
+                    
+                    <!-- Mostrar botones solo si no se está editando este país -->
+                    <div *ngIf="selectedPais?.id !== pais.id">
+                      <button (click)="selectPaisForEdit(pais)">Editar</button>
+                    </div>
+                    <!-- Formulario de edición para el país actual -->
+                    <div *ngIf="selectedPais?.id === pais.id" class="col-span-5">
+                    <input [(ngModel)]="selectedPais.name" placeholder="Country" class="mr-2">
+                    <!-- Aquí agregarías los otros campos necesarios -->
+                    <button (click)="updatePais(selectedPais)">Guardar Cambios</button>
+                    <br/>
+                    <button (click)="cancelEdit()">Cancelar</button>
                     </div>
                 </div>
             </ng-container>
+            
             <!-- Fila para agregar un nuevo usuario -->
             <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <input [(ngModel)]="newPais.name" placeholder="Country">        
-                <input [(ngModel)]="newPais.created_at" placeholder="Creado">
-                <input [(ngModel)]="newPais.updated_at" placeholder="Modificado">              
+                <input [(ngModel)]="newPais.name" placeholder="Country">                    
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
                     <button (click)="addPais()">Guardar</button>
