@@ -1,14 +1,23 @@
+import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDivider } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { User } from './user.model'; // Import the 'User' class from the appropriate file
 import { UserService } from './user.service';
 
 
 @Component({
   selector: 'app-users',
-  standalone: true,
-  imports        : [NgIf, NgFor, NgTemplateOutlet, NgClass, AsyncPipe, CurrencyPipe,FormsModule],
+  standalone: true, 
+  imports        : [
+    NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
+    RouterLink, MatButtonModule, CdkScrollable
+  ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })

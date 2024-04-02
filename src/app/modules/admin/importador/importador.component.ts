@@ -1,6 +1,11 @@
+import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDivider } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { Importador } from './importador.model'; // Import the 'User' class from the appropriate file
 import { ImportadorService } from './importador.service';
 
@@ -8,7 +13,11 @@ import { ImportadorService } from './importador.service';
 @Component({
   selector: 'app-importadors',
   standalone: true,
-  imports        : [NgIf, NgFor, NgTemplateOutlet, NgClass, AsyncPipe, CurrencyPipe,FormsModule],
+  imports        : [
+    NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
+    RouterLink, MatButtonModule, CdkScrollable
+  ],
   templateUrl: './importador.component.html',
   styleUrl: './importador.component.scss'
 })

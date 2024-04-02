@@ -1,5 +1,24 @@
-<div>
-    <h1>Importador</h1>
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 pb-22 sm:pt-12 sm:pb-28 sm:px-10 bg-default dark:bg-transparent">
+       
+        <div class="flex-1 min-w-0">
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Lista de Importadores
+                </h2>
+            </div>
+        </div>       
+        
+    </div>
+    <mat-divider class="mt-6 mb-10"></mat-divider>
+    <div
+        class="flex-auto -mt-16 p-6 sm:p-10 rounded-t-2xl shadow overflow-y-auto bg-card"
+        cdkScrollable>
+        <div class="h-400 min-h-400 max-h-400 border-2 border-dashed border-gray-300 rounded-2xl">
+        
     <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
         <ng-container *ngIf="(importadors ) as importadors">
             <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
@@ -33,6 +52,11 @@
                     <button (click)="addImportador()">Guardar</button>
                 </div>
             </div>
+            
         </ng-container>
+        </div>
+
     </div>
+
 </div>
+
