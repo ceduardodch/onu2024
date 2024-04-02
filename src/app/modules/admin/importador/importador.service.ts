@@ -7,7 +7,7 @@ import { Importador } from './importador.model';
   providedIn: 'root'
 })
 export class ImportadorService {
-  private apiUrl = 'http://localhost:3000/users';
+  private apiUrl = 'http://localhost:3000/importadors';
 
   constructor(private http: HttpClient) { }
 

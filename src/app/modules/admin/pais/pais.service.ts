@@ -7,7 +7,7 @@ import { Pais } from './pais.model';
   providedIn: 'root'
 })
 export class PaisService {
-  private apiUrl = 'http://localhost:3000/users';
+  private apiUrl = 'http://localhost:3000/paises';
 
   constructor(private http: HttpClient) { }
 

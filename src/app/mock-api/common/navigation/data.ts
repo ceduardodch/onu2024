@@ -10,42 +10,35 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link : '/example'
     },
     {
-        id   : 'example',
+        id   : 'usuarios',
         title: 'Usuarios',
         type : 'basic',
         icon : 'heroicons_outline:user',
         link : '/users'
     },
     {
-        id   : 'example',
-        title: 'pais',
+        id   : 'paises',
+        title: 'Paises',
         type : 'basic',
         icon : 'heroicons_outline:user',
         link : '/paises'
     },
     {
-        id   : 'example',
-        title: 'producto',
+        id   : 'sustancias',
+        title: 'Sustancias',
         type : 'basic',
         icon : 'heroicons_outline:user',
-        link : '/producto'
+        link : '/sustancias'
     },
     {
-        id   : 'example',
-        title: 'sustancia',
+        id   : 'importadors',
+        title: 'Importadors',
         type : 'basic',
         icon : 'heroicons_outline:user',
-        link : '/sustancia'
+        link : '/importadors'
     },
     {
-        id   : 'example',
-        title: 'importador',
-        type : 'basic',
-        icon : 'heroicons_outline:user',
-        link : '/importador'
-    },
-    {
-        id   : 'example',
+        id   : 'appis',
         title: 'appis',
         type : 'basic',
         icon : 'heroicons_outline:user',

@@ -7,7 +7,7 @@ import { Proveedor } from './proveedor.model';
   providedIn: 'root'
 })
 export class ProveedorService {
-  private apiUrl = 'http://localhost:3000/users';
+  private apiUrl = 'http://localhost:3000/proveedors';
 
   constructor(private http: HttpClient) { }
 
