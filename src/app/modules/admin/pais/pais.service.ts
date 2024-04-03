@@ -20,10 +20,16 @@ export class PaisService {
   }
 
   updatePais(id: number, pais: Pais): Observable<Pais> {
+    if (!id || id <= 0) {
+      throw new Error('ID de país no válido');
+    }
     return this.http.put<Pais>(`${this.apiUrl}/${id}`, { name: pais.name });
   }
 
   deletePais(id: number): Observable<any> {
+    if (!id || id <= 0) {
+      throw new Error('ID de país no válido');
+    }
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 

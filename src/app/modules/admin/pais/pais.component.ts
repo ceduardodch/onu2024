@@ -1,7 +1,8 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatFormField } from '@angular/material/form-field';
@@ -10,15 +11,21 @@ import { RouterLink } from '@angular/router';
 import { Pais } from './pais.model'; // Import the 'pais' class from the appropriate file
 import { PaisService } from './pais.service';
 
-
 @Component({
   selector: 'app-paises',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable,
-    MatFormField,ReactiveFormsModule
+    RouterLink, MatButtonModule, CdkScrollable,MatFormField
+  ],
+  animations: [
+    trigger('fadeOutRight', [
+      state('void', style({ opacity: 0, transform: 'translateX(100%)' })),
+      transition(':leave', [
+        animate('0.5s ease-out')
+      ])
+    ])
   ],
   templateUrl: './pais.component.html',
   styleUrls: ['./pais.component.scss']
@@ -55,6 +62,7 @@ export class PaisesComponent implements OnInit{
               }
             
               updatePais(updatedPais: Pais): void {
+                
                 if (!updatedPais.id) {
                   console.error('Error al actualizar: ID de país no proporcionado');
                   return;
