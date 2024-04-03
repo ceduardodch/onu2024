@@ -81,6 +81,8 @@ export const appRoutes: Route[] = [
             {path: 'proveedors', loadChildren: () => import('app/modules/admin/proveedor/proveedor.routes')},
             {path: 'sustancias', loadChildren: () => import('app/modules/admin/sustancia/sustancia.routes')},
             {path: 'importadors', loadChildren: () => import('app/modules/admin/importador/importador.routes')},
+            {path: 'imports', loadChildren: () => import('app/modules/admin/importacion/importacion.routes')},
+
         ]
     },
 
