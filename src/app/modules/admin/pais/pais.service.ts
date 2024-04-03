@@ -14,14 +14,20 @@ export class PaisService {
   getPaises(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }
+  
   addPais(pais: Pais): Observable<Pais> {
     return this.http.post<Pais>(this.apiUrl, pais);
   }
+
   updatePais(id: number, pais: Pais): Observable<Pais> {
     return this.http.put<Pais>(`${this.apiUrl}/${id}`, { name: pais.name });
   }
+
   deletePais(id: number): Observable<any> {
-    const url = `${this.apiUrl}/${id}`;
-    return this.http.delete(url);
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  searchPaises(name: string): Observable<Pais[]> {
+    return this.http.get<Pais[]>(`${this.apiUrl}/search?name=${name}`);
   }
 }

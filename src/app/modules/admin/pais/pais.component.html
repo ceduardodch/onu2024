@@ -10,10 +10,13 @@
                     Lista de Paises
                 </h2>
             </div>
-        </div>       
-        
+        </div>             
+        <div class="p-4">
+            <mat-icon matPrefix svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
+            <input type="text" placeholder=" Buscar país por nombre " [(ngModel)]="searchTerm" (input)="searchPaises()">
+        </div>
     </div>
-    <mat-divider class="mt-6 mb-10"></mat-divider>
+    
     <div
         class="flex-auto -mt-16 p-6 sm:p-10 rounded-t-2xl shadow overflow-y-auto bg-card"
         cdkScrollable>
@@ -21,37 +24,40 @@
         <ng-container *ngIf="(paises ) as paises">
             <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
                 <div [mat-sort-header]="'name'">Country</div>
-                <div>Acciones</div> <!-- Columna para acciones -->
-            </div>
+                <div>Acciones</div> <!-- Columna para acciones -->                
+            </div>            
             <!-- Rows -->
-            <ng-container *ngFor="let pais of paises; let i = index " class="mb-4">
+            <!--ng-container *ngFor="let pais of filteredPaises; let i = index " class="mb-4"-->
+            <ng-container *ngFor="let pais of filteredPaises; let i = index" class="mb-4">
                 <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
                     <div *ngIf="selectedPais?.id !== pais.id" class="truncate">{{ pais.name }}</div>
                     
                     <!-- Mostrar botones solo si no se está editando este país -->
-                    <div *ngIf="selectedPais?.id !== pais.id">
-                      <button mat-stroked-button (click)="selectPaisForEdit(pais)">
-                        <mat-icon
-                    class="icon-size-4"
-                    [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
-                    <span class="ml-2">Editar</span>
-                    </button>
+                    <div *ngIf="selectedPais?.id !== pais.id" class="flex items-center">
+                        <button mat-stroked-button (click)="selectPaisForEdit(pais)" class="mr-2">
+                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
+                            <span class="ml-2">Editar</span>
+                        </button>
+                        <button mat-stroked-button color="warn" (click)="deletePais(pais.id)">
+                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
+                            <span class="ml-2">Eliminar</span>
+                        </button>
                     </div>
+                    
                     <!-- Formulario de edición para el país actual -->
                     <div *ngIf="selectedPais?.id === pais.id" class="col-span-5">
-                    <input [(ngModel)]="selectedPais.name" placeholder="Country" class="mr-2">
-                    <!-- Aquí agregarías los otros campos necesarios -->
-                    <div class="status-buttons flex w-full justify-start">
-                    <button (click)="updatePais(selectedPais)" mat-flat-button color="primary" class="px-6 ml-3">Guardar Cambios</button>
-                    <br/>
-                    <button (click)="cancelEdit()">Cancelar</button>
-                    </div>
+                        <input [(ngModel)]="selectedPais.name" placeholder="Country" class="mr-2">
+                        <div class="status-buttons flex w-full justify-start">
+                            <button (click)="updatePais(selectedPais)" mat-flat-button color="primary" class="px-6 ml-3">Guardar Cambios</button>
+                            <br/>
+                            <button (click)="cancelEdit()">Cancelar</button>
+                        </div>
                     </div>
                     
                 </div>
             </ng-container>
-            
+        <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
             <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                 <input [(ngModel)]="newPais.name" placeholder="Country">                    
