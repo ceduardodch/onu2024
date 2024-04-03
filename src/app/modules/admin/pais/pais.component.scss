@@ -1,7 +1,9 @@
 
-
-@use '/src/styles/styles.scss';
-@use '/src/styles/variables/typography.scss' as type;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+//@use '/src/styles/styles.scss';
+//@use '/src/styles/variables/typography.scss' as type;
 
 .form-container {
   @apply flex flex-auto mt-2 px-6 pt-5 shadow-md rounded-md overflow-hidden;
