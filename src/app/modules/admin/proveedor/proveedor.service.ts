@@ -17,4 +17,21 @@ export class ProveedorService {
   addProveedor(proveedor: Proveedor): Observable<Proveedor> {
     return this.http.post<Proveedor>(this.apiUrl, proveedor);
   }
+  updateProveedor(id: number, proveedor: Proveedor): Observable<Proveedor> {
+    if (!id || id <= 0) {
+      throw new Error('ID de proveedor no válido');
+    }
+    return this.http.put<Proveedor>(`${this.apiUrl}/${id}`, { name: proveedor.name });
+  }
+
+  deleteProveedor(id: number): Observable<any> {
+    if (!id || id <= 0) {
+      throw new Error('ID de proveedor no válido');
+    }
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  searchProveedor(name: string): Observable<Proveedor[]> {
+    return this.http.get<Proveedor[]>(`${this.apiUrl}/search?name=${name}`);
+  }
 }
