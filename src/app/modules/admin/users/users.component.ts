@@ -1,14 +1,15 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
+import { MatFormField } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { User } from './user.model'; // Import the 'User' class from the appropriate file
 import { UserService } from './user.service';
-
 
 @Component({
   selector: 'app-users',
@@ -16,38 +17,117 @@ import { UserService } from './user.service';
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable
+    RouterLink, MatButtonModule, CdkScrollable, MatFormField
+  ],
+  animations: [
+    trigger('fadeOutRight', [
+      state('void', style({ opacity: 0, transform: 'translateX(100%)' })),
+      transition(':leave', [
+        animate('0.5s ease-out')
+      ])
+    ])
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })
 export class UsersComponent implements OnInit{
         users: User[] = []; // Cambiado a array regular para manejar la lista de usuarios
-        newUser:User = {name: '', email: '',password:'', phone: '', company: '', address: ''};
-
+        newUser:User = {
+          name: '', email: '',password:'', phone: '', company: '', address: ''};
+        filteredUsers: User[] = [];
+        searchTerm: string = '';
+        selectedUser:  User | null = null;
 
         constructor(private _userService: UserService) { }
 
         ngOnInit(): void {
 
-            this._userService.getUsers().subscribe((users: User[]) => {
-                this.users = (users);
-            });
+          this.loadUsers();
+
             }
 
             addUser(): void {
-                console.log();
-                this._userService.addUser(this.newUser).subscribe((user: User) => {
-                  this.users.push(user);
-                  
+              this._userService.addUser(this.newUser).subscribe({
+                next: () => {
+                  this.loadUsers();
+                  this.newUser = { 
+                    id: 0, name: '', email: '',password:'', phone: '', company: '', address: ''};
+                },
+                error: (error) => {
+                  console.error('Error al agregar la user', error);
+                }
+              });
+            }
+
+              selectUserForEdit(user: User): void {
+                this.selectedUser = { ...user };               
+              }
+            
+              updateUser(updatedUser: User): void {
+                
+                if (!updatedUser.id) {
+                  console.error('Error al actualizar: ID de user no proporcionado');
+                  return;
+                }
+                this._userService.updateUser(updatedUser.id, updatedUser).subscribe({
+                  next: (response) => {
+                    // Actualizar la lista de users en el frontend
+                    const index = this.users.findIndex(user => user.id === updatedUser.id);
+                    if (index !== -1) {
+                      this.users[index] = updatedUser;
+                    }
+                    console.log('User actualizada:', response);
+                    this.selectedUser = null; // Resetea la selección para cerrar el formulario de edición
+                  },
+                  error: (error) => {
+                    console.error('Error al actualizar el user', error);
+                  }
                 });
               }
-  editUser(user) {
-    // Aquí va tu código para editar el usuario
-  }
-}
 
-function subscribe(arg0: (user: User) => void) {
-    throw new Error('Function not implemented.');
-}
+              deleteUser(userId: number): void {
+                if (!userId) {
+                  console.error('Error al eliminar: ID de user no proporcionado');
+                  return;
+                }
+              
+                const confirmation = confirm('¿Estás seguro de que deseas eliminar este user?');
+                if (!confirmation) {
+                  return;
+                }
+              
+                this._userService.deleteUser(userId).subscribe({
+                  next: () => {
+                    // Eliminar el user de la lista en el frontend
+                    this.loadUsers();
+                    this.users = this.users.filter(user => user.id !== userId);
+                    console.log('User eliminado con éxito');
+                    this.selectedUser = null; // Resetea la selección si se estaba editando el país eliminado
+                  },
+                  error: (error) => {
+                    console.error('Error al eliminar el user', error);
+                  }
+                });
+              }             
 
+              loadUsers(): void {
+                this._userService.getUsers().subscribe({
+                  next: (data) => {
+                    this.users = data;
+                    this.filteredUsers = data;
+                  },
+                  error: (error) => console.error(error)
+                });
+              }
+
+              searchUsers(): void {
+                this.filteredUsers = this.searchTerm
+                  ? this.users.filter(user => user.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                  : this.users;
+              }
+            
+              cancelEdit(): void {
+                this.selectedUser = null;
+                this.searchTerm = '';
+              }
+}

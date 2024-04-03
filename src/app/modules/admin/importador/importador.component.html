@@ -11,17 +11,17 @@
                 </h2>
             </div>
         </div>       
-        
+        <div class="p-4 flex items-center border rounded">
+            <mat-icon matPrefix svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
+            <input type="text" placeholder=" Buscar importador " [(ngModel)]="searchTerm" (input)="searchImportadores()" class="flex-1 border-gray-300 rounded pl-2">
+        </div>
     </div>
-    <mat-divider class="mt-6 mb-10"></mat-divider>
     <div
         class="flex-auto -mt-16 p-6 sm:p-10 rounded-t-2xl shadow overflow-y-auto bg-card"
         cdkScrollable>
         <div class="h-400 min-h-400 max-h-400 border-2 border-dashed border-gray-300 rounded-2xl">
-        
-    <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
         <ng-container *ngIf="(importadors ) as importadors">
-            <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
+            <div class="grid grid-cols-4 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
                 <div [mat-sort-header]="'name'">Nombre</div>
                 <div [mat-sort-header]="'ruc'">RUC</div>
                 <div [mat-sort-header]="'user_import'">Usuario Importador</div>
@@ -29,27 +29,48 @@
                 <div>Acciones</div> <!-- Columna para acciones -->
             </div>
             <!-- Rows -->
-            <ng-container *ngFor="let importador of importadors">
-                <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                    <div class="truncate">{{importador.name}}</div>
-                    <div class="truncate">{{importador.ruc}}</div>
-                    <div class="truncate">{{importador.user_import}}</div>
+            <ng-container *ngFor="let importador of filteredImportadores; let i = index">
+                <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                    <div *ngIf="selectedImportador?.id !== importador.id" class="truncate">{{importador.name}}</div>
+                    <div *ngIf="selectedImportador?.id !== importador.id" class="truncate">{{importador.ruc}}</div>
+                    <div *ngIf="selectedImportador?.id !== importador.id" class="truncate">{{importador.user_import}}</div>
 
-                    <div>
-                        <!-- Botón para editar la fila -->
-                        <button (click)="editImportador(importador)">Editar</button>
+                    <!-- Mostrar botones solo si no se está editando este país -->
+                    <div *ngIf="selectedImportador?.id !== importador.id" class="flex items-center">
+                        <button mat-stroked-button (click)="selectImportadorForEdit(importador)" >
+                            <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
+                            <span>Editar</span>
+                        </button>                        
                     </div>
+                    
+                    <!-- Formulario de edición para el país actual -->
+                    
+                    <div *ngIf="selectedImportador?.id === importador.id" @fadeOutRight class="flex items-center">
+                        <input [(ngModel)]="selectedImportador.name" placeholder="Country" class="flex-1">
+
+                        <button mat-button (click)="updateImportador(selectedImportador)" color="primary">
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
+                        </button>
+                        <button mat-button (click)="cancelEdit()" color="accent">
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:x-circle'"></mat-icon>                            
+                        </button>
+                        <button mat-button (click)="deleteImportador(importador.id)" color="warn">
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon> 
+                            
+                        </button>
+                    </div>
+                    
                 </div>
             </ng-container>
+        <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
-            <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <input [(ngModel)]="newImportador.name" placeholder="Nombre">
-                <input [(ngModel)]="newImportador.ruc" placeholder="RUC">
-                <input [(ngModel)]="newImportador.user_import" placeholder="Usuario Importador">
-
+            <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                <input [(ngModel)]="newImportador.name" placeholder="Nombre">   
+                <input [(ngModel)]="newImportador.ruc" placeholder="RUC">  
+                <input [(ngModel)]="newImportador.user_import" placeholder="Usuario Importador">                   
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
-                    <button (click)="addImportador()">Guardar</button>
+                    <button (click)="addImportador()" mat-stroked-button>Guardar</button>
                 </div>
             </div>
             
@@ -59,4 +80,3 @@
     </div>
 
 </div>
-

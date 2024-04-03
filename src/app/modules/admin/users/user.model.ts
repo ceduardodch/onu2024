@@ -4,8 +4,8 @@ export interface User {
     email: string;
     phone: string;
     company: string;
-    password: string;
-    address: string;
+    password?: string;
+    address?: string;
     created_at?: string;
     updated_at?: string;
 }

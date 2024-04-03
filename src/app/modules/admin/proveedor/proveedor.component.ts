@@ -132,8 +132,3 @@ export class ProveedorsComponent implements OnInit{
                 this.searchTerm = '';
               }
 }
-
-function subscribe(arg0: (proveedor: Proveedor) => void) {
-    throw new Error('Function not implemented.');
-}
-

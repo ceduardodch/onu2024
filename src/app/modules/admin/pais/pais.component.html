@@ -16,7 +16,6 @@
             <input type="text" placeholder=" Buscar país por nombre " [(ngModel)]="searchTerm" (input)="searchPaises()" class="flex-1 border-gray-300 rounded pl-2">
         </div>
     </div>
-    
     <div
         class="flex-auto -mt-16 p-6 sm:p-10 rounded-t-2xl shadow overflow-y-auto bg-card"
         cdkScrollable>
@@ -63,7 +62,7 @@
         <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
             <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <input [(ngModel)]="newPais.name" placeholder="New Country" class=" bg-gray-200 border-collapse">                    
+                <input [(ngModel)]="newPais.name" placeholder="New Country">                    
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
                     <button (click)="addPais()" mat-stroked-button>Guardar</button>

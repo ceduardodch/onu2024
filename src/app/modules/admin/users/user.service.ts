@@ -17,4 +17,21 @@ export class UserService {
   addUser(user: User): Observable<User> {
     return this.http.post<User>(this.apiUrl, user);
   }
+  updateUser(id: number, user: User): Observable<User> {
+    if (!id || id <= 0) {
+      throw new Error('ID de User no válido');
+    }
+    return this.http.put<User>(`${this.apiUrl}/${id}`, { name: user.name });
+  }
+
+  deleteUser(id: number): Observable<any> {
+    if (!id || id <= 0) {
+      throw new Error('ID de User no válido');
+    }
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  searchUser(name: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/search?name=${name}`);
+  }
 }
