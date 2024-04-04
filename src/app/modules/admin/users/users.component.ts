@@ -51,7 +51,7 @@ export class UsersComponent implements OnInit{
                 next: () => {
                   this.loadUsers();
                   this.newUser = { 
-                    id: 0, name: '', email: '',password:'', phone: '', company: '', address: ''};
+                    name: '', email: '',password:'', phone: '', company: '', address: ''};
                 },
                 error: (error) => {
                   console.error('Error al agregar la user', error);

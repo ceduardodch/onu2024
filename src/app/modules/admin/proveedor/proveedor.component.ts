@@ -116,15 +116,28 @@ export class ProveedorsComponent implements OnInit{
                   next: (data) => {
                     this.proveedors = data;
                     this.filteredProveedors = data;
+                    this.applyFilter();
                   },
                   error: (error) => console.error(error)
                 });
               }
 
-              searchProveedors(): void {
+              applyFilter(): void {
                 this.filteredProveedors = this.searchTerm
-                  ? this.proveedors.filter(proveedor => proveedor.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                  ? this.proveedors.filter(proveedor =>
+                      proveedor.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      proveedor.country.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      proveedor.activo.toLowerCase().includes(this.searchTerm.toLowerCase())
+                    )
                   : this.proveedors;
+              }
+            
+              orderBy(field: string): void {
+                this.filteredProveedors.sort((a, b) => {
+                  const valueA = a[field].toLowerCase();
+                  const valueB = b[field].toLowerCase();
+                  return valueA.localeCompare(valueB);
+                });
               }
             
               cancelEdit(): void {

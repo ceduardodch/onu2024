@@ -4,7 +4,7 @@ export interface Sustancia {
     subpartida: string;
     pao: string;
     pcg: string;
-    grupos_sust: string;
+    grupo_sust: string;
     activo: string;
     cupo_prod: string;
     created_at?: string;

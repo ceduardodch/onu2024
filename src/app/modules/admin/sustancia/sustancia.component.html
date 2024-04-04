@@ -26,7 +26,7 @@
                 <div [mat-sort-header]="'subpartida'">Subpartida</div>
                 <div [mat-sort-header]="'pao'">PAO</div>
                 <div [mat-sort-header]="'pcg'">PCG</div>
-                <div [mat-sort-header]="'grupos_sust'">Grupo de sustancia</div>
+                <div [mat-sort-header]="'grupo_sust'">Grupo de sustancia</div>
                 <div [mat-sort-header]="'activo'">Activo</div>
                 <div [mat-sort-header]="'cupo_prod'">Cupo producto</div>
                                 
@@ -40,7 +40,7 @@
                     <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.subpartida}}</div>
                     <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.pao}}</div>
                     <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.pcg}}</div>
-                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.grupos_sust}}</div>
+                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.grupo_sust}}</div>
                     <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.activo}}</div>
                     <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.cupo_prod}}</div>
                     
@@ -77,7 +77,7 @@
                 <input [(ngModel)]="newSustancia.subpartida" placeholder="Subpartida">
                 <input [(ngModel)]="newSustancia.pao" placeholder="PAO">
                 <input [(ngModel)]="newSustancia.pcg" placeholder="PCG">
-                <input [(ngModel)]="newSustancia.grupos_sust" placeholder="Grupo de sustancia">
+                <input [(ngModel)]="newSustancia.grupo_sust" placeholder="Grupo de sustancia">
                 <input [(ngModel)]="newSustancia.activo" placeholder="Activo">
                 <input [(ngModel)]="newSustancia.cupo_prod" placeholder="Cupo Producto">
                 
