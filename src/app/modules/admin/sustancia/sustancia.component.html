@@ -58,13 +58,22 @@
                     
                     <div *ngIf="selectedSustancia?.id === sustancia.id" @fadeOutRight class="flex items-center">
                         <div class="grid grid-cols-8 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                        <input [(ngModel)]="selectedSustancia.name" placeholder="Nombre" class="flex-1">
-                        <input [(ngModel)]="selectedSustancia.subpartida" placeholder="Subpartida" class="flex-1">
-                        <input [(ngModel)]="selectedSustancia.pao" placeholder="PAO" class="flex-1">
-                        <input [(ngModel)]="selectedSustancia.pcg" placeholder="PCG" class="flex-1">
-                        <input [(ngModel)]="selectedSustancia.grupo_sust" placeholder="Grupo" class="flex-1">
-                        <input [(ngModel)]="selectedSustancia.activo" placeholder="Activo" class="flex-1">
-                        <input [(ngModel)]="selectedSustancia.cupo_prod" placeholder="Cupo" class="flex-1">
+                        <input [(ngModel)]="selectedSustancia.name" placeholder="Nombre" class="flex-1" name="name">
+                        <input [(ngModel)]="selectedSustancia.subpartida" placeholder="Subpartida" class="flex-1" name="subpartida">
+                        <input [(ngModel)]="selectedSustancia.pao" placeholder="PAO" class="flex-1" name="pao">
+                        <input [(ngModel)]="selectedSustancia.pcg" placeholder="PCG" class="flex-1" name="pcg">
+                        
+                        <mat-form-field>
+                            <mat-select [(ngModel)]="model.property" name="prop">
+                              <mat-option *ngFor="let option of options" [value]="option.value">
+                                {{ option.viewValue }}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          
+
+                        <input [(ngModel)]="selectedSustancia.activo" placeholder="Activo" class="flex-1" name="activo">
+                        <input [(ngModel)]="selectedSustancia.cupo_prod" placeholder="Cupo" class="flex-1" name="cupo_prod">
                         <div class="flex items-center col-span-1 space-x-1">
                         <button mat-icon-button (click)="updateSustancia(selectedSustancia)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
@@ -77,8 +86,8 @@
                             
                         </button>
                     </div>
-                </div>
-                </div>
+                    </div>
+                    </div>
                 
             </ng-container>
             <!-- Fila para agregar un nuevo sustancia -->

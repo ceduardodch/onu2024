@@ -11,19 +11,25 @@ export class SustanciaService {
 
   constructor(private http: HttpClient) { }
 
-  getSustancias(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+  // Obtener todas las sustancias
+  getSustancias(): Observable<Sustancia[]> {
+    return this.http.get<Sustancia[]>(this.apiUrl);
   }
+
+  // Agregar una nueva sustancia
   addSustancia(sustancia: Sustancia): Observable<Sustancia> {
     return this.http.post<Sustancia>(this.apiUrl, sustancia);
   }
-  updateSustancia(id: number, sustancia: Sustancia): Observable<Sustancia> {
+
+  // Actualizar una sustancia existente
+  updateSustancia(id: number, sustancia: Partial<Sustancia>): Observable<Sustancia> {
     if (!id || id <= 0) {
       throw new Error('ID de Sustancia no válido');
     }
-    return this.http.put<Sustancia>(`${this.apiUrl}/${id}`, { name: sustancia.name });
+    return this.http.put<Sustancia>(`${this.apiUrl}/${id}`, sustancia);
   }
 
+  // Eliminar una sustancia
   deleteSustancia(id: number): Observable<any> {
     if (!id || id <= 0) {
       throw new Error('ID de Sustancia no válido');
