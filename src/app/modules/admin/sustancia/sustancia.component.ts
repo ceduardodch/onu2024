@@ -40,17 +40,10 @@ export class SustanciasComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        grupos = [
-          { value: 'grupo-1', viewValue: 'Grupo 1' },
-          { value: 'grupo-2', viewValue: 'Grupo 2' },
-          { value: 'grupo-3', viewValue: 'Grupo 3' },
-          // ... otros grupos
-        ];
-
         constructor(private _sustanciaService: SustanciaService) { }
 
         ngOnInit(): void {
-          
+
           this.loadSustancias();
 
             }
