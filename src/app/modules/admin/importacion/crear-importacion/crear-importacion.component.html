@@ -12,15 +12,15 @@
             <mat-step label="Borrador">
                 <div class="grid grid-cols-2 gap-4"> <!-- Dos cuadros de texto por fila -->
                     <mat-form-field class="w-full">
-                        <input matInput placeholder="Nro Solicitud VUE">
+                        <input matInput [formControl]="nroSolicitudVUE" placeholder="Nro Solicitud VUE" maxlength="20">
                         <mat-icon class="icon-size-5" matPrefix svgIcon="heroicons_solid:hashtag"></mat-icon>
                     </mat-form-field>
 
                     <mat-form-field class="w-full">
                         <input type="text" placeholder="Importador" matInput [formControl]="importadorControl" [matAutocomplete]="auto">
                         <mat-autocomplete #auto="matAutocomplete">
-                            <mat-option *ngFor="let importador of importadores" [value]="importador">
-                                {{importador}}
+                            <mat-option *ngFor="let importador of importadores" [value]="importador.name">
+                                {{importador.name}}
                             </mat-option>
                         </mat-autocomplete>
                         <button mat-icon-button color="primary">

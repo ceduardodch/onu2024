@@ -1,6 +1,6 @@
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component,OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule , Validators} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule, MatRippleModule } from '@angular/material/core';
@@ -53,6 +53,9 @@ export class CrearImportacionComponent implements OnInit {
     importadorControl = new FormControl();
     displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq'];
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
+    nroSolicitudVUE = new FormControl('', [
+        Validators.required,
+        Validators.pattern('^\\d{19}P$')      ]);
 
     constructor(private _proveedorService: ProveedorService,
                 private _paisService: PaisService,
