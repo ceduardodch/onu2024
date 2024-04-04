@@ -13,7 +13,7 @@
         </div>             
         <div class="p-4 flex items-center border rounded">
             <mat-icon matPrefix svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
-            <input type="text" placeholder=" Buscar país por nombre " [(ngModel)]="searchTerm" (input)="searchPaises()" class="flex-1 border-gray-300 rounded pl-2">
+            <input type="text" placeholder=" Buscar país por nombre " [(ngModel)]="searchTerm" (input)="applyFilter()" class="flex-1">
         </div>
     </div>
     <div
@@ -22,7 +22,7 @@
         <div class="h-400 min-h-400 max-h-400 border-2 border-dashed border-gray-300 rounded-2xl">
         <ng-container *ngIf="(paises ) as paises">
             <div class="grid grid-cols-2 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
-                <div [mat-sort-header]="'name'">Country</div>
+                <div [mat-sort-header]="'name'" (click)="orderBy('name')">Country</div>
 
                 <div>Acciones</div> <!-- Columna para acciones -->                
             </div>            
@@ -30,7 +30,8 @@
             <ng-container *ngFor="let pais of filteredPaises; let i = index">
                 <div class="grid grid-cols-2 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
-                    <div *ngIf="selectedPais?.id !== pais.id" class="truncate">{{ pais.name }}</div>
+                    <ng-container *ngIf="selectedPais?.id !== pais.id">
+                    <div class="truncate">{{ pais.name }}</div>
                     
                     <!-- Mostrar botones solo si no se está editando este país -->
                     <div *ngIf="selectedPais?.id !== pais.id" class="flex items-center">
@@ -39,22 +40,25 @@
                             <span>Editar</span>
                         </button>                        
                     </div>
-                    
+                </ng-container>
+                </div>
                     <!-- Formulario de edición para el país actual -->
                     
                     <div *ngIf="selectedPais?.id === pais.id" @fadeOutRight class="flex items-center">
+                        <div class="grid grid-cols-2 items-center gap-4 py-2 px-6 md:px-12 border-b">
                         <input [(ngModel)]="selectedPais.name" placeholder="Country" class="flex-1">
-
-                        <button mat-button (click)="updatePais(selectedPais)" color="primary">
+                        <div class="flex items-center col-span-1 space-x-1">
+                        <button mat-icon-button (click)="updatePais(selectedPais)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
                         </button>
-                        <button mat-button (click)="cancelEdit()" color="accent">
+                        <button mat-icon-button (click)="cancelEdit()" color="accent">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:x-circle'"></mat-icon>                            
                         </button>
-                        <button mat-button (click)="deletePais(pais.id)" color="warn">
+                        <button mat-icon-button (click)="deletePais(pais.id)" color="warn">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon> 
                             
                         </button>
+                    </div>
                     </div>
                     
                 </div>
@@ -65,7 +69,7 @@
                 <input [(ngModel)]="newPais.name" placeholder="New Country">                    
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
-                    <button (click)="addPais()" mat-stroked-button>Guardar</button>
+                    <button (click)="addPais()" mat-stroked-button color="primary">Guardar</button>
                 </div>
             </div>
             

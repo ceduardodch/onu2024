@@ -13,7 +13,7 @@
         </div>       
         <div class="p-4 flex items-center border rounded">
             <mat-icon matPrefix svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
-            <input type="text" placeholder=" Buscar sustancia por nombre " [(ngModel)]="searchTerm" (input)="searchSustancias()" class="flex-1 border-gray-300 rounded pl-2">
+            <input type="text" placeholder=" Buscar " [(ngModel)]="searchTerm" (input)="applyFilter()" class="flex-1">
         </div>
     </div>
     <div
@@ -22,13 +22,13 @@
         <div class="h-400 min-h-400 max-h-400 border-2 border-dashed border-gray-300 rounded-2xl">
         <ng-container *ngIf="(sustancias ) as sustancias">
             <div class="grid grid-cols-8 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
-                <div [mat-sort-header]="'name'">Nombre</div>
-                <div [mat-sort-header]="'subpartida'">Subpartida</div>
-                <div [mat-sort-header]="'pao'">PAO</div>
-                <div [mat-sort-header]="'pcg'">PCG</div>
-                <div [mat-sort-header]="'grupo_sust'">Grupo de sustancia</div>
-                <div [mat-sort-header]="'activo'">Activo</div>
-                <div [mat-sort-header]="'cupo_prod'">Cupo producto</div>
+                <div [mat-sort-header]="'name'" (click)="orderBy('name')">Nombre</div>
+                <div [mat-sort-header]="'subpartida'" (click)="orderBy('subpartida')">Subpartida</div>
+                <div [mat-sort-header]="'pao'" (click)="orderBy('pao')">PAO</div>
+                <div [mat-sort-header]="'pcg'" (click)="orderBy('pcg')">PCG</div>
+                <div [mat-sort-header]="'grupo_sust'" (click)="orderBy('grupo_sust')">Grupo de sustancia</div>
+                <div [mat-sort-header]="'activo'" (click)="orderBy('activo')">Activo</div>
+                <div [mat-sort-header]="'cupo_prod'" (click)="orderBy('cupo_prod')">Cupo producto</div>
                                 
                 <div>Acciones</div> <!-- Columna para acciones -->
             </div>
@@ -36,13 +36,14 @@
             <ng-container *ngFor="let sustancia of filteredSustancias; let i = index">
                 <div class="grid grid-cols-8 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
-                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{ sustancia.name }}</div>
-                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.subpartida}}</div>
-                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.pao}}</div>
-                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.pcg}}</div>
-                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.grupo_sust}}</div>
-                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.activo}}</div>
-                    <div *ngIf="selectedSustancia?.id !== sustancia.id" class="truncate">{{sustancia.cupo_prod}}</div>
+                    <ng-container *ngIf="selectedSustancia?.id !== sustancia.id">
+                    <div class="truncate">{{ sustancia.name }}</div>
+                    <div class="truncate">{{sustancia.subpartida}}</div>
+                    <div class="truncate">{{sustancia.pao}}</div>
+                    <div class="truncate">{{sustancia.pcg}}</div>
+                    <div class="truncate">{{sustancia.grupo_sust}}</div>
+                    <div class="truncate">{{sustancia.activo}}</div>
+                    <div class="truncate">{{sustancia.cupo_prod}}</div>
                     
                     <!-- Mostrar botones solo si no se está editando este país -->
                     <div *ngIf="selectedSustancia?.id !== sustancia.id" class="flex items-center">
@@ -51,25 +52,34 @@
                             <span>Editar</span>
                         </button>                        
                     </div>
-                    
+                    </ng-container>
+                </div>
                     <!-- Formulario de edición para el país actual -->
                     
                     <div *ngIf="selectedSustancia?.id === sustancia.id" @fadeOutRight class="flex items-center">
-                        <input [(ngModel)]="selectedSustancia.name" placeholder="Country" class="flex-1">
-
-                        <button mat-button (click)="updateSustancia(selectedSustancia)" color="primary">
+                        <div class="grid grid-cols-8 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                        <input [(ngModel)]="selectedSustancia.name" placeholder="Nombre" class="flex-1">
+                        <input [(ngModel)]="selectedSustancia.subpartida" placeholder="Subpartida" class="flex-1">
+                        <input [(ngModel)]="selectedSustancia.pao" placeholder="PAO" class="flex-1">
+                        <input [(ngModel)]="selectedSustancia.pcg" placeholder="PCG" class="flex-1">
+                        <input [(ngModel)]="selectedSustancia.grupo_sust" placeholder="Grupo" class="flex-1">
+                        <input [(ngModel)]="selectedSustancia.activo" placeholder="Activo" class="flex-1">
+                        <input [(ngModel)]="selectedSustancia.cupo_prod" placeholder="Cupo" class="flex-1">
+                        <div class="flex items-center col-span-1 space-x-1">
+                        <button mat-icon-button (click)="updateSustancia(selectedSustancia)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
                         </button>
-                        <button mat-button (click)="cancelEdit()" color="accent">
+                        <button mat-icon-button (click)="cancelEdit()" color="accent">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:x-circle'"></mat-icon>                            
                         </button>
-                        <button mat-button (click)="deleteSustancia(sustancia.id)" color="warn">
+                        <button mat-icon-button (click)="deleteSustancia(sustancia.id)" color="warn">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon> 
                             
                         </button>
                     </div>
-                    
                 </div>
+                </div>
+                
             </ng-container>
             <!-- Fila para agregar un nuevo sustancia -->
             <div class="grid grid-cols-8 items-center gap-4 py-2 px-6 md:px-12 border-b">
@@ -77,9 +87,9 @@
                 <input [(ngModel)]="newSustancia.subpartida" placeholder="Subpartida">
                 <input [(ngModel)]="newSustancia.pao" placeholder="PAO">
                 <input [(ngModel)]="newSustancia.pcg" placeholder="PCG">
-                <input [(ngModel)]="newSustancia.grupo_sust" placeholder="Grupo de sustancia">
+                <input [(ngModel)]="newSustancia.grupo_sust" placeholder="Grupo">
                 <input [(ngModel)]="newSustancia.activo" placeholder="Activo">
-                <input [(ngModel)]="newSustancia.cupo_prod" placeholder="Cupo Producto">
+                <input [(ngModel)]="newSustancia.cupo_prod" placeholder="Cupo">
                 
                 <div>
                     <!-- Botón para guardar el nuevo sustancia -->

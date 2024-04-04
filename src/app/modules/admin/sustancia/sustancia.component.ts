@@ -37,6 +37,8 @@ export class SustanciasComponent implements OnInit{
         filteredSustancias: Sustancia[] = [];
         searchTerm: string = '';
         selectedSustancia:  Sustancia | null = null;
+        orderAsc: boolean = true;
+        currentField: string = '';
 
         constructor(private _sustanciaService: SustanciaService) { }
 
@@ -50,7 +52,8 @@ export class SustanciasComponent implements OnInit{
               this._sustanciaService.addSustancia(this.newSustancia).subscribe({
                 next: () => {
                   this.loadSustancias();
-                  this.newSustancia = {  name: '' , subpartida: '',pao:'', pcg: '', grupo_sust: '',activo:'', cupo_prod: '', created_at: '',updated_at: ''}; // Restablece el objeto `newSustancia`
+                  this.newSustancia = {  
+                    name: '' , subpartida: '',pao:'', pcg: '', grupo_sust: '',activo:'', cupo_prod: ''}; // Restablece el objeto `newSustancia`
                 },
                 error: (error) => {
                   console.error('Error al agregar la sustancia', error);
@@ -114,19 +117,53 @@ export class SustanciasComponent implements OnInit{
                   next: (data) => {
                     this.sustancias = data;
                     this.filteredSustancias = data;
+                    this.applyFilter();
                   },
                   error: (error) => console.error(error)
                 });
               }
 
-              searchSustancias(): void {
+              applyFilter(): void {
                 this.filteredSustancias = this.searchTerm
-                  ? this.sustancias.filter(sustancia => sustancia.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                  ? this.sustancias.filter(sustancia =>
+                    sustancia.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    sustancia.subpartida.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    sustancia.pao.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    sustancia.pcg.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    sustancia.grupo_sust.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    sustancia.activo.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    sustancia.cupo_prod.toLowerCase().includes(this.searchTerm.toLowerCase())
+                    )
                   : this.sustancias;
+              }
+            
+              orderBy(field: string): void {
+                // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
+                if (this.currentField === field) {
+                  this.orderAsc = !this.orderAsc;
+                } else {
+                  this.orderAsc = true;
+                  this.currentField = field;
+                }
+              
+                this.filteredSustancias.sort((a, b) => {
+                  const valueA = a[field].toLowerCase();
+                  const valueB = b[field].toLowerCase();
+              
+                  // Comparar los valores para el ordenamiento
+                  if (valueA < valueB) {
+                    return this.orderAsc ? -1 : 1;
+                  }
+                  if (valueA > valueB) {
+                    return this.orderAsc ? 1 : -1;
+                  }
+                  return 0;
+                });
               }
             
               cancelEdit(): void {
                 this.selectedSustancia = null;
                 this.searchTerm = '';
+                this.applyFilter();
               }
 }

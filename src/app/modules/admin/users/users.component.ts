@@ -37,6 +37,8 @@ export class UsersComponent implements OnInit{
         filteredUsers: User[] = [];
         searchTerm: string = '';
         selectedUser:  User | null = null;
+        orderAsc: boolean = true;
+        currentField: string = '';
 
         constructor(private _userService: UserService) { }
 
@@ -115,19 +117,50 @@ export class UsersComponent implements OnInit{
                   next: (data) => {
                     this.users = data;
                     this.filteredUsers = data;
+                    this.applyFilter();
                   },
                   error: (error) => console.error(error)
                 });
               }
 
-              searchUsers(): void {
+              applyFilter(): void {
                 this.filteredUsers = this.searchTerm
-                  ? this.users.filter(user => user.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                  ? this.users.filter(proveedor =>
+                      proveedor.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      proveedor.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      proveedor.phone.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      proveedor.company.toLowerCase().includes(this.searchTerm.toLowerCase())
+                    )
                   : this.users;
+              }
+            
+              orderBy(field: string): void {
+                // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
+                if (this.currentField === field) {
+                  this.orderAsc = !this.orderAsc;
+                } else {
+                  this.orderAsc = true;
+                  this.currentField = field;
+                }
+              
+                this.filteredUsers.sort((a, b) => {
+                  const valueA = a[field].toLowerCase();
+                  const valueB = b[field].toLowerCase();
+              
+                  // Comparar los valores para el ordenamiento
+                  if (valueA < valueB) {
+                    return this.orderAsc ? -1 : 1;
+                  }
+                  if (valueA > valueB) {
+                    return this.orderAsc ? 1 : -1;
+                  }
+                  return 0;
+                });
               }
             
               cancelEdit(): void {
                 this.selectedUser = null;
                 this.searchTerm = '';
+                this.applyFilter();
               }
 }

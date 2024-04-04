@@ -36,6 +36,8 @@ export class PaisesComponent implements OnInit{
         filteredPaises: Pais[] = [];
         searchTerm: string = '';
         selectedPais:  Pais | null = null;
+        orderAsc: boolean = true;
+        currentField: string = '';
 
         constructor(private _paisService: PaisService) { }
 
@@ -113,19 +115,47 @@ export class PaisesComponent implements OnInit{
                   next: (data) => {
                     this.paises = data;
                     this.filteredPaises = data;
+                    this.applyFilter();
                   },
                   error: (error) => console.error(error)
                 });
               }
 
-              searchPaises(): void {
+              applyFilter(): void {
                 this.filteredPaises = this.searchTerm
-                  ? this.paises.filter(pais => pais.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                  ? this.paises.filter(pais =>
+                      pais.name.toLowerCase().includes(this.searchTerm.toLowerCase())                     
+                    )
                   : this.paises;
               }
             
+              orderBy(field: string): void {
+                // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
+                if (this.currentField === field) {
+                  this.orderAsc = !this.orderAsc;
+                } else {
+                  this.orderAsc = true;
+                  this.currentField = field;
+                }
+              
+                this.filteredPaises.sort((a, b) => {
+                  const valueA = a[field].toLowerCase();
+                  const valueB = b[field].toLowerCase();
+              
+                  // Comparar los valores para el ordenamiento
+                  if (valueA < valueB) {
+                    return this.orderAsc ? -1 : 1;
+                  }
+                  if (valueA > valueB) {
+                    return this.orderAsc ? 1 : -1;
+                  }
+                  return 0;
+                });
+              }
               cancelEdit(): void {
                 this.selectedPais = null;
                 this.searchTerm = '';
+                this.applyFilter();
               }
+              
 }
