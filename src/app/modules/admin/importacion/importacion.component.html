@@ -1,5 +1,7 @@
 <div>
     <h1>Importaciones</h1>
+    <button (click)="createImportacion()">Crear</button>
+
     <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
         <ng-container *ngIf="(importaciones) as importaciones">
             <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>

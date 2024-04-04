@@ -3,6 +3,7 @@ import { initialDataResolver } from 'app/app.resolvers';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
+import { CrearImportacionComponent } from './modules/admin/importacion/crear-importacion/crear-importacion.component';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -74,13 +75,15 @@ export const appRoutes: Route[] = [
             initialData: initialDataResolver
         },
         children: [
-            {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},            
+            {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
             {path: 'users', loadChildren: () => import('app/modules/admin/users/users.routes')}, // Import the missing module here
             {path: 'paises', loadChildren: () => import('app/modules/admin/pais/pais.routes')},
             {path: 'proveedors', loadChildren: () => import('app/modules/admin/proveedor/proveedor.routes')},
             {path: 'sustancias', loadChildren: () => import('app/modules/admin/sustancia/sustancia.routes')},
             {path: 'importadors', loadChildren: () => import('app/modules/admin/importador/importador.routes')},
             {path: 'imports', loadChildren: () => import('app/modules/admin/importacion/importacion.routes')},
+            { path: 'crear-importacion', component: CrearImportacionComponent },
+
 
         ]
     },

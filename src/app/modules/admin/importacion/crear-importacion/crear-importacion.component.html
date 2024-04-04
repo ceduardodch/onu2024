@@ -1,0 +1,196 @@
+
+
+<form class="contents flex-row mt-0 px-0 pt-5 shadow-none overflow-scroll">
+
+    <div class="w-3/4 bg-white float-left ">
+        <mat-toolbar class="mb-4 shadow-lg">
+            <button mat-icon-button aria-label="Guardar">
+              <mat-icon>save</mat-icon>
+            </button>
+          </mat-toolbar>
+        <mat-horizontal-stepper class="w-auto">
+            <mat-step label="Borrador">
+                <div class="grid grid-cols-2 gap-4"> <!-- Dos cuadros de texto por fila -->
+                    <mat-form-field class="w-full">
+                        <input matInput placeholder="Nro Solicitud VUE">
+                        <mat-icon class="icon-size-5" matPrefix svgIcon="heroicons_solid:hashtag"></mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full">
+                        <input type="text" placeholder="Importador" matInput [formControl]="importadorControl" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let importador of importadores" [value]="importador">
+                                {{importador}}
+                            </mat-option>
+                        </mat-autocomplete>
+                        <button mat-icon-button color="primary">
+                            <mat-icon>search</mat-icon>
+                        </button>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full">
+                        <mat-select placeholder="Proveedor">
+                            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.id">{{ proveedor.name }}</mat-option>
+                        </mat-select>
+                        <mat-icon class="icon-size-5" matPrefix ></mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full">
+                        <mat-select placeholder="Pais">
+                            <mat-option *ngFor="let pais of paises" [value]="pais.id">{{ pais.name }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                </div>
+                <div class="">
+                    <h3>Proforma</h3>
+
+                    <button mat-icon-button color="primary">
+                        <mat-icon>cloud_upload</mat-icon>
+                    </button>
+                </div>
+                <div class="">
+                    <h3>Lista de productos</h3>
+
+                    <button mat-icon-button color="primary">
+                        <mat-icon>control_point</mat-icon>
+                    </button>
+                    <table mat-table class="mat-elevation-z8">
+
+                        <ng-container matColumnDef="producto">
+                            <th mat-header-cell *matHeaderCellDef> Producto </th>
+                        </ng-container>
+
+                        <ng-container matColumnDef="subpartida">
+                            <th mat-header-cell *matHeaderCellDef> Subpartida </th>
+                        </ng-container>
+
+                        <ng-container matColumnDef="cif">
+                            <th mat-header-cell *matHeaderCellDef> Valor CIF </th>
+                        </ng-container>
+
+                        <ng-container matColumnDef="kg">
+                            <th mat-header-cell *matHeaderCellDef> Peso Kg </th>
+                        </ng-container>
+
+                        <ng-container matColumnDef="fob">
+                            <th mat-header-cell *matHeaderCellDef> Valor FOB </th>
+                        </ng-container>
+                        <ng-container matColumnDef="eq">
+                            <th mat-header-cell *matHeaderCellDef> EQ TM CO2 </th>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                    </table>
+                </div>
+                <div>
+                    <table mat-table class="mat-elevation-z8">
+                        <ng-container matColumnDef="nombre">
+                            <th mat-header-cell *matHeaderCellDef> Nombre </th>
+                        </ng-container>
+
+                        <ng-container matColumnDef="ficha">
+                            <th mat-header-cell *matHeaderCellDef> Ficha Técnica </th>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumnsFT"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumnsFT;"></mat-row>
+
+                    </table>
+                </div>
+            </mat-step>
+            <mat-step label="Aprobado">
+                <!-- Contenido del Paso 2 -->
+            </mat-step>
+            <mat-step label="Validado">
+                <!-- Contenido del Paso 2 -->
+            </mat-step>
+            <!-- Agrega más pasos según sea necesario -->
+        </mat-horizontal-stepper>
+    </div>
+
+    <div class="w-1/3 bg-white float-right  shadow-lg"> <!-- Contenedor derecho, más pequeño y ajustado -->        <div class="flex flex-col space-y-4"> <!-- Añadir espaciado vertical entre elementos -->
+        <mat-toolbar class="mb-4 shadow-lg">
+                <div class="status-buttons">
+                    <button [ngClass]="{'selected': selectedButton === 'approved'}" (click)="selectedButton = 'approved'" mat-flat-button color="primary" class="px-6 ml-3">
+                        Aprobado
+                    </button>
+                    <button [ngClass]="{'selected': selectedButton === 'rejected'}" (click)="selectedButton = 'rejected'" mat-flat-button color="warn" class="px-6 ml-3">
+                        Rechazado
+                    </button>
+                </div>
+              </mat-toolbar>
+              <div class="px-5">
+
+        <ng-container>
+                <div class="dates-section flex flex-wrap">
+                    <div class="px-2  w-1/2">
+                        <p class="font-bold">Año</p>
+                        <p>2024</p>
+                      </div>
+                      <div class="px-2  w-1/2">
+                        <p class="font-bold">Mes</p>
+                        <p>Enero</p>
+                      </div>
+                    <mat-form-field color="accent"  class="px-2 w-1/2">
+                        <mat-label class="font-bold">Fecha de solicitud</mat-label>
+                        <input matInput [matDatepicker]="picker1" >
+                        <mat-hint>MM/DD/YYYY</mat-hint>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field color="accent"  class="px-2 w-1/2">
+                        <mat-label class="font-bold">Fecha de autorizacion</mat-label>
+                        <input matInput [matDatepicker]="picker2">
+                        <mat-hint>MM/DD/YYYY</mat-hint>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                <div class="summary-section flex flex-wrap py-5">
+                    <h2 class="w-full">Resumen CFO</h2>
+                    <div class="px-2  w-1/2">
+                        <p class="font-bold">Cupo Asignado</p>
+                        <p>123.12</p>
+                      </div>
+                      <div class="px-2  w-1/2">
+                        <p class="font-bold">Cupo Restante</p>
+                        <p>123.12</p>
+                      </div>
+                      <div class="px-2  w-1/2">
+                        <p class="font-bold">Total Solicitud</p>
+                        <p>123.12</p>
+                      </div>
+                      <div class="px-2  w-1/2">
+                        <p class="font-bold">Total Peso Kg</p>
+                        <p>123.12</p>
+                      </div>
+                </div>
+                <div class="summary-section flex flex-wrap">
+                    <h2 class="w-full">Resumen PAO</h2>
+                    <div class="px-2  w-1/2">
+                        <p class="font-bold">Cupo Asignado</p>
+                        <p>123.12</p>
+                      </div>
+                      <div class="px-2  w-1/2">
+                        <p class="font-bold">Cupo Restante</p>
+                        <p>123.12</p>
+                      </div>
+                      <div class="px-2  w-1/2">
+                        <p class="font-bold">Total Solicitud</p>
+                        <p>123.12</p>
+                      </div>
+                      <div class="px-2  w-1/2">
+                        <p class="font-bold">Total Peso Kg</p>
+                        <p>123.12</p>
+                      </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    </div>
+</form>

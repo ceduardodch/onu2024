@@ -18,23 +18,12 @@
                     src="assets/images/logo/logo.svg">
             </div>
             <!-- Components -->
-            <div class="flex items-center ml-auto">            
+            <div class="flex items-center ml-auto">
                 <user [showAvatar]="false"></user>
             </div>
         </div>
         <!-- User -->
         <div class="flex flex-col items-center w-full p-4">
-            <div class="relative w-24 h-24">
-                <img
-                    class="w-full h-full rounded-full"
-                    *ngIf="user.avatar"
-                    [src]="user.avatar"
-                    alt="User avatar">
-                <mat-icon
-                    class="icon-size-24"
-                    *ngIf="!user.avatar"
-                    [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>
-            </div>
             <div class="flex flex-col items-center justify-center w-full mt-6">
                 <div class="w-full whitespace-nowrap text-ellipsis overflow-hidden text-center leading-normal font-medium">
                     {{user.name}}
@@ -46,31 +35,25 @@
         </div>
     </ng-container>
     <!-- Navigation footer hook -->
-    <ng-container fuseVerticalNavigationContentFooter>
-        <div class="flex flex-0 items-center justify-center h-16 pr-6 pl-2 mt-2 mb-4 opacity-12">
-            <img
-                class="max-w-36"
-                src="assets/images/logo/logo-text-on-dark.svg">
-        </div>
-    </ng-container>
+
 
     <div class="dashboard">
         <div class="status-buttons">
           <button class="approved">Aprobado</button>
           <button class="rejected">Rechazado</button>
         </div>
-      
+
         <div class="dates-section">
           <h2>Fechas</h2>
           <!-- Contenido de fechas aquí -->
         </div>
-      
+
         <div class="summary-section">
           <h2>Resumen</h2>
           <!-- Contenido de resumen aquí -->
         </div>
       </div>
-      
+
 </fuse-vertical-navigation>
 
 <!-- Wrapper -->

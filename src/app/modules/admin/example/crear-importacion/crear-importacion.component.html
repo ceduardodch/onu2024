@@ -18,11 +18,11 @@
 
         </div>
     </div>
-    
+
     <form class="flex flex-auto mt-2 px-6 pt-5 shadow-md rounded-md overflow-hidden">
-        
+
        <!-- Main -->
-       <div class="flex flex-auto lg:flex-row gap-4 lg:w-3/4">        
+       <div class="flex flex-auto lg:flex-row gap-4 lg:w-3/4">
         <div class="flex-auto">
 
                 <div class="flex gap-4 p-1 rounded-md dark:bg-gray-700">
@@ -35,26 +35,23 @@
                             matPrefix
                             [svgIcon]="'heroicons_solid:envelope'"></mat-icon>
                     </mat-form-field>
-                    
+
                     <mat-form-field class="flex-1">
                         <input
                             matInput
                             [placeholder]="'Importador'">
-                            <button                       
+                            <button
                             mat-icon-button
                             color="primary"
                             >
                                 <mat-icon>search</mat-icon>
-                            </button>                                           
+                            </button>
                     </mat-form-field>
-  
+
                 </div>
                 <div class="flex gap-4 p-1 rounded-md dark:bg-gray-700">
                     <mat-form-field class="flex-1 ">
                         <mat-select [placeholder]="'Proveedor'">
-                            <mat-option value="language-1">ABROINDUSTRIES INC</mat-option>
-                            <mat-option value="language-2">ACROSS CONTNENTS TRADING LTD</mat-option>
-                            <mat-option value="language-3">AMEREX</mat-option>
                         </mat-select>
                         <mat-icon
                             class="icon-size-5"
@@ -68,8 +65,8 @@
                         <mat-option value="language-2">COLOMBIA</mat-option>
                         <mat-option value="language-3">ECUADOR</mat-option>
                     </mat-select>
-                </mat-form-field>                
-                </div>       
+                </mat-form-field>
+                </div>
                 <div class="w-full border-t  px-5 py-5 dark:bg-gray-700">
                   <p>Proforma</p>
                   <div class="flex col-end-2 items-center justify-between">
@@ -82,23 +79,23 @@
                       </div>
                     </div>
                   </div>
-                  
+
                     <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageIndex]="pageIndex"
                     (page)="handlePage($event)">
-                    </mat-paginator>     
-                    
+                    </mat-paginator>
+
                     <table mat-table [dataSource]="getPaginatedData()" class="mat-elevation-z8">
                       <!-- Columnas definidas en displayedColumns -->
                       <ng-container matColumnDef="nombre">
                         <th mat-header-cell *matHeaderCellDef> Producto </th>
                         <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
                       </ng-container>
-                  
+
                       <ng-container matColumnDef="ruc">
                         <th mat-header-cell *matHeaderCellDef> Subpartida </th>
                         <td mat-cell *matCellDef="let element"> {{element.ruc}} </td>
                       </ng-container>
-                  
+
                       <ng-container matColumnDef="usuarioImportador">
                         <th mat-header-cell *matHeaderCellDef> Valor CIF</th>
                         <td mat-cell *matCellDef="let element"> {{element.usuarioImportador}} </td>
@@ -108,12 +105,12 @@
                         <th mat-header-cell *matHeaderCellDef> Peso Kg </th>
                         <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
                       </ng-container>
-                  
+
                       <ng-container matColumnDef="Valor FOB">
                         <th mat-header-cell *matHeaderCellDef> Valor FOB </th>
                         <td mat-cell *matCellDef="let element"> {{element.ruc}} </td>
                       </ng-container>
-                  
+
                       <ng-container matColumnDef="Peso Kg PAO">
                         <th mat-header-cell *matHeaderCellDef> Peso Kg PAO </th>
                         <td mat-cell *matCellDef="let element"> {{element.usuarioImportador}} </td>
@@ -123,18 +120,18 @@
                         <th mat-header-cell *matHeaderCellDef> EQ TM CO2 </th>
                         <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
                       </ng-container>
-                  
+
                       <ng-container matColumnDef="Observación">
                         <th mat-header-cell *matHeaderCellDef> Observación </th>
                         <td mat-cell *matCellDef="let element"> {{element.ruc}} </td>
                       </ng-container>
-                  
+
                       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>                   
-                    </table>                                                 
-                    
-                  </div>                
-                             
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+
+                  </div>
+
                 <p class="text-lg font-medium mb-2 ">Lista de fichas técnicas</p>
                 <div class="w-full mx-auto px-5 py-5 bg-gray-50 dark:bg-gray-700">
                       <table mat-table [dataSource]="getPaginatedData()" class="mat-elevation-z8">
@@ -143,44 +140,44 @@
                         <th mat-header-cell *matHeaderCellDef> Nombre </th>
                         <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
                       </ng-container>
-                  
+
                       <ng-container matColumnDef="ruc">
                         <th mat-header-cell *matHeaderCellDef> Ficha técnica </th>
                         <td mat-cell *matCellDef="let element"> {{element.ruc}} </td>
                       </ng-container>
-                  
+
                       <ng-container matColumnDef="usuarioImportador">
                         <th mat-header-cell *matHeaderCellDef> Valor CIF</th>
                         <td mat-cell *matCellDef="let element"> {{element.usuarioImportador}} </td>
-                      </ng-container>           
-                  
+                      </ng-container>
+
                       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>                   
-                    </table>                                                 
-                    
-                  </div>      
-            
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+
+                  </div>
+
         </div>
        </div>
 
       <div class="flex flex-auto lg:flex-row gap-8 w-1/3">
         <mat-divider class="mt-6 mb-10"></mat-divider>
 
-        <div class="w-full mx-auto px-5 py-5 dark:bg-gray-700 ">            
+        <div class="w-full mx-auto px-5 py-5 dark:bg-gray-700 ">
             <ng-container>
                 <div class="status-buttons flex w-full justify-start">
                     <button [ngClass]="{'selected': selectedButton === 'approved'}" (click)="selectedButton = 'approved'" mat-flat-button color="primary" class="px-6 ml-3">
-                        Aprobado                  
+                        Aprobado
                     </button>
-                                                                
+
                     <button [ngClass]="{'selected': selectedButton === 'rejected'}" (click)="selectedButton = 'rejected'" mat-flat-button color="warn" class="px-6 ml-3">
-                        Reprobado                      
+                        Reprobado
                     </button>
                 </div>
 
                 <mat-divider class="mt-6 mb-10"></mat-divider>
-              
-                <div class="dates-section">                    
+
+                <div class="dates-section">
                     <mat-form-field color="accent" class="w-full max-w-md">
                         <mat-label>Fecha de solicitud</mat-label>
                         <input matInput [matDatepicker]="picker1">
@@ -188,7 +185,7 @@
                         <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                         <mat-datepicker #picker1></mat-datepicker>
                       </mat-form-field>
-                      
+
                       <mat-form-field color="accent" class="w-full max-w-md">
                         <mat-label>Fecha de autorizacion</mat-label>
                         <input matInput [matDatepicker]="picker2">
@@ -199,17 +196,17 @@
                 </div>
 
                 <mat-divider class="mt-6 mb-10"></mat-divider>
-              
+
                 <div class="summary-section">
                     <h2>Resumen</h2>
                     <!-- Contenido de resumen aquí -->
-                </div> 
+                </div>
             </ng-container>
-        </div>  
+        </div>
 
         <mat-divider class="mt-6 mb-10"></mat-divider>
-        
+
       </div>
-    </form> 
+    </form>
 </div>
 
