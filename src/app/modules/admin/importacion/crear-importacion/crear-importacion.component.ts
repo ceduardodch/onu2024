@@ -65,6 +65,8 @@ export class CrearImportacionComponent implements OnInit {
         Validators.pattern('^\\d{19}P$')      ]);
         selectedFile: File;
     dataSource: any[];
+    currentStep = 'Borrador';
+currentType: any;
 
 
     constructor(private _proveedorService: ProveedorService,
