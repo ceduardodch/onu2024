@@ -30,8 +30,4 @@ export class SustanciaService {
     }
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
-  searchSustancia(name: string): Observable<Sustancia[]> {
-    return this.http.get<Sustancia[]>(`${this.apiUrl}/search?name=${name}`);
-  }
 }

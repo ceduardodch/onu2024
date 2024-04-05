@@ -32,8 +32,4 @@ export class PaisService {
     }
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
-  searchPaises(name: string): Observable<Pais[]> {
-    return this.http.get<Pais[]>(`${this.apiUrl}/search?name=${name}`);
-  }
 }

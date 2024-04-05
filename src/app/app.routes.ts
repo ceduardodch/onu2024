@@ -78,6 +78,7 @@ export const appRoutes: Route[] = [
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
             {path: 'users', loadChildren: () => import('app/modules/admin/users/users.routes')}, // Import the missing module here
             {path: 'paises', loadChildren: () => import('app/modules/admin/pais/pais.routes')},
+            {path: 'anios', loadChildren: () => import('app/modules/admin/anio/anio.routes')},
             {path: 'proveedors', loadChildren: () => import('app/modules/admin/proveedor/proveedor.routes')},
             {path: 'sustancias', loadChildren: () => import('app/modules/admin/sustancia/sustancia.routes')},
             {path: 'importadors', loadChildren: () => import('app/modules/admin/importador/importador.routes')},

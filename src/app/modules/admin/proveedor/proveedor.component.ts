@@ -37,6 +37,8 @@ export class ProveedorsComponent implements OnInit{
         filteredProveedors: Proveedor[] = [];
         searchTerm: string = '';
         selectedProveedor:  Proveedor | null = null;
+        orderAsc: boolean = true;
+        currentField: string = '';
 
         constructor(private _proveedorService: ProveedorService) { }
 
@@ -51,7 +53,7 @@ export class ProveedorsComponent implements OnInit{
                 next: () => {
                   this.loadProveedors();
                   this.newProveedor = { 
-                    id:0, name: '', country: '',activo:'', created_at: '',updated_at: ''}; 
+                    name: '', country: '',activo:''}; 
                     // Restablece el objeto `newProveedor`
                 },
                 error: (error) => {
@@ -133,15 +135,32 @@ export class ProveedorsComponent implements OnInit{
               }
             
               orderBy(field: string): void {
+                // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
+                if (this.currentField === field) {
+                  this.orderAsc = !this.orderAsc;
+                } else {
+                  this.orderAsc = true;
+                  this.currentField = field;
+                }
+              
                 this.filteredProveedors.sort((a, b) => {
                   const valueA = a[field].toLowerCase();
                   const valueB = b[field].toLowerCase();
-                  return valueA.localeCompare(valueB);
+              
+                  // Comparar los valores para el ordenamiento
+                  if (valueA < valueB) {
+                    return this.orderAsc ? -1 : 1;
+                  }
+                  if (valueA > valueB) {
+                    return this.orderAsc ? 1 : -1;
+                  }
+                  return 0;
                 });
               }
             
               cancelEdit(): void {
                 this.selectedProveedor = null;
                 this.searchTerm = '';
+                this.applyFilter();
               }
 }

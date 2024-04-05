@@ -8,11 +8,11 @@ import { MatDivider } from '@angular/material/divider';
 import { MatFormField } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { Pais } from './pais.model'; // Import the 'pais' class from the appropriate file
-import { PaisService } from './pais.service';
+import { Anio } from './anio.model'; // Import the 'anio' class from the appropriate file
+import { AnioService } from './anio.service';
 
 @Component({
-  selector: 'app-paises',
+  selector: 'app-anioes',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
@@ -27,31 +27,32 @@ import { PaisService } from './pais.service';
       ])
     ])
   ],
-  templateUrl: './pais.component.html',
-  styleUrls: ['./pais.component.scss']
+  templateUrl: './anio.component.html',
+  styleUrls: ['./anio.component.scss']
 })
-export class PaisesComponent implements OnInit{
-        paises: Pais[] = []; // Cambiado a array regular para manejar la lista de usuarios
-        newPais:Pais = {name: ''};
-        filteredPaises: Pais[] = [];
+export class AniosComponent implements OnInit{
+        anios: Anio[] = []; // Cambiado a array regular para manejar la lista de usuarios
+        newAnio:Anio = {
+          name: '', activo: ''};
+        filteredAnios: Anio[] = [];
         searchTerm: string = '';
-        selectedPais:  Pais | null = null;
+        selectedAnio:  Anio | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
 
-        constructor(private _paisService: PaisService) { }
+        constructor(private _anioService: AnioService) { }
 
             ngOnInit(): void {
 
-            this.loadPaises();
+            this.loadAnios();
 
             }
 
-            addPais(): void {
-              this._paisService.addPais(this.newPais).subscribe({
+            addAnio(): void {
+              this._anioService.addAnio(this.newAnio).subscribe({
                 next: () => {
-                  this.loadPaises();
-                  this.newPais = { id: 0, name: '' }; // Restablece el objeto `newPais`
+                  this.loadAnios();
+                  this.newAnio = { name: '', activo: ''}; // Restablece el objeto `newAnio`
                 },
                 error: (error) => {
                   console.error('Error al agregar el país', error);
@@ -59,25 +60,25 @@ export class PaisesComponent implements OnInit{
               });
             }
 
-              selectPaisForEdit(pais: Pais): void {
-                this.selectedPais = { ...pais };               
+              selectAnioForEdit(anio: Anio): void {
+                this.selectedAnio = { ...anio };               
               }
             
-              updatePais(updatedPais: Pais): void {
+              updateAnio(updatedAnio: Anio): void {
                 
-                if (!updatedPais.id) {
+                if (!updatedAnio.id) {
                   console.error('Error al actualizar: ID de país no proporcionado');
                   return;
                 }
-                this._paisService.updatePais(updatedPais.id, updatedPais).subscribe({
+                this._anioService.updateAnio(updatedAnio.id, updatedAnio).subscribe({
                   next: (response) => {
                     // Actualizar la lista de países en el frontend
-                    const index = this.paises.findIndex(pais => pais.id === updatedPais.id);
+                    const index = this.anios.findIndex(anio => anio.id === updatedAnio.id);
                     if (index !== -1) {
-                      this.paises[index] = updatedPais;
+                      this.anios[index] = updatedAnio;
                     }
                     console.log('País actualizado:', response);
-                    this.selectedPais = null; // Resetea la selección para cerrar el formulario de edición
+                    this.selectedAnio = null; // Resetea la selección para cerrar el formulario de edición
                   },
                   error: (error) => {
                     console.error('Error al actualizar el país', error);
@@ -85,8 +86,8 @@ export class PaisesComponent implements OnInit{
                 });
               }
 
-              deletePais(paisId: number): void {
-                if (!paisId) {
+              deleteAnio(anioId: number): void {
+                if (!anioId) {
                   console.error('Error al eliminar: ID de país no proporcionado');
                   return;
                 }
@@ -96,13 +97,13 @@ export class PaisesComponent implements OnInit{
                   return;
                 }
               
-                this._paisService.deletePais(paisId).subscribe({
+                this._anioService.deleteAnio(anioId).subscribe({
                   next: () => {
                     // Eliminar el país de la lista en el frontend
-                    this.loadPaises();
-                    this.paises = this.paises.filter(pais => pais.id !== paisId);
+                    this.loadAnios();
+                    this.anios = this.anios.filter(anio => anio.id !== anioId);
                     console.log('País eliminado con éxito');
-                    this.selectedPais = null; // Resetea la selección si se estaba editando el país eliminado
+                    this.selectedAnio = null; // Resetea la selección si se estaba editando el país eliminado
                   },
                   error: (error) => {
                     console.error('Error al eliminar el país', error);
@@ -110,11 +111,11 @@ export class PaisesComponent implements OnInit{
                 });
               }             
 
-              loadPaises(): void {
-                this._paisService.getPaises().subscribe({
+              loadAnios(): void {
+                this._anioService.getAnios().subscribe({
                   next: (data) => {
-                    this.paises = data;
-                    this.filteredPaises = data;
+                    this.anios = data;
+                    this.filteredAnios = data;
                     this.applyFilter();
                   },
                   error: (error) => console.error(error)
@@ -122,11 +123,11 @@ export class PaisesComponent implements OnInit{
               }
 
               applyFilter(): void {
-                this.filteredPaises = this.searchTerm
-                  ? this.paises.filter(pais =>
-                      pais.name.toLowerCase().includes(this.searchTerm.toLowerCase())                     
+                this.filteredAnios = this.searchTerm
+                  ? this.anios.filter(anio =>
+                      anio.name.toLowerCase().includes(this.searchTerm.toLowerCase())                     
                     )
-                  : this.paises;
+                  : this.anios;
               }
             
               orderBy(field: string): void {
@@ -138,7 +139,7 @@ export class PaisesComponent implements OnInit{
                   this.currentField = field;
                 }
               
-                this.filteredPaises.sort((a, b) => {
+                this.filteredAnios.sort((a, b) => {
                   const valueA = a[field].toLowerCase();
                   const valueB = b[field].toLowerCase();
               
@@ -153,9 +154,11 @@ export class PaisesComponent implements OnInit{
                 });
               }
               cancelEdit(): void {
-                this.selectedPais = null;
+                this.selectedAnio = null;
                 this.searchTerm = '';
                 this.applyFilter();
               }
+
+              
               
 }

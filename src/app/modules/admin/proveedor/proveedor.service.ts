@@ -30,8 +30,4 @@ export class ProveedorService {
     }
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
-  searchProveedor(name: string): Observable<Proveedor[]> {
-    return this.http.get<Proveedor[]>(`${this.apiUrl}/search?name=${name}`);
-  }
 }

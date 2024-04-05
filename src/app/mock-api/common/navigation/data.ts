@@ -24,6 +24,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link : '/paises'
     },
     {
+        id   : 'anios',
+        title: 'Años',
+        type : 'basic',
+        icon : 'heroicons_outline:user',
+        link : '/anios'
+    },
+    {
         id   : 'proveedors',
         title: 'Proveedores',
         type : 'basic',
