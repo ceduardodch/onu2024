@@ -125,7 +125,8 @@ export class AniosComponent implements OnInit{
               applyFilter(): void {
                 this.filteredAnios = this.searchTerm
                   ? this.anios.filter(anio =>
-                      anio.name.toLowerCase().includes(this.searchTerm.toLowerCase())                     
+                      anio.name.toLowerCase().includes(this.searchTerm.toLowerCase())  ||                   
+                      anio.activo.toLowerCase().includes(this.searchTerm.toLowerCase())                     
                     )
                   : this.anios;
               }
@@ -140,8 +141,8 @@ export class AniosComponent implements OnInit{
                 }
               
                 this.filteredAnios.sort((a, b) => {
-                  const valueA = a[field].toLowerCase();
-                  const valueB = b[field].toLowerCase();
+                  const valueA = a[field] ? a[field].toString().toLowerCase() : '';
+                  const valueB = b[field] ? b[field].toString().toLowerCase() : '';
               
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {

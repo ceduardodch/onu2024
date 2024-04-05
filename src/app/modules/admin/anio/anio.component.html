@@ -7,7 +7,7 @@
             <!-- Title -->
             <div class="mt-2">
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    Lista de Anios
+                    Lista de Años
                 </h2>
             </div>
         </div>             
@@ -21,17 +21,19 @@
         cdkScrollable>
         <div class="h-400 min-h-400 max-h-400 border-2 border-dashed border-gray-300 rounded-2xl">
         <ng-container *ngIf="(anios ) as anios">
-            <div class="grid grid-cols-2 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
-                <div [mat-sort-header]="'name'" (click)="orderBy('name')">Country</div>
+            <div class="grid grid-cols-3 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
+                <div [mat-sort-header]="'name'" (click)="orderBy('name')">Año</div>
+                <div [mat-sort-header]="'activo'" (click)="orderBy('activo')">Activo</div>
 
                 <div>Acciones</div> <!-- Columna para acciones -->                
             </div>            
             <!-- Rows -->            
             <ng-container *ngFor="let anio of filteredAnios; let i = index">
-                <div class="grid grid-cols-2 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
                     <ng-container *ngIf="selectedAnio?.id !== anio.id">
                     <div class="truncate">{{ anio.name }}</div>
+                    <div class="truncate">{{ anio.activo }}</div>
                     
                     <!-- Mostrar botones solo si no se está editando este país -->
                     <div *ngIf="selectedAnio?.id !== anio.id" class="flex items-center">
@@ -45,8 +47,9 @@
                     <!-- Formulario de edición para el país actual -->
                     
                     <div *ngIf="selectedAnio?.id === anio.id" @fadeOutRight class="flex items-center">
-                        <div class="grid grid-cols-2 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                        <input [(ngModel)]="selectedAnio.name" placeholder="Country" class="flex-1">
+                        <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                        <input [(ngModel)]="selectedAnio.name" placeholder="Año" class="flex-1">
+                        <input [(ngModel)]="selectedAnio.activo" placeholder="Activo" class="flex-1">
                         <div class="flex items-center col-span-1 space-x-1">
                         <button mat-icon-button (click)="updateAnio(selectedAnio)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
@@ -65,8 +68,9 @@
             </ng-container>
         <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
-            <div class="grid grid-cols-2 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <input [(ngModel)]="newAnio.name" placeholder="New Country">                    
+            <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                <input [(ngModel)]="newAnio.name" placeholder="Año">   
+                <input [(ngModel)]="newAnio.activo" placeholder="Activo">                    
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
                     <button (click)="addAnio()" mat-stroked-button color="primary">Guardar</button>

@@ -30,8 +30,4 @@ export class ImportadorService {
     }
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
-  searchImportadores(name: string): Observable<Importador[]> {
-    return this.http.get<Importador[]>(`${this.apiUrl}/search?name=${name}`);
-  }
 }

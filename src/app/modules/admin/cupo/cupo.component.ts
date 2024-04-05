@@ -55,7 +55,7 @@ export class CuposComponent implements OnInit{
                   this.newCupo = { importador: '', anio: '', hfc: '', hcfc: ''};// Restablece el objeto `newCupo`
                 },
                 error: (error) => {
-                  console.error('Error al agregar el país', error);
+                  console.error('Error al agregar el cupo', error);
                 }
               });
             }
@@ -67,7 +67,7 @@ export class CuposComponent implements OnInit{
               updateCupo(updatedCupo: Cupo): void {
                 
                 if (!updatedCupo.id) {
-                  console.error('Error al actualizar: ID de país no proporcionado');
+                  console.error('Error al actualizar: ID de cupo no proporcionado');
                   return;
                 }
                 this._cupoService.updateCupo(updatedCupo.id, updatedCupo).subscribe({
@@ -77,22 +77,22 @@ export class CuposComponent implements OnInit{
                     if (index !== -1) {
                       this.cupos[index] = updatedCupo;
                     }
-                    console.log('País actualizado:', response);
+                    console.log('Cupo actualizado:', response);
                     this.selectedCupo = null; // Resetea la selección para cerrar el formulario de edición
                   },
                   error: (error) => {
-                    console.error('Error al actualizar el país', error);
+                    console.error('Error al actualizar el cupo', error);
                   }
                 });
               }
 
               deleteCupo(cupoId: number): void {
                 if (!cupoId) {
-                  console.error('Error al eliminar: ID de país no proporcionado');
+                  console.error('Error al eliminar: ID de cupo no proporcionado');
                   return;
                 }
               
-                const confirmation = confirm('¿Estás seguro de que deseas eliminar este país?');
+                const confirmation = confirm('¿Estás seguro de que deseas eliminar este cupo?');
                 if (!confirmation) {
                   return;
                 }
@@ -102,11 +102,11 @@ export class CuposComponent implements OnInit{
                     // Eliminar el país de la lista en el frontend
                     this.loadCupos();
                     this.cupos = this.cupos.filter(cupo => cupo.id !== cupoId);
-                    console.log('País eliminado con éxito');
+                    console.log('Cupo eliminado con éxito');
                     this.selectedCupo = null; // Resetea la selección si se estaba editando el país eliminado
                   },
                   error: (error) => {
-                    console.error('Error al eliminar el país', error);
+                    console.error('Error al eliminar el cupo', error);
                   }
                 });
               }             
@@ -125,7 +125,10 @@ export class CuposComponent implements OnInit{
               applyFilter(): void {
                 this.filteredCupos = this.searchTerm
                   ? this.cupos.filter(cupo =>
-                      cupo.importador.toLowerCase().includes(this.searchTerm.toLowerCase())                     
+                      cupo.importador.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      cupo.anio.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      cupo.hfc.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      cupo.hcfc.toLowerCase().includes(this.searchTerm.toLowerCase())                    
                     )
                   : this.cupos;
               }

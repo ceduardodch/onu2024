@@ -33,11 +33,12 @@ import { ImportadorService } from './importador.service';
 export class ImportadorsComponent implements OnInit{
         importadors: Importador[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newImportador:Importador = {
-          name: '', ruc: '',user_import:'', created_at: '',updated_at: ''};
+          name: '', ruc: '',user_import:''};
         filteredImportadores: Importador[] = [];
         searchTerm: string = '';
         selectedImportador:  Importador | null = null;
-
+        orderAsc: boolean = true;
+        currentField: string = '';
 
         constructor(private _importadorService: ImportadorService) { }
 
@@ -51,7 +52,7 @@ export class ImportadorsComponent implements OnInit{
             this._importadorService.addImportador(this.newImportador).subscribe({
               next: () => {
                 this.loadImportadores();
-                this.newImportador = { id: 0, name: '', ruc: '',user_import:'', created_at: '',updated_at: ''}; // Restablece el objeto `newImportador`
+                this.newImportador = { id: 0, name: '', ruc: '',user_import:''}; // Restablece el objeto `newImportador`
               },
               error: (error) => {
                 console.error('Error al agregar el importador', error);
@@ -115,19 +116,49 @@ export class ImportadorsComponent implements OnInit{
                 next: (data) => {
                   this.importadors = data;
                   this.filteredImportadores = data;
+                  this.applyFilter();
                 },
                 error: (error) => console.error(error)
               });
             }
 
-            searchImportadores(): void {
+            applyFilter(): void {
               this.filteredImportadores = this.searchTerm
-                ? this.importadors.filter(importador => importador.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                ? this.importadors.filter(importador =>
+                    importador.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    importador.ruc.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    importador.user_import.toLowerCase().includes(this.searchTerm.toLowerCase())                                      
+                  )
                 : this.importadors;
+            }
+          
+            orderBy(field: string): void {
+              // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
+              if (this.currentField === field) {
+                this.orderAsc = !this.orderAsc;
+              } else {
+                this.orderAsc = true;
+                this.currentField = field;
+              }
+            
+              this.filteredImportadores.sort((a, b) => {
+                const valueA = a[field].toLowerCase();
+                const valueB = b[field].toLowerCase();
+            
+                // Comparar los valores para el ordenamiento
+                if (valueA < valueB) {
+                  return this.orderAsc ? -1 : 1;
+                }
+                if (valueA > valueB) {
+                  return this.orderAsc ? 1 : -1;
+                }
+                return 0;
+              });
             }
           
             cancelEdit(): void {
               this.selectedImportador = null;
               this.searchTerm = '';
+              this.applyFilter();
             }
 }

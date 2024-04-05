@@ -13,27 +13,28 @@
         </div>       
         <div class="p-4 flex items-center border rounded">
             <mat-icon matPrefix svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
-            <input type="text" placeholder=" Buscar importador " [(ngModel)]="searchTerm" (input)="searchImportadores()" class="flex-1 border-gray-300 rounded pl-2">
+            <input type="text" placeholder=" Buscar " [(ngModel)]="searchTerm" (input)="applyFilter()" class="flex-1 border-gray-300 rounded pl-2">
         </div>
     </div>
     <div
         class="flex-auto -mt-16 p-6 sm:p-10 rounded-t-2xl shadow overflow-y-auto bg-card"
-        cdkScrollable>
+        cdkScrollable>    
         <div class="h-400 min-h-400 max-h-400 border-2 border-dashed border-gray-300 rounded-2xl">
         <ng-container *ngIf="(importadors ) as importadors">
             <div class="grid grid-cols-4 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
-                <div [mat-sort-header]="'name'">Nombre</div>
-                <div [mat-sort-header]="'ruc'">RUC</div>
-                <div [mat-sort-header]="'user_import'">Usuario Importador</div>
+                <div [mat-sort-header]="'name'" (click)="orderBy('name')">Nombre</div>
+                <div [mat-sort-header]="'ruc'" (click)="orderBy('ruc')">RUC</div>
+                <div [mat-sort-header]="'user_import'" (click)="orderBy('user_import')">Usuario Importador</div>
                 
                 <div>Acciones</div> <!-- Columna para acciones -->
             </div>
             <!-- Rows -->
             <ng-container *ngFor="let importador of filteredImportadores; let i = index">
                 <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                    <div *ngIf="selectedImportador?.id !== importador.id" class="truncate">{{importador.name}}</div>
-                    <div *ngIf="selectedImportador?.id !== importador.id" class="truncate">{{importador.ruc}}</div>
-                    <div *ngIf="selectedImportador?.id !== importador.id" class="truncate">{{importador.user_import}}</div>
+                    <ng-container *ngIf="selectedImportador?.id !== importador.id">
+                        <div class="truncate">{{ importador.name }}</div>
+                        <div class="truncate">{{ importador.ruc }}</div>
+                        <div class="truncate">{{ importador.user_import }}</div>
 
                     <!-- Mostrar botones solo si no se está editando este país -->
                     <div *ngIf="selectedImportador?.id !== importador.id" class="flex items-center">
@@ -42,12 +43,16 @@
                             <span>Editar</span>
                         </button>                        
                     </div>
-                    
+                    </ng-container>
+                    </div>
                     <!-- Formulario de edición para el país actual -->
                     
                     <div *ngIf="selectedImportador?.id === importador.id" @fadeOutRight class="flex items-center">
-                        <input [(ngModel)]="selectedImportador.name" placeholder="Country" class="flex-1">
-
+                        <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                        <input [(ngModel)]="selectedImportador.name" placeholder="Importador" class="flex-1">
+                        <input [(ngModel)]="selectedImportador.ruc" placeholder="RUC" class="flex-1">
+                        <input [(ngModel)]="selectedImportador.user_import" placeholder="Usuario" class="flex-1">
+                        <div class="flex items-center col-span-1 space-x-1">
                         <button mat-button (click)="updateImportador(selectedImportador)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
                         </button>
@@ -59,7 +64,7 @@
                             
                         </button>
                     </div>
-                    
+                </div>
                 </div>
             </ng-container>
         <!--/ng-container-->
