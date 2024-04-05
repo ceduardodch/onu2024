@@ -51,7 +51,7 @@ export class PaisesComponent implements OnInit{
               this._paisService.addPais(this.newPais).subscribe({
                 next: () => {
                   this.loadPaises();
-                  this.newPais = { id: 0, name: '' }; // Restablece el objeto `newPais`
+                  this.newPais = { name: '' }; // Restablece el objeto `newPais`
                 },
                 error: (error) => {
                   console.error('Error al agregar el país', error);
@@ -60,30 +60,42 @@ export class PaisesComponent implements OnInit{
             }
 
               selectPaisForEdit(pais: Pais): void {
-                this.selectedPais = { ...pais };               
+                console.log('Seleccionando país para editar:', pais);
+                if (pais && pais.id) {
+                  this.selectedPais = { ...pais };
+                } else {
+                  console.error('El país seleccionado no tiene un ID válido.');
+                }               
               }
             
-              updatePais(updatedPais: Pais): void {
-                
-                if (!updatedPais.id) {
-                  console.error('Error al actualizar: ID de país no proporcionado');
-                  return;
-                }
-                this._paisService.updatePais(updatedPais.id, updatedPais).subscribe({
-                  next: (response) => {
-                    // Actualizar la lista de países en el frontend
-                    const index = this.paises.findIndex(pais => pais.id === updatedPais.id);
-                    if (index !== -1) {
-                      this.paises[index] = updatedPais;
-                    }
-                    console.log('País actualizado:', response);
-                    this.selectedPais = null; // Resetea la selección para cerrar el formulario de edición
-                  },
-                  error: (error) => {
-                    console.error('Error al actualizar el país', error);
+          
+                updatePais(updatedPais: Pais): void {
+                  // Verificar que el pais tenga un 
+                  console.log('Intentando actualizar el país:', updatedPais);
+                  if (!updatedPais || !updatedPais.id) {
+                    console.error('Error al actualizar: ID de país no proporcionado');
+                    return;
                   }
-                });
-              }
+                  
+                  this._paisService.updatePais(updatedPais.id, updatedPais).subscribe({
+                    next: (response) => {
+                      // Encuentra el país actualizado y actualiza la lista
+                      const index = this.paises.findIndex(p => p.id === updatedPais.id);
+                      if (index !== -1) {
+                        this.paises[index] = { ...updatedPais, ...response };
+                      }
+
+                      this.paises = [...this.paises];
+                      this.filteredPaises = this.paises;
+
+                      console.log('País actualizado:', response);
+                      this.selectedPais = null;
+                    },
+                    error: (error) => {
+                      console.error('Error al actualizar el país', error);
+                    }
+                  });
+                }
 
               deletePais(paisId: number): void {
                 if (!paisId) {

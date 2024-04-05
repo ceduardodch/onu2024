@@ -67,7 +67,7 @@ export class AniosComponent implements OnInit{
               updateAnio(updatedAnio: Anio): void {
                 
                 if (!updatedAnio.id) {
-                  console.error('Error al actualizar: ID de país no proporcionado');
+                  console.error('Error al actualizar: ID de año no proporcionado');
                   return;
                 }
                 this._anioService.updateAnio(updatedAnio.id, updatedAnio).subscribe({
@@ -77,22 +77,22 @@ export class AniosComponent implements OnInit{
                     if (index !== -1) {
                       this.anios[index] = updatedAnio;
                     }
-                    console.log('País actualizado:', response);
+                    console.log('Año actualizado:', response);
                     this.selectedAnio = null; // Resetea la selección para cerrar el formulario de edición
                   },
                   error: (error) => {
-                    console.error('Error al actualizar el país', error);
+                    console.error('Error al actualizar el año', error);
                   }
                 });
               }
 
               deleteAnio(anioId: number): void {
                 if (!anioId) {
-                  console.error('Error al eliminar: ID de país no proporcionado');
+                  console.error('Error al eliminar: ID de año no proporcionado');
                   return;
                 }
               
-                const confirmation = confirm('¿Estás seguro de que deseas eliminar este país?');
+                const confirmation = confirm('¿Estás seguro de que deseas eliminar este año?');
                 if (!confirmation) {
                   return;
                 }
@@ -102,11 +102,11 @@ export class AniosComponent implements OnInit{
                     // Eliminar el país de la lista en el frontend
                     this.loadAnios();
                     this.anios = this.anios.filter(anio => anio.id !== anioId);
-                    console.log('País eliminado con éxito');
+                    console.log('Año eliminado con éxito');
                     this.selectedAnio = null; // Resetea la selección si se estaba editando el país eliminado
                   },
                   error: (error) => {
-                    console.error('Error al eliminar el país', error);
+                    console.error('Error al eliminar el año', error);
                   }
                 });
               }             
