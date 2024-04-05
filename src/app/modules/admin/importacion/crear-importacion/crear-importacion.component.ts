@@ -1,5 +1,5 @@
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component,OnInit } from '@angular/core';
+import { Component,OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule , Validators} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -24,6 +24,10 @@ import { PaisService } from '../../pais/pais.service';
 import { ImportadorService } from '../../importador/importador.service';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 @Component({
   selector: 'app-crear-importacion',
   standalone: true,
@@ -36,7 +40,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatFormFieldModule, MatIconModule,
     MatInputModule, FormsModule, MatTableModule,
     ReactiveFormsModule, MatButtonModule,
-    MatSortModule, NgFor, NgTemplateOutlet,
+    MatSortModule, NgFor, NgTemplateOutlet,MatTooltipModule,
     MatPaginatorModule, NgClass, MatSlideToggleModule,MatToolbarModule,
     MatSelectModule, MatOptionModule, MatCheckboxModule,MatStepperModule,
     MatRippleModule, AsyncPipe, CurrencyPipe,MatAutocompleteModule],
@@ -53,14 +57,26 @@ export class CrearImportacionComponent implements OnInit {
     importadorControl = new FormControl();
     displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq'];
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
+    listaProductos = []; // Añade esta línea
+
+
     nroSolicitudVUE = new FormControl('', [
         Validators.required,
         Validators.pattern('^\\d{19}P$')      ]);
+        selectedFile: File;
+    dataSource: any[];
+
 
     constructor(private _proveedorService: ProveedorService,
                 private _paisService: PaisService,
-                private _importadorService: ImportadorService) { }
-
+                private _importadorService: ImportadorService,
+                private cdr: ChangeDetectorRef,
+                public dialog: MatDialog) { }
+                ngAfterViewInit() {
+                    Promise.resolve().then(() => {
+                      this.cdr.detectChanges();
+                    });
+                  }
     ngOnInit(): void {
         this._proveedorService.getProveedors().subscribe((data: any[]) => {
           this.proveedores = data;
@@ -74,5 +90,28 @@ export class CrearImportacionComponent implements OnInit {
             }
         );
       }
+      selectFile(event) {
+        this.selectedFile = event.target.files[0];
+      }
+
+      openDialog() {
+
+        const dialogRef = this.dialog.open(DetalleProductosComponent, {
+            width: '600px',
+            height: '400px'
+          });
+          dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+
+            // Actualiza la tabla "Lista Productos" con los datos recibidos
+            this.listaProductos = [...this.listaProductos, result];
+            this.dataSource = this.listaProductos;
+
+            console.log(this.dataSource);
+          }
+        });
+      }
+
+
 
 }
