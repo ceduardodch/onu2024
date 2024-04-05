@@ -21,7 +21,7 @@ export class SustanciaService {
     if (!id || id <= 0) {
       throw new Error('ID de Sustancia no válido');
     }
-    return this.http.put<Sustancia>(`${this.apiUrl}/${id}`, { name: sustancia.name });
+    return this.http.put<Sustancia>(`${this.apiUrl}/${id}`, sustancia);
   }
 
   deleteSustancia(id: number): Observable<any> {

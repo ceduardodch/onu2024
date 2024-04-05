@@ -33,7 +33,7 @@ import { SustanciaService } from './sustancia.service';
 export class SustanciasComponent implements OnInit{
         sustancias: Sustancia[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newSustancia:Sustancia = {
-           name: '', subpartida: '',pao:'', pcg: '', grupo_sust: '',activo:'', cupo_prod: '', created_at: '',updated_at: ''};
+           name: '', subpartida: '', pao: '', pcg: '', grupo_sust: '', activo: '', cupo_prod: ''};
         filteredSustancias: Sustancia[] = [];
         searchTerm: string = '';
         selectedSustancia:  Sustancia | null = null;
@@ -53,7 +53,7 @@ export class SustanciasComponent implements OnInit{
                 next: () => {
                   this.loadSustancias();
                   this.newSustancia = {  
-                    name: '' , subpartida: '',pao:'', pcg: '', grupo_sust: '',activo:'', cupo_prod: ''}; // Restablece el objeto `newSustancia`
+                    name: '' , subpartida: '', pao:'', pcg: '', grupo_sust: '', activo:'', cupo_prod: ''}; // Restablece el objeto `newSustancia`
                 },
                 error: (error) => {
                   console.error('Error al agregar la sustancia', error);

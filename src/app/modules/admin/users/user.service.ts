@@ -21,7 +21,8 @@ export class UserService {
     if (!id || id <= 0) {
       throw new Error('ID de User no válido');
     }
-    return this.http.put<User>(`${this.apiUrl}/${id}`, { name: user.name });
+    // Enviar todo el objeto de usuario en la solicitud PUT
+    return this.http.put<User>(`${this.apiUrl}/${id}`, user);
   }
 
   deleteUser(id: number): Observable<any> {

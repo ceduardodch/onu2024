@@ -23,7 +23,7 @@ export class PaisService {
     if (!id || id <= 0) {
       throw new Error('ID de país no válido');
     }
-    return this.http.put<Pais>(`${this.apiUrl}/${id}`, { name: pais.name });
+    return this.http.put<Pais>(`${this.apiUrl}/${id}`,pais);
   }
 
   deletePais(id: number): Observable<any> {

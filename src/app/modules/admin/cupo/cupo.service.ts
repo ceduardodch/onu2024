@@ -23,7 +23,7 @@ export class CupoService {
     if (!id || id <= 0) {
       throw new Error('ID de cupo no válido');
     }
-    return this.http.put<Cupo>(`${this.apiUrl}/${id}`, { importador: cupo.importador });
+    return this.http.put<Cupo>(`${this.apiUrl}/${id}`, cupo);
   }
 
   deleteCupo(id: number): Observable<any> {

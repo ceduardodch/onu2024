@@ -33,7 +33,7 @@ import { ProveedorService } from './proveedor.service';
 export class ProveedorsComponent implements OnInit{
         proveedors: Proveedor[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newProveedor:Proveedor = {
-          name: '', country: '',activo:'', created_at: '',updated_at: ''};
+          name: '', country: '', activo: ''};
         filteredProveedors: Proveedor[] = [];
         searchTerm: string = '';
         selectedProveedor:  Proveedor | null = null;

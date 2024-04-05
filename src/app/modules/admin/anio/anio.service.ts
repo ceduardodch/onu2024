@@ -23,7 +23,7 @@ export class AnioService {
     if (!id || id <= 0) {
       throw new Error('ID de año no válido');
     }
-    return this.http.put<Anio>(`${this.apiUrl}/${id}`, { name: anio.name });
+    return this.http.put<Anio>(`${this.apiUrl}/${id}`, anio);
   }
 
   deleteAnio(id: number): Observable<any> {

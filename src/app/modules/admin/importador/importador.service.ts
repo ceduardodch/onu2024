@@ -21,7 +21,7 @@ export class ImportadorService {
     if (!id || id <= 0) {
       throw new Error('ID de importador no válido');
     }
-    return this.http.put<Importador>(`${this.apiUrl}/${id}`, { name: importador.name });
+    return this.http.put<Importador>(`${this.apiUrl}/${id}`, importador);
   }
 
   deleteImportador(id: number): Observable<any> {

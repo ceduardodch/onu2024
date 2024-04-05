@@ -21,7 +21,7 @@ export class ProveedorService {
     if (!id || id <= 0) {
       throw new Error('ID de proveedor no válido');
     }
-    return this.http.put<Proveedor>(`${this.apiUrl}/${id}`, { name: proveedor.name });
+    return this.http.put<Proveedor>(`${this.apiUrl}/${id}`, proveedor);
   }
 
   deleteProveedor(id: number): Observable<any> {
