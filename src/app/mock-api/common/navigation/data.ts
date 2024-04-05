@@ -31,6 +31,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link : '/anios'
     },
     {
+        id   : 'cupos',
+        title: 'Cupos',
+        type : 'basic',
+        icon : 'heroicons_outline:user',
+        link : '/cupos'
+    },
+    {
         id   : 'proveedors',
         title: 'Proveedores',
         type : 'basic',
