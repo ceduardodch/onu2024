@@ -29,6 +29,7 @@ import { PaisService } from '../../pais/pais.service';
 import { ProveedorService } from '../../proveedor/proveedor.service';
 import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { ImportacionService } from '../importacion.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-crear-importacion',
@@ -97,6 +98,7 @@ export class CrearImportacionComponent implements OnInit {
                 private _importacioService: ImportacionService,
                 private cdr: ChangeDetectorRef,
                 private _importacionService: ImportacionService,
+                private route: ActivatedRoute,
                                 public dialog: MatDialog
 
                ) {
@@ -112,6 +114,30 @@ export class CrearImportacionComponent implements OnInit {
                     });
                   }
     ngOnInit(): void {
+        const id = this.route.snapshot.paramMap.get('id');
+        console.log('id',id);
+        //cargar data maestro detalle para editar importacion existente si id es diferente de null
+        if (id) {
+            this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
+                console.log('data',data);
+                this.importadorControl.setValue(data.importador);
+                this.fechaAutorizacion = new Date(data.authorization_date);
+                this.cupoAsignado = data.cupo_asignado;
+                this.cupoRestante = data.cupo_restante;
+                this.totalPao = data.total_solicitud;
+                this.totalPesoKg = data.total_pesokg;
+                this.nroSolicitudVUE.setValue(data.vue);
+                this.paisSeleccionado = data.pais;
+                this.proveedorSeleccionado = data.proveedor;
+                this.grupoSustancia = data.grupo;
+                this.listaProductos = data.details;
+                this.dataSource = this.listaProductos;
+                this.currentStep = data.status;
+                this.importacion = data;
+                this.calculoResumen(data.importador);
+            });
+        }
+
         this.loadData().then(() => {
         });
 
