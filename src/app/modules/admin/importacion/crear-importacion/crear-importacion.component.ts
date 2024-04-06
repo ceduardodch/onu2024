@@ -22,6 +22,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { startWith } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AnioService } from '../../anio/anio.service';
 import { CupoService } from '../../cupo/cupo.service';
 import { ImportadorService } from '../../importador/importador.service';
@@ -61,7 +62,7 @@ export class CrearImportacionComponent implements OnInit {
     paises: any[];
     importadores: any[];
     importadorControl = new FormControl();
-    displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq'];
+    displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq','eliminar'];
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
     fileUrl: string;
@@ -144,7 +145,7 @@ export class CrearImportacionComponent implements OnInit {
         this.importadorControl.valueChanges
       .pipe(
         startWith(''),
-        //map(valor => this._filtrarImportadores(valor))
+        map(valor => this._filtrarImportadores(valor)),
       )
       .subscribe(filtrados => this.importadoresFiltrados = filtrados);
 

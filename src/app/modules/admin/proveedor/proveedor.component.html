@@ -101,6 +101,18 @@
                 </mat-autocomplete> 
                 <mat-error *ngIf="signInForm.get('country').touched && signInForm.get('country').hasError('required')"/>                                                             
                 </mat-form-field>  
+
+                <!-- app-proveedors.component.html -->
+                <mat-form-field class="example-full-width" appearance="fill">
+                    <input type="text" placeholder="País" aria-label="Número" matInput [formControl]="paisControl">
+                    <mat-autocomplete autoActiveFirstOption [displayWith]="displayFn">
+                      <mat-option *ngFor="let pais of paisesFiltrados$ | async" [value]="pais">
+                        {{ pais }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+  
+
                 <mat-slide-toggle formControlName="activo"/>
 
                 <div>

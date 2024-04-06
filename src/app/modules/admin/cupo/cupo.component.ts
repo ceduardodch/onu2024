@@ -139,15 +139,13 @@ export class CuposComponent implements OnInit{
                   if (result) {
                     this.cupos.push(result);
                     this.cupos = [...this.cupos]; 
-                    this.filteredCupos = this.cupos.slice();
-                    //this.filteredCupos = [...this.cupos]; // Actualiza la lista filtrada con la lista de cupos actualizada
-                    // Forzamos la detección de cambios para asegurarnos de que la vista se actualice
-                    //this.cdr.detectChanges();
+                    this.filteredCupos = this.cupos.slice();                  
                     }                
               });
             }         
             addCupo(): void {
-              const importo = this.signInForm.get('importador').value;
+              const importoValue = this.signInForm.get('importador').value;
+              const importo = typeof importoValue === 'string' ? importoValue.trim() : '';
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
