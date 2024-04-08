@@ -59,14 +59,15 @@ export class PaisesComponent implements OnInit{
               });
             }
 
-              selectPaisForEdit(pais: Pais): void {
-                console.log('Seleccionando país para editar:', pais);
-                if (pais && pais.id) {
-                  this.selectedPais = { ...pais };
-                } else {
-                  console.error('El país seleccionado no tiene un ID válido.');
-                }               
+            selectPaisForEdit(pais: Pais): void {
+              console.log('Seleccionando país para editar:', pais);
+              // Aquí se permite el ID cero como válido.
+              if (pais && (pais.id || pais.id === 0)) {
+                this.selectedPais = { ...pais };
+              } else {
+                console.error('El país seleccionado no tiene un ID válido.');
               }
+            }
             
           
                 updatePais(updatedPais: Pais): void {

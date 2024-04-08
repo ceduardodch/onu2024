@@ -5,8 +5,8 @@ export interface Sustancia {
     pao: string;
     pcg: string;
     grupo_sust: string;
-    activo: string;
-    cupo_prod: string;
+    activo: boolean;
+    cupo_prod: boolean;
     created_at?: string;
     updated_at?: string;
 }

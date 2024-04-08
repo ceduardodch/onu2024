@@ -2,22 +2,29 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { Sustancia } from './sustancia.model'; // Import the 'User' class from the appropriate file
 import { SustanciaService } from './sustancia.service';
+
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { GruposustService } from '../gruposust/gruposust.service';
 
 @Component({
   selector: 'app-sustancias',
   standalone: true, 
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
-    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable,MatFormField
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
+    RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -33,27 +40,58 @@ import { SustanciaService } from './sustancia.service';
 export class SustanciasComponent implements OnInit{
         sustancias: Sustancia[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newSustancia:Sustancia = {
-           name: '', subpartida: '', pao: '', pcg: '', grupo_sust: '', activo: '', cupo_prod: ''};
+           name: '', subpartida: '', pao: '', pcg: '', grupo_sust: '', activo: false, cupo_prod: false};
         filteredSustancias: Sustancia[] = [];
         searchTerm: string = '';
         selectedSustancia:  Sustancia | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
+        gruposusts: any[];
+        importadorControl = new FormControl();
 
-        constructor(private _sustanciaService: SustanciaService) { }
+        constructor(
+          private _sustanciaService: SustanciaService,
+          private _gruposustService: GruposustService
+        ) { }
 
         ngOnInit(): void {
 
           this.loadSustancias();
 
+          this._gruposustService.getGruposusts().subscribe((data: any[]) => {
+            this.gruposusts = data;
+          });
+
+            }
+
+            onGrupoSelected(event: MatAutocompleteSelectedEvent) {
+              if (event?.option?.value) {
+                this.newSustancia.grupo_sust = event.option.value;
+              } else {
+                // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
+                console.error('El evento o la opción seleccionada son indefinidos');
+              }
+            }
+
+            // Esta función se activa cuando se cambia el estado del checkbox de 'activo'
+            onActivoChange(event: MatCheckboxChange, sustancia: Sustancia): void {
+              sustancia.activo = event.checked;
             }
 
             addSustancia(): void {
+              // Validación de que todos los campos necesarios están presentes
+              if (!this.newSustancia.name || !this.newSustancia.subpartida || !this.newSustancia.pao || !this.newSustancia.pcg || !this.newSustancia.grupo_sust) {
+                console.error('Todos los campos deben estar llenos.');
+                return; // Salir de la función si alguna validación falla
+              }
+            
+              // Si todo está bien, procede a agregar la sustancia
               this._sustanciaService.addSustancia(this.newSustancia).subscribe({
                 next: () => {
                   this.loadSustancias();
+                  // Restablece el objeto `newSustancia` a sus valores por defecto
                   this.newSustancia = {  
-                    name: '' , subpartida: '', pao:'', pcg: '', grupo_sust: '', activo:'', cupo_prod: ''}; // Restablece el objeto `newSustancia`
+                    name: '', subpartida: '', pao:'', pcg: '', grupo_sust: '', activo: false, cupo_prod: false};
                 },
                 error: (error) => {
                   console.error('Error al agregar la sustancia', error);
@@ -130,9 +168,7 @@ export class SustanciasComponent implements OnInit{
                     sustancia.subpartida.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                     sustancia.pao.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                     sustancia.pcg.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                    sustancia.grupo_sust.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                    sustancia.activo.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                    sustancia.cupo_prod.toLowerCase().includes(this.searchTerm.toLowerCase())
+                    sustancia.grupo_sust.toLowerCase().includes(this.searchTerm.toLowerCase()) 
                     )
                   : this.sustancias;
               }

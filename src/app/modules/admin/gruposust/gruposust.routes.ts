@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { Grupo_sustComponent } from './grupo-sust.component';
+import { GruposustComponent } from './gruposust.component';
 
 const routes: Routes = [
     {
         path: '', // quita la barra al principio
-        component: Grupo_sustComponent,
+        component: GruposustComponent,
     },
 ];
 

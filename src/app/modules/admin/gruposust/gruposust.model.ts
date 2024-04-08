@@ -1,4 +1,4 @@
-export interface Grupo_sust {
+export interface Gruposust {
     id?: number;
     name: string;
     activo: string;
