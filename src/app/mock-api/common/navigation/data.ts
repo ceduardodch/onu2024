@@ -65,13 +65,6 @@ export const defaultNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:user',
         link : '/gruposusts'
     },
-    {
-        id   : 'inventorys',
-        title: 'Pruebas',
-        type : 'basic',
-        icon : 'heroicons_outline:user',
-        link : '/inventorys'
-    },
 ];
 export const compactNavigation: FuseNavigationItem[] = [
     {

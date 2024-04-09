@@ -33,8 +33,10 @@
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
                     <ng-container *ngIf="selectedGruposust?.id !== gruposust.id">
                     <div class="truncate">{{ gruposust.name }}</div>
-                    <div class="truncate">{{ gruposust.activo }}</div>
-                    
+                    <div class="flex items-center justify-start col-span-1">
+                        <mat-slide-toggle [(ngModel)]="gruposust.activo" disabled/>                                              
+                    </div>
+
                     <!-- Mostrar botones solo si no se está editando este país -->
                     <div *ngIf="selectedGruposust?.id !== gruposust.id" class="flex items-center">
                         <button mat-stroked-button (click)="selectGruposustForEdit(gruposust)" >
@@ -49,7 +51,10 @@
                     <div *ngIf="selectedGruposust?.id === gruposust.id" @fadeOutRight class="flex items-center">
                         <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
                         <input [(ngModel)]="selectedGruposust.name" placeholder="Nombre" class="flex-1">
-                        <input [(ngModel)]="selectedGruposust.activo" placeholder="Activo" class="flex-1">
+                        <mat-slide-toggle
+                            [(ngModel)]="selectedGruposust.activo"
+                            (change)="onActivoChange($event, selectedGruposust)"/>
+
                         <div class="flex items-center col-span-1 space-x-1">
                         <button mat-icon-button (click)="updateGruposust(selectedGruposust)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
@@ -70,7 +75,7 @@
             <!-- Fila para agregar un nuevo usuario -->
             <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
                 <input [(ngModel)]="newGruposust.name" placeholder="Nombre">   
-                <input [(ngModel)]="newGruposust.activo" placeholder="Activo">                    
+                <mat-slide-toggle ngModel name="activo" [(ngModel)]="newGruposust.activo"/>                  
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
                     <button (click)="addGruposust()" mat-stroked-button color="primary">Guardar</button>

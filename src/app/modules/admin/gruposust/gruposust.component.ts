@@ -2,11 +2,15 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink } from '@angular/router';
 import { Gruposust } from './gruposust.model'; // Import the 'gruposust' class from the appropriate file
 import { GruposustService } from './gruposust.service';
@@ -16,8 +20,9 @@ import { GruposustService } from './gruposust.service';
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
-    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable,MatFormField
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
+    RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -33,7 +38,7 @@ import { GruposustService } from './gruposust.service';
 export class GruposustComponent implements OnInit{
         gruposusts: Gruposust[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newGruposust:Gruposust = {
-          name: '', activo: ''};
+          name: '', activo: false};
         filteredGruposusts: Gruposust[] = [];
         searchTerm: string = '';
         selectedGruposust:  Gruposust | null = null;
@@ -48,11 +53,16 @@ export class GruposustComponent implements OnInit{
 
             }
 
+            onActivoChange(event: MatSlideToggleChange, gruposust: Gruposust): void {
+              gruposust.activo = event.checked;
+            }
+            
+
             addGruposust(): void {
               this._gruposustService.addGruposust(this.newGruposust).subscribe({
                 next: () => {
                   this.loadGruposusts();
-                  this.newGruposust = { name: '', activo: ''}; // Restablece el objeto `newGruposust`
+                  this.newGruposust = { name: '', activo: false}; // Restablece el objeto `newGruposust`
                 },
                 error: (error) => {
                   console.error('Error al agregar el grupo', error);
@@ -125,8 +135,7 @@ export class GruposustComponent implements OnInit{
               applyFilter(): void {
                 this.filteredGruposusts = this.searchTerm
                   ? this.gruposusts.filter(gruposust =>
-                      gruposust.name.toLowerCase().includes(this.searchTerm.toLowerCase())  ||                   
-                      gruposust.activo.toLowerCase().includes(this.searchTerm.toLowerCase())                     
+                      gruposust.name.toLowerCase().includes(this.searchTerm.toLowerCase())                                       
                     )
                   : this.gruposusts;
               }

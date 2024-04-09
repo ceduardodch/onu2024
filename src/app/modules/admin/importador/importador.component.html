@@ -51,7 +51,15 @@
                         <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
                         <input [(ngModel)]="selectedImportador.name" placeholder="Importador" class="flex-1">
                         <input [(ngModel)]="selectedImportador.ruc" placeholder="RUC" class="flex-1">
-                        <input [(ngModel)]="selectedImportador.user_import" placeholder="Usuario" class="flex-1">
+
+                        <mat-form-field class="w-full">                            
+                            <mat-select [(ngModel)]="selectedImportador.user_import">
+                              <mat-option *ngFor="let usuario of usuarios" [value]="usuario.name">
+                                {{ usuario.name }}
+                              </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
                         <div class="flex items-center col-span-1 space-x-1">
                         <button mat-button (click)="updateImportador(selectedImportador)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
@@ -72,7 +80,18 @@
             <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
                 <input [(ngModel)]="newImportador.name" placeholder="Nombre">   
                 <input [(ngModel)]="newImportador.ruc" placeholder="RUC">  
-                <input [(ngModel)]="newImportador.user_import" placeholder="Usuario Importador">                   
+                <mat-form-field class="w-full">                    
+                    <input type="text"
+                    placeholder="Usuario"
+                    matInput
+                    [(ngModel)]="newImportador.user_import"
+                    [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onUserSelected($event)">
+                <mat-option *ngFor="let usuario of usuarios" [value]="usuario.name">
+                 {{ usuario.name }}
+                </mat-option>
+                </mat-autocomplete>                       
+                </mat-form-field>  
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
                     <button (click)="addImportador()" mat-stroked-button>Guardar</button>

@@ -42,8 +42,13 @@
                     <div class="truncate">{{sustancia.pao}}</div>
                     <div class="truncate">{{sustancia.pcg}}</div>
                     <div class="truncate">{{sustancia.grupo_sust}}</div>
-                    <div class="truncate">{{sustancia.activo}}</div>
-                    <div class="truncate">{{sustancia.cupo_prod}}</div>
+
+                    <div class="flex items-center justify-start col-span-1">
+                        <mat-slide-toggle [(ngModel)]="sustancia.activo" disabled/>                                              
+                    </div>
+                    <div class="flex items-center justify-start col-span-1">
+                        <mat-slide-toggle [(ngModel)]="sustancia.cupo_prod" disabled/>                                                  
+                    </div>
                     
                     <!-- Mostrar botones solo si no se está editando este país -->
                     <div *ngIf="selectedSustancia?.id !== sustancia.id" class="flex items-center">
@@ -53,7 +58,7 @@
                         </button>                        
                     </div>
                     </ng-container>
-                </div>
+                    </div>
                     <!-- Formulario de edición para el país actual -->
                     
                     <div *ngIf="selectedSustancia?.id === sustancia.id" @fadeOutRight class="flex items-center">
@@ -65,15 +70,21 @@
 
                         <!--input [(ngModel)]="selectedSustancia.grupo_sust" placeholder="Grupo" class="flex-1"-->
                         <mat-form-field class="w-full">                            
-                            <mat-select [(ngModel)]="selectedSustancia.grupo_sust" (ngModelChange)="onGrupoSelected($event)">
+                            <mat-select [(ngModel)]="selectedSustancia.grupo_sust" name="grupoSust">
                               <mat-option *ngFor="let grupo of gruposusts" [value]="grupo.name">
                                 {{ grupo.name }}
                               </mat-option>
                             </mat-select>
                           </mat-form-field>
 
-                        <input [(ngModel)]="selectedSustancia.activo" placeholder="Activo" class="flex-1">
-                        <input [(ngModel)]="selectedSustancia.cupo_prod" placeholder="Cupo" class="flex-1">
+                          <mat-slide-toggle
+                            [(ngModel)]="selectedSustancia.activo"
+                            (change)="onActivoChange($event, selectedSustancia)"/>
+
+                          <mat-slide-toggle
+                            [(ngModel)]="selectedSustancia.cupo_prod"
+                            (change)="onCupoProdChange($event, selectedSustancia)"/>
+
                         <div class="flex items-center col-span-1 space-x-1">
                         <button mat-icon-button (click)="updateSustancia(selectedSustancia)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
@@ -103,14 +114,19 @@
                     matInput
                     [(ngModel)]="newSustancia.grupo_sust"
                     [matAutocomplete]="auto">
-             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onGrupoSelected($event)">
-               <mat-option *ngFor="let grupo of gruposusts" [value]="grupo.name">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onGrupoSelected($event)">
+                <mat-option *ngFor="let grupo of gruposusts" [value]="grupo.name">
                  {{ grupo.name }}
-               </mat-option>
-             </mat-autocomplete>                       
+                </mat-option>
+                </mat-autocomplete>                       
                 </mat-form-field>  
-                <input [(ngModel)]="newSustancia.activo" placeholder="Activo">
-                <input [(ngModel)]="newSustancia.cupo_prod" placeholder="Cupo">
+                <!--input [(ngModel)]="newSustancia.activo" placeholder="Activo"-->
+                
+
+                    <mat-slide-toggle ngModel name="activo" [(ngModel)]="newSustancia.activo"/>
+                    <mat-slide-toggle ngModel name="cupo_prod" [(ngModel)]="newSustancia.cupo_prod"/>
+                
+                <!--input [(ngModel)]="newSustancia.cupo_prod" placeholder="Cupo"-->
                 
                 <div>
                     <!-- Botón para guardar el nuevo sustancia -->
