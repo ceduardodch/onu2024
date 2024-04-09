@@ -27,11 +27,15 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
+import { AnioService } from '../../anio/anio.service';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 @Component({
   selector: 'app-crear-importacion',
   standalone: true,
-
+  providers: [
+    // otros proveedores aquí...
+    { provide: MAT_DATE_LOCALE, useValue: 'es' }
+  ],
   imports        : [
     MatFormFieldModule, MatInputModule, MatDatepickerModule, MatButtonModule,
     MatButtonModule,
@@ -58,6 +62,9 @@ export class CrearImportacionComponent implements OnInit {
     displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq'];
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
+    fileUrl: string;
+    fechaAutorizacion: Date = new Date();
+    fechaSolicitud: Date;
 
 
     nroSolicitudVUE = new FormControl('', [
@@ -66,10 +73,13 @@ export class CrearImportacionComponent implements OnInit {
         selectedFile: File;
     dataSource: any[];
     currentStep = 'Borrador';
-currentType: any;
+    currentType: any;
+    selectedFileName: any;
+    anios: any;
 
 
     constructor(private _proveedorService: ProveedorService,
+                private _anioService: AnioService,
                 private _paisService: PaisService,
                 private _importadorService: ImportadorService,
                 private cdr: ChangeDetectorRef,
@@ -91,19 +101,29 @@ currentType: any;
             this.importadores = data;
             }
         );
+
+        this._anioService.getAniosActivo().subscribe((data: any[]) => {
+            this.anios = data;
+            }
+        );
       }
       selectFile(event) {
         this.selectedFile = event.target.files[0];
+        this.selectedFileName = event.target.files[0].name;
+
+
       }
 
       openDialog() {
 
         const dialogRef = this.dialog.open(DetalleProductosComponent, {
             width: '600px',
-            height: '400px'
+            height: '420px'
           });
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
+                this.fileUrl= URL.createObjectURL(result.ficha);
+
 
             // Actualiza la tabla "Lista Productos" con los datos recibidos
             this.listaProductos = [...this.listaProductos, result];

@@ -5,12 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { Importacion } from './importacion.model'; // Import the 'User' class from the appropriate file
 import { Observable, of } from 'rxjs'; // Import the 'Observable' class from the appropriate package
 import { Router } from '@angular/router'; // Import Router
-
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports        : [NgIf, NgFor, NgTemplateOutlet, NgClass, AsyncPipe, CurrencyPipe,FormsModule],
+  imports        : [NgIf, NgFor, NgTemplateOutlet, NgClass, AsyncPipe, CurrencyPipe,FormsModule, MatToolbarModule, MatIcon],
   templateUrl: './importacion.component.html',
   styleUrl: './importacion.component.scss'
 })

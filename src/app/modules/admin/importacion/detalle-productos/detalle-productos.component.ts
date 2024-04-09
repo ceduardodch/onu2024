@@ -46,7 +46,8 @@ export class DetalleProductosComponent implements OnInit{
     productoControl = new FormControl();
     sustancias: any[];
     selectedFile: File;
-    form = { producto: '', subpartida: '', cif: '', pao: '', fob: '', kg: ''};
+    form = { producto: '', subpartida: '', cif: '', pao: '', fob: '', kg: '', ficha:''};
+    selectedFileName: any;
 
     constructor(private _sustanciaService: SustanciaService,
         public dialogRef: MatDialogRef<DetalleProductosComponent>
@@ -62,15 +63,29 @@ export class DetalleProductosComponent implements OnInit{
 
     selectFile(event) {
         this.selectedFile = event.target.files[0];
+        this.form.ficha = event.target.files[0];
+        this.selectedFileName = event.target.files[0].name;
+
     }
 
     onSubmit() {
-        // Recoge los datos del formulario
+        if (this.isDataComplete()) {
         const formData = this.form;
         console.log(formData);
-
-        // Cierra el diálogo pasando los datos del formulario
         this.dialogRef.close(formData);
+        }
+    }
+    isDataComplete(): boolean {
+        if (!this.form) {
+            return false;
+        }
+        const requiredFields = ['producto', 'subpartida', 'cif', 'kg', 'fob', 'ficha'];
+        for (const field of requiredFields) {
+            if (!this.form[field]) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
