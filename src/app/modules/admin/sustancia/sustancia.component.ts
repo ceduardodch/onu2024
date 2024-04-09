@@ -12,9 +12,9 @@ import { Sustancia } from './sustancia.model'; // Import the 'User' class from t
 import { SustanciaService } from './sustancia.service';
 
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GruposustService } from '../gruposust/gruposust.service';
 
 @Component({
@@ -24,7 +24,7 @@ import { GruposustService } from '../gruposust/gruposust.service';
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
-    MatFormFieldModule,MatInputModule,MatSelectModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -74,8 +74,12 @@ export class SustanciasComponent implements OnInit{
             }
 
             // Esta función se activa cuando se cambia el estado del checkbox de 'activo'
-            onActivoChange(event: MatCheckboxChange, sustancia: Sustancia): void {
+            onActivoChange(event: MatSlideToggleChange, sustancia: Sustancia): void {
               sustancia.activo = event.checked;
+            }
+
+            onCupoProdChange(event: MatSlideToggleChange, sustancia: Sustancia): void {
+              sustancia.cupo_prod = event.checked;            
             }
 
             addSustancia(): void {
