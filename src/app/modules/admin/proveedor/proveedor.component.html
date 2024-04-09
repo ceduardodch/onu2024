@@ -54,7 +54,7 @@
                         <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
                         <input [(ngModel)]="selectedProveedor.name" placeholder="Nombre" class="flex-1">
                         <mat-form-field class="w-full">                            
-                            <mat-select [(ngModel)]="selectedProveedor.country" (ngModelChange)="onPaisSelected($event)">
+                            <mat-select [(ngModel)]="selectedProveedor.country" name="countrys">
                               <mat-option *ngFor="let country2 of countrys" [value]="country2.name">
                                 {{ country2.name }}
                               </mat-option>

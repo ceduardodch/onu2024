@@ -2,22 +2,29 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink } from '@angular/router';
 import { Importador } from './importador.model'; // Import the 'User' class from the appropriate file
 import { ImportadorService } from './importador.service';
+
+import { UserService } from '../users/user.service';
 
 @Component({
   selector: 'app-importadors',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
-    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable,MatFormField
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
+    RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -39,13 +46,31 @@ export class ImportadorsComponent implements OnInit{
         selectedImportador:  Importador | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
+        usuarios: any[];
+        importadorControl = new FormControl();
 
-        constructor(private _importadorService: ImportadorService) { }
+        constructor(
+          private _importadorService: ImportadorService,
+          private _userService: UserService
+        ) { }
 
         ngOnInit(): void {
 
           this.loadImportadores();
 
+          this._userService.getUsers().subscribe((data: any[]) => {
+            this.usuarios = data;
+          });
+
+          }
+
+          onUserSelected(event: MatAutocompleteSelectedEvent) {
+            if (event?.option?.value) {
+              this.newImportador.user_import = event.option.value;
+            } else {
+              // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
+              console.error('El evento o la opción seleccionada son indefinidos');
+            }
           }
 
           addImportador(): void {
@@ -142,8 +167,8 @@ export class ImportadorsComponent implements OnInit{
               }
             
               this.filteredImportadores.sort((a, b) => {
-                const valueA = a[field].toLowerCase();
-                const valueB = b[field].toLowerCase();
+                const valueA = a[field] ? a[field].toString().toLowerCase() : '';
+                  const valueB = b[field] ? b[field].toString().toLowerCase() : '';
             
                 // Comparar los valores para el ordenamiento
                 if (valueA < valueB) {

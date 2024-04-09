@@ -55,7 +55,7 @@
                         <input [(ngModel)]="selectedCupo.importador" placeholder="Importador" class="flex-1">
                         
                         <mat-form-field class="w-full">                            
-                            <mat-select [(ngModel)]="selectedCupo.anio" (ngModelChange)="onAnioSelected($event)">
+                            <mat-select [(ngModel)]="selectedCupo.anio">
                               <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
                                 {{ anio2.name }}
                               </mat-option>
