@@ -187,8 +187,8 @@ export class SustanciasComponent implements OnInit{
                 }
               
                 this.filteredSustancias.sort((a, b) => {
-                  const valueA = a[field].toLowerCase();
-                  const valueB = b[field].toLowerCase();
+                  const valueA = a[field] ? a[field].toString().toLowerCase() : '';
+                  const valueB = b[field] ? b[field].toString().toLowerCase() : '';
               
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {

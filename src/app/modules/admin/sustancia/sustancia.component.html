@@ -114,17 +114,17 @@
                     matInput
                     [(ngModel)]="newSustancia.grupo_sust"
                     [matAutocomplete]="auto">
-             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onGrupoSelected($event)">
-               <mat-option *ngFor="let grupo of gruposusts" [value]="grupo.name">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onGrupoSelected($event)">
+                <mat-option *ngFor="let grupo of gruposusts" [value]="grupo.name">
                  {{ grupo.name }}
-               </mat-option>
-             </mat-autocomplete>                       
+                </mat-option>
+                </mat-autocomplete>                       
                 </mat-form-field>  
                 <!--input [(ngModel)]="newSustancia.activo" placeholder="Activo"-->
                 
 
-                    <mat-slide-toggle ngModel name="activo" [(ngModel)]="newSustancia.activo"></mat-slide-toggle>
-                    <mat-slide-toggle ngModel name="cupo_prod" [(ngModel)]="newSustancia.cupo_prod"></mat-slide-toggle>
+                    <mat-slide-toggle ngModel name="activo" [(ngModel)]="newSustancia.activo"/>
+                    <mat-slide-toggle ngModel name="cupo_prod" [(ngModel)]="newSustancia.cupo_prod"/>
                 
                 <!--input [(ngModel)]="newSustancia.cupo_prod" placeholder="Cupo"-->
                 

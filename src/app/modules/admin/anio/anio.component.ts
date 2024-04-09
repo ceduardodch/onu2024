@@ -2,11 +2,15 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink } from '@angular/router';
 import { Anio } from './anio.model'; // Import the 'anio' class from the appropriate file
 import { AnioService } from './anio.service';
@@ -16,8 +20,9 @@ import { AnioService } from './anio.service';
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
-    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable,MatFormField
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
+    RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -33,7 +38,7 @@ import { AnioService } from './anio.service';
 export class AniosComponent implements OnInit{
         anios: Anio[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newAnio:Anio = {
-          name: '', activo: ''};
+          name: '', activo: false};
         filteredAnios: Anio[] = [];
         searchTerm: string = '';
         selectedAnio:  Anio | null = null;
@@ -48,11 +53,16 @@ export class AniosComponent implements OnInit{
 
             }
 
+            onActivoChange(event: MatSlideToggleChange, anio: Anio): void {
+              anio.activo = event.checked;
+            }
+
+
             addAnio(): void {
               this._anioService.addAnio(this.newAnio).subscribe({
                 next: () => {
                   this.loadAnios();
-                  this.newAnio = { name: '', activo: ''}; // Restablece el objeto `newAnio`
+                  this.newAnio = { name: '', activo: false}; // Restablece el objeto `newAnio`
                 },
                 error: (error) => {
                   console.error('Error al agregar el país', error);
@@ -125,8 +135,7 @@ export class AniosComponent implements OnInit{
               applyFilter(): void {
                 this.filteredAnios = this.searchTerm
                   ? this.anios.filter(anio =>
-                      anio.name.toLowerCase().includes(this.searchTerm.toLowerCase())  ||                   
-                      anio.activo.toLowerCase().includes(this.searchTerm.toLowerCase())                     
+                      anio.name.toLowerCase().includes(this.searchTerm.toLowerCase())                       
                     )
                   : this.anios;
               }

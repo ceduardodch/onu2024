@@ -53,7 +53,15 @@
                     <div *ngIf="selectedCupo?.id === cupo.id" @fadeOutRight class="flex items-center">
                         <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                         <input [(ngModel)]="selectedCupo.importador" placeholder="Importador" class="flex-1">
-                        <input [(ngModel)]="selectedCupo.anio" placeholder="Año" class="flex-1">
+                        
+                        <mat-form-field class="w-full">                            
+                            <mat-select [(ngModel)]="selectedCupo.anio" (ngModelChange)="onAnioSelected($event)">
+                              <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
+                                {{ anio2.name }}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+
                         <input [(ngModel)]="selectedCupo.hfc" placeholder="HFC" class="flex-1">
                         <input [(ngModel)]="selectedCupo.hcfc" placeholder="HCFC" class="flex-1">
                         <div class="flex items-center col-span-1 space-x-1">
@@ -76,7 +84,18 @@
             <!-- Fila para agregar un nuevo usuario -->
             <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                 <input [(ngModel)]="newCupo.importador" placeholder="Importador">                 
-                <input [(ngModel)]="newCupo.anio" placeholder="Año">    
+                <mat-form-field class="w-full">                    
+                    <input type="text"
+                    placeholder="Año"
+                    matInput
+                    [(ngModel)]="newCupo.anio"
+                    [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAnioSelected($event)">
+                <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
+                 {{ anio2.name }}
+                </mat-option>
+                </mat-autocomplete>                       
+                </mat-form-field>      
                 <input [(ngModel)]="newCupo.hfc" placeholder="HFC">    
                 <input [(ngModel)]="newCupo.hcfc" placeholder="HCFC">       
                 <div>

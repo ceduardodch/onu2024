@@ -30,36 +30,33 @@
             <!-- Rows -->
             <ng-container *ngFor="let anio of filteredAnios; let i = index">
                 <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
-<!-- Solo mostrar campos si no se está editando este país en particular -->
-<ng-container *ngIf="selectedAnio?.id !== anio.id">
-    <div class="truncate">{{ anio.name }}</div>
-    <div class="truncate">
-        <button mat-stroked-button [color]="anio.activo ? 'primary' : 'warn'" (click)="toggleActivo(anio)">
-            {{ anio.activo ? 'Activo' : 'Inactivo' }}
-        </button>
-    </div>
-</ng-container>
-
-<!-- Mostrar checkbox si se está editando este país en particular -->
-<ng-container *ngIf="selectedAnio?.id === anio.id">
-    <div class="truncate">{{ anio.name }}</div>
-    <div class="truncate">
-        <mat-checkbox [(ngModel)]="anio.activo"></mat-checkbox>
-    </div>
-</ng-container>
-                                    <div *ngIf="selectedAnio?.id !== anio.id" class="flex items-center">
+                    <!-- Solo mostrar campos si no se está editando este país en particular -->
+                    <ng-container *ngIf="selectedAnio?.id !== anio.id">
+                    <div class="truncate">{{ anio.name }}</div>
+                    
+                    <div class="flex items-center justify-start col-span-1">
+                        <mat-slide-toggle [(ngModel)]="anio.activo" disabled/>                                              
+                    </div>
+                    
+                    <!-- Mostrar botones solo si no se está editando este país -->
+                    <div *ngIf="selectedAnio?.id !== anio.id" class="flex items-center">
                         <button mat-stroked-button (click)="selectAnioForEdit(anio)" >
                             <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
                             <span>Editar</span>
                         </button>
                     </div>
+                    </ng-container>
                 </div>
                     <!-- Formulario de edición para el país actual -->
 
                     <div *ngIf="selectedAnio?.id === anio.id" @fadeOutRight class="flex items-center">
                         <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
                         <input [(ngModel)]="selectedAnio.name" placeholder="Año" class="flex-1">
-                        <input [(ngModel)]="selectedAnio.activo" placeholder="Activo" class="flex-1">
+
+                        <mat-slide-toggle
+                            [(ngModel)]="selectedAnio.activo"
+                            (change)="onActivoChange($event, selectedAnio)"/>
+
                         <div class="flex items-center col-span-1 space-x-1">
                         <button mat-icon-button (click)="updateAnio(selectedAnio)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>
@@ -80,7 +77,7 @@
             <!-- Fila para agregar un nuevo usuario -->
             <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
                 <input [(ngModel)]="newAnio.name" placeholder="Año">
-                <input [(ngModel)]="newAnio.activo" placeholder="Activo">
+                <mat-slide-toggle ngModel name="activo" [(ngModel)]="newAnio.activo"/>
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
                     <button (click)="addAnio()" mat-stroked-button color="primary">Guardar</button>

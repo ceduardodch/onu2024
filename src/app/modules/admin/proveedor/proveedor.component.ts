@@ -2,22 +2,29 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink } from '@angular/router';
 import { Proveedor } from './proveedor.model'; // Import the 'User' class from the appropriate file
 import { ProveedorService } from './proveedor.service';
+
+import { PaisService } from '../pais/pais.service';
 
 @Component({
   selector: 'app-proveedors',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
-    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable,MatFormField
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
+    RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -33,19 +40,42 @@ import { ProveedorService } from './proveedor.service';
 export class ProveedorsComponent implements OnInit{
         proveedors: Proveedor[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newProveedor:Proveedor = {
-          name: '', country: '', activo: ''};
+          name: '', country: '', activo: false};
         filteredProveedors: Proveedor[] = [];
         searchTerm: string = '';
         selectedProveedor:  Proveedor | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
+        countrys: any[];
+        importadorControl = new FormControl();
 
-        constructor(private _proveedorService: ProveedorService) { }
+        constructor(
+          private _proveedorService: ProveedorService,
+          private _paisService: PaisService
+        ) { }
 
         ngOnInit(): void {
 
           this.loadProveedors();
 
+          this._paisService.getPaises().subscribe((data: any[]) => {
+            this.countrys = data;
+          });
+
+            }
+
+            onPaisSelected(event: MatAutocompleteSelectedEvent) {
+              if (event?.option?.value) {
+                this.newProveedor.country = event.option.value;
+              } else {
+                // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
+                console.error('El evento o la opción seleccionada son indefinidos');
+              }
+            }
+
+            // Esta función se activa cuando se cambia el estado del checkbox de 'activo'
+            onActivoChange(event: MatSlideToggleChange, proveedor: Proveedor): void {
+              proveedor.activo = event.checked;
             }
 
             addProveedor(): void {
@@ -53,7 +83,7 @@ export class ProveedorsComponent implements OnInit{
                 next: () => {
                   this.loadProveedors();
                   this.newProveedor = { 
-                    name: '', country: '',activo:''}; 
+                    name: '', country: '',activo: false}; 
                     // Restablece el objeto `newProveedor`
                 },
                 error: (error) => {
@@ -128,8 +158,7 @@ export class ProveedorsComponent implements OnInit{
                 this.filteredProveedors = this.searchTerm
                   ? this.proveedors.filter(proveedor =>
                       proveedor.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                      proveedor.country.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                      proveedor.activo.toLowerCase().includes(this.searchTerm.toLowerCase())
+                      proveedor.country.toLowerCase().includes(this.searchTerm.toLowerCase())                       
                     )
                   : this.proveedors;
               }
@@ -144,8 +173,8 @@ export class ProveedorsComponent implements OnInit{
                 }
               
                 this.filteredProveedors.sort((a, b) => {
-                  const valueA = a[field].toLowerCase();
-                  const valueB = b[field].toLowerCase();
+                  const valueA = a[field] ? a[field].toString().toLowerCase() : '';
+                  const valueB = b[field] ? b[field].toString().toLowerCase() : '';
               
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {

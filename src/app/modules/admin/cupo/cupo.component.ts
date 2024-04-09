@@ -2,22 +2,29 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { Cupo } from './cupo.model'; // Import the 'cupo' class from the appropriate file
 import { CupoService } from './cupo.service';
+
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { AnioService } from '../anio/anio.service';
 
 @Component({
   selector: 'app-cupoes',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
-    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable,MatFormField
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule, 
+    RouterLink, MatButtonModule, CdkScrollable,MatFormField,MatFormFieldModule,
+    MatInputModule,MatSelectModule,MatSlideToggleModule,ReactiveFormsModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -40,12 +47,31 @@ export class CuposComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        constructor(private _cupoService: CupoService) { }
+        anios: any[];
+        importadorControl = new FormControl();
+
+        constructor(
+          private _cupoService: CupoService,
+          private _anioService: AnioService
+        ) { }
 
             ngOnInit(): void {
 
             this.loadCupos();
 
+            this._anioService.getAnios().subscribe((data: any[]) => {
+              this.anios = data;
+            });
+
+            }
+
+            onAnioSelected(event: MatAutocompleteSelectedEvent) {
+              if (event?.option?.value) {
+                this.newCupo.anio = event.option.value;
+              } else {
+                // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
+                console.error('El evento o la opción seleccionada son indefinidos');
+              }
             }
 
             addCupo(): void {
@@ -143,8 +169,8 @@ export class CuposComponent implements OnInit{
                 }
               
                 this.filteredCupos.sort((a, b) => {
-                  const valueA = a[field].toLowerCase();
-                  const valueB = b[field].toLowerCase();
+                  const valueA = a[field] ? a[field].toString().toLowerCase() : '';
+                  const valueB = b[field] ? b[field].toString().toLowerCase() : '';
               
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {
