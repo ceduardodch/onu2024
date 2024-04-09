@@ -8,11 +8,11 @@ import { MatDivider } from '@angular/material/divider';
 import { MatFormField } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { Grupo_sust } from './grupo-sust.model'; // Import the 'grupo_sust' class from the appropriate file
-import { Grupo_sustService } from './grupo-sust.service';
+import { Gruposust } from './gruposust.model'; // Import the 'gruposust' class from the appropriate file
+import { GruposustService } from './gruposust.service';
 
 @Component({
-  selector: 'app-grupo_susts',
+  selector: 'app-gruposusts',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
@@ -27,67 +27,67 @@ import { Grupo_sustService } from './grupo-sust.service';
       ])
     ])
   ],
-  templateUrl: './grupo-sust.component.html',
-  styleUrls: ['./grupo-sust.component.scss']
+  templateUrl: './gruposust.component.html',
+  styleUrls: ['./gruposust.component.scss']
 })
-export class Grupo_sustComponent implements OnInit{
-        grupo_susts: Grupo_sust[] = []; // Cambiado a array regular para manejar la lista de usuarios
-        newGrupo_sust:Grupo_sust = {
+export class GruposustComponent implements OnInit{
+        gruposusts: Gruposust[] = []; // Cambiado a array regular para manejar la lista de usuarios
+        newGruposust:Gruposust = {
           name: '', activo: ''};
-        filteredGrupo_susts: Grupo_sust[] = [];
+        filteredGruposusts: Gruposust[] = [];
         searchTerm: string = '';
-        selectedGrupo_sust:  Grupo_sust | null = null;
+        selectedGruposust:  Gruposust | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
 
-        constructor(private _grupo_sustService: Grupo_sustService) { }
+        constructor(private _gruposustService: GruposustService) { }
 
             ngOnInit(): void {
 
-            this.loadGrupo_susts();
+            this.loadGruposusts();
 
             }
 
-            addGrupo_sust(): void {
-              this._grupo_sustService.addGrupo_sust(this.newGrupo_sust).subscribe({
+            addGruposust(): void {
+              this._gruposustService.addGruposust(this.newGruposust).subscribe({
                 next: () => {
-                  this.loadGrupo_susts();
-                  this.newGrupo_sust = { name: '', activo: ''}; // Restablece el objeto `newGrupo_sust`
+                  this.loadGruposusts();
+                  this.newGruposust = { name: '', activo: ''}; // Restablece el objeto `newGruposust`
                 },
                 error: (error) => {
-                  console.error('Error al agregar el país', error);
+                  console.error('Error al agregar el grupo', error);
                 }
               });
             }
 
-              selectGrupo_sustForEdit(grupo_sust: Grupo_sust): void {
-                this.selectedGrupo_sust = { ...grupo_sust };               
+              selectGruposustForEdit(gruposust: Gruposust): void {
+                this.selectedGruposust = { ...gruposust };               
               }
             
-              updateGrupo_sust(updatedGrupo_sust: Grupo_sust): void {
+              updateGruposust(updatedGruposust: Gruposust): void {
                 
-                if (!updatedGrupo_sust.id) {
-                  console.error('Error al actualizar: ID de país no proporcionado');
+                if (!updatedGruposust.id) {
+                  console.error('Error al actualizar: ID de grupo no proporcionado');
                   return;
                 }
-                this._grupo_sustService.updateGrupo_sust(updatedGrupo_sust.id, updatedGrupo_sust).subscribe({
+                this._gruposustService.updateGruposust(updatedGruposust.id, updatedGruposust).subscribe({
                   next: (response) => {
-                    // Actualizar la lista de países en el frontend
-                    const index = this.grupo_susts.findIndex(grupo_sust => grupo_sust.id === updatedGrupo_sust.id);
+                    // Actualizar la lista de grupo en el frontend
+                    const index = this.gruposusts.findIndex(gruposust => gruposust.id === updatedGruposust.id);
                     if (index !== -1) {
-                      this.grupo_susts[index] = updatedGrupo_sust;
+                      this.gruposusts[index] = updatedGruposust;
                     }
                     console.log('Grupo actualizado:', response);
-                    this.selectedGrupo_sust = null; // Resetea la selección para cerrar el formulario de edición
+                    this.selectedGruposust = null; // Resetea la selección para cerrar el formulario de edición
                   },
                   error: (error) => {
-                    console.error('Error al actualizar el país', error);
+                    console.error('Error al actualizar el grupo', error);
                   }
                 });
               }
 
-              deleteGrupo_sust(grupo_sustId: number): void {
-                if (!grupo_sustId) {
+              deleteGruposust(gruposustId: number): void {
+                if (!gruposustId) {
                   console.error('Error al eliminar: ID de grupo no proporcionado');
                   return;
                 }
@@ -97,25 +97,25 @@ export class Grupo_sustComponent implements OnInit{
                   return;
                 }
               
-                this._grupo_sustService.deleteGrupo_sust(grupo_sustId).subscribe({
+                this._gruposustService.deleteGruposust(gruposustId).subscribe({
                   next: () => {
-                    // Eliminar el país de la lista en el frontend
-                    this.loadGrupo_susts();
-                    this.grupo_susts = this.grupo_susts.filter(grupo_sust => grupo_sust.id !== grupo_sustId);
+                    // Eliminar el grupo de la lista en el frontend
+                    this.loadGruposusts();
+                    this.gruposusts = this.gruposusts.filter(gruposust => gruposust.id !== gruposustId);
                     console.log('Grupo eliminado con éxito');
-                    this.selectedGrupo_sust = null; // Resetea la selección si se estaba editando el país eliminado
+                    this.selectedGruposust = null; // Resetea la selección si se estaba editando el grupo eliminado
                   },
                   error: (error) => {
-                    console.error('Error al eliminar el país', error);
+                    console.error('Error al eliminar el grupo', error);
                   }
                 });
               }             
 
-              loadGrupo_susts(): void {
-                this._grupo_sustService.getGrupo_susts().subscribe({
+              loadGruposusts(): void {
+                this._gruposustService.getGruposusts().subscribe({
                   next: (data) => {
-                    this.grupo_susts = data;
-                    this.filteredGrupo_susts = data;
+                    this.gruposusts = data;
+                    this.filteredGruposusts = data;
                     this.applyFilter();
                   },
                   error: (error) => console.error(error)
@@ -123,12 +123,12 @@ export class Grupo_sustComponent implements OnInit{
               }
 
               applyFilter(): void {
-                this.filteredGrupo_susts = this.searchTerm
-                  ? this.grupo_susts.filter(grupo_sust =>
-                      grupo_sust.name.toLowerCase().includes(this.searchTerm.toLowerCase())  ||                   
-                      grupo_sust.activo.toLowerCase().includes(this.searchTerm.toLowerCase())                     
+                this.filteredGruposusts = this.searchTerm
+                  ? this.gruposusts.filter(gruposust =>
+                      gruposust.name.toLowerCase().includes(this.searchTerm.toLowerCase())  ||                   
+                      gruposust.activo.toLowerCase().includes(this.searchTerm.toLowerCase())                     
                     )
-                  : this.grupo_susts;
+                  : this.gruposusts;
               }
             
               orderBy(field: string): void {
@@ -140,7 +140,7 @@ export class Grupo_sustComponent implements OnInit{
                   this.currentField = field;
                 }
               
-                this.filteredGrupo_susts.sort((a, b) => {
+                this.filteredGruposusts.sort((a, b) => {
                   const valueA = a[field] ? a[field].toString().toLowerCase() : '';
                   const valueB = b[field] ? b[field].toString().toLowerCase() : '';
               
@@ -155,7 +155,7 @@ export class Grupo_sustComponent implements OnInit{
                 });
               }
               cancelEdit(): void {
-                this.selectedGrupo_sust = null;
+                this.selectedGruposust = null;
                 this.searchTerm = '';
                 this.applyFilter();
               }

@@ -20,24 +20,24 @@
         class="flex-auto -mt-16 p-6 sm:p-10 rounded-t-2xl shadow overflow-y-auto bg-card"
         cdkScrollable>
         <div class="h-400 min-h-400 max-h-400 border-2 border-dashed border-gray-300 rounded-2xl">
-        <ng-container *ngIf="(grupo_susts ) as grupo_susts">
+        <ng-container *ngIf="(gruposusts ) as gruposusts">
             <div class="grid grid-cols-3 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
-                <div [mat-sort-header]="'name'" (click)="orderBy('name')">Año</div>
+                <div [mat-sort-header]="'name'" (click)="orderBy('name')">Nombre</div>
                 <div [mat-sort-header]="'activo'" (click)="orderBy('activo')">Activo</div>
 
                 <div>Acciones</div> <!-- Columna para acciones -->                
             </div>            
             <!-- Rows -->            
-            <ng-container *ngFor="let grupo_sust of filteredAnios; let i = index">
+            <ng-container *ngFor="let gruposust of filteredGruposusts; let i = index">
                 <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
-                    <ng-container *ngIf="selectedGrupo_sust?.id !== grupo_sust.id">
-                    <div class="truncate">{{ grupo_sust.name }}</div>
-                    <div class="truncate">{{ grupo_sust.activo }}</div>
+                    <ng-container *ngIf="selectedGruposust?.id !== gruposust.id">
+                    <div class="truncate">{{ gruposust.name }}</div>
+                    <div class="truncate">{{ gruposust.activo }}</div>
                     
                     <!-- Mostrar botones solo si no se está editando este país -->
-                    <div *ngIf="selectedGrupo_sust?.id !== grupo_sust.id" class="flex items-center">
-                        <button mat-stroked-button (click)="selectGrupo_sustForEdit(grupo_sust)" >
+                    <div *ngIf="selectedGruposust?.id !== gruposust.id" class="flex items-center">
+                        <button mat-stroked-button (click)="selectGruposustForEdit(gruposust)" >
                             <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
                             <span>Editar</span>
                         </button>                        
@@ -46,18 +46,18 @@
                 </div>
                     <!-- Formulario de edición para el país actual -->
                     
-                    <div *ngIf="selectedGrupo_sust?.id === grupo_sust.id" @fadeOutRight class="flex items-center">
+                    <div *ngIf="selectedGruposust?.id === gruposust.id" @fadeOutRight class="flex items-center">
                         <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                        <input [(ngModel)]="selectedGrupo_sust.name" placeholder="Año" class="flex-1">
-                        <input [(ngModel)]="selectedGrupo_sust.activo" placeholder="Activo" class="flex-1">
+                        <input [(ngModel)]="selectedGruposust.name" placeholder="Nombre" class="flex-1">
+                        <input [(ngModel)]="selectedGruposust.activo" placeholder="Activo" class="flex-1">
                         <div class="flex items-center col-span-1 space-x-1">
-                        <button mat-icon-button (click)="updateGrupo_sust(selectedGrupo_sust)" color="primary">
+                        <button mat-icon-button (click)="updateGruposust(selectedGruposust)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
                         </button>
                         <button mat-icon-button (click)="cancelEdit()" color="accent">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:x-circle'"></mat-icon>                            
                         </button>
-                        <button mat-icon-button (click)="deleteGrupo_sust(grupo_sust.id)" color="warn">
+                        <button mat-icon-button (click)="deleteGruposust(gruposust.id)" color="warn">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon> 
                             
                         </button>
@@ -69,11 +69,11 @@
         <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
             <div class="grid grid-cols-3 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <input [(ngModel)]="newGrupo_sust.name" placeholder="Año">   
-                <input [(ngModel)]="newGrupo_sust.activo" placeholder="Activo">                    
+                <input [(ngModel)]="newGruposust.name" placeholder="Nombre">   
+                <input [(ngModel)]="newGruposust.activo" placeholder="Activo">                    
                 <div>
                     <!-- Botón para guardar el nuevo usuario -->
-                    <button (click)="addGrupo_sust()" mat-stroked-button color="primary">Guardar</button>
+                    <button (click)="addGruposust()" mat-stroked-button color="primary">Guardar</button>
                 </div>
             </div>
             

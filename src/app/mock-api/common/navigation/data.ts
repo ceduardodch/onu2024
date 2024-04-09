@@ -59,11 +59,11 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link : '/importadors'
     },
     {
-        id   : 'grupo_sust',
+        id   : 'gruposusts',
         title: 'Grupo Sustancias',
         type : 'basic',
         icon : 'heroicons_outline:user',
-        link : '/grupo_susts'
+        link : '/gruposusts'
     },
     {
         id   : 'inventorys',

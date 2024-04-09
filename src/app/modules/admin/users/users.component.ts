@@ -33,7 +33,7 @@ import { UserService } from './user.service';
 export class UsersComponent implements OnInit{
         users: User[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newUser:User = {
-          name: '', email: '',password:'', phone: '', company: '', address: ''};
+          name: '', email: '',password: '', phone: '', company: '', address: ''};
         filteredUsers: User[] = [];
         searchTerm: string = '';
         selectedUser:  User | null = null;
@@ -125,11 +125,11 @@ export class UsersComponent implements OnInit{
 
               applyFilter(): void {
                 this.filteredUsers = this.searchTerm
-                  ? this.users.filter(proveedor =>
-                      proveedor.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                      proveedor.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                      proveedor.phone.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                      proveedor.company.toLowerCase().includes(this.searchTerm.toLowerCase())
+                  ? this.users.filter(user =>
+                      user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      user.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      user.phone.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                      user.company.toLowerCase().includes(this.searchTerm.toLowerCase())
                     )
                   : this.users;
               }

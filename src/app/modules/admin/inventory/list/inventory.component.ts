@@ -1,6 +1,6 @@
 import { AsyncPipe, CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -22,9 +22,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { fuseAnimations } from '@fuse/animations';
 
-import { ImportadorService } from '../../importador/importador.service';
-import { PaisService } from '../../pais/pais.service';
-import { ProveedorService } from '../../proveedor/proveedor.service';
+import { GruposustService } from '../../gruposust/gruposust.service';
 
 @Component({
     selector       : 'inventory-list',
@@ -54,12 +52,10 @@ import { ProveedorService } from '../../proveedor/proveedor.service';
     animations     : fuseAnimations,
     standalone     : true,
     imports        : [
-        MatFormFieldModule, MatInputModule, MatDatepickerModule, MatButtonModule,
-        MatButtonModule,
+        MatFormFieldModule, MatInputModule, MatDatepickerModule,
         CommonModule,MatDividerModule,NgIf,
         MatRadioModule, MatProgressBarModule,
-        MatFormFieldModule, MatIconModule,
-        MatInputModule, FormsModule, MatTableModule,
+        MatIconModule, FormsModule, MatTableModule,
         ReactiveFormsModule, MatButtonModule,
         MatSortModule, NgFor, NgTemplateOutlet,MatTooltipModule,
         MatPaginatorModule, NgClass, MatSlideToggleModule,MatToolbarModule,
@@ -70,22 +66,21 @@ import { ProveedorService } from '../../proveedor/proveedor.service';
 export class InventoryListComponent implements OnInit
 {    
     selectedButton: string = '';
-    proveedores: any[];
-    paises: any[];
-    importadores: any[];
-    
-    displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq'];
-    displayedColumnsFT: string[] = ['nombre', 'ficha'];
+    gruposusts: any[];
+
+    importadorControl = new FormControl();
+    displayedColumns: string[] = ['Nombre', 'Subpartida', 'PAO', 'PCG', 'Activo','Cupo/prod'];
+    //displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
     selectedFile: File;
     dataSource: any[];
+    displayedColumnsFT: string[] = ['nombre', 'ficha'];
 
     /**
      * Constructor
      */
-    constructor(private _proveedorService: ProveedorService,
-        private _paisService: PaisService,
-        private _importadorService: ImportadorService,
+    constructor(
+        private _gruposustService: GruposustService,
         private cdr: ChangeDetectorRef,
         ) { }
         
@@ -95,17 +90,9 @@ export class InventoryListComponent implements OnInit
             });
           }
 ngOnInit(): void {
-this._proveedorService.getProveedors().subscribe((data: any[]) => {
-  this.proveedores = data;
+this._gruposustService.getGruposusts().subscribe((data: any[]) => {
+  this.gruposusts = data;
 });
-this._paisService.getPaises().subscribe((data: any[]) => {
-    this.paises = data;
-    }
-);
-this._importadorService.getImportadors().subscribe((data: any[]) => {
-    this.importadores = data;
-    }
-);
 }
 selectFile(event) {
 this.selectedFile = event.target.files[0];
