@@ -42,50 +42,77 @@ import { MatDialog,MatDialogRef, MatDialogConfig } from '@angular/material/dialo
 templateUrl: './detalle-productos.component.html',
   styleUrl: './detalle-productos.component.scss'
 })
-export class DetalleProductosComponent implements OnInit{
-    productoControl = new FormControl();
-    sustancias: any[];
-    selectedFile: File;
-    form = { producto: '', subpartida: '', cif: '', pao: '', fob: '', kg: '', ficha:''};
-    selectedFileName: any;
 
-    constructor(private _sustanciaService: SustanciaService,
+export class DetalleProductosComponent implements OnInit {
+    form: FormGroup;
+    selectedFile: File;
+    selectedFileName: string;
+    sustancias: any[];
+
+    constructor(
+        private _sustanciaService: SustanciaService,
         public dialogRef: MatDialogRef<DetalleProductosComponent>
-        ) { }
+    ) {
+        this.form = new FormGroup({
+            producto: new FormControl('', Validators.required),
+            subpartida: new FormControl('', Validators.required),
+            grupo: new FormControl('', Validators.required),
+            paoSustancia: new FormControl('', Validators.required),
+            cif: new FormControl('', Validators.required),
+            kg: new FormControl('', Validators.required),
+            fob: new FormControl('', Validators.required),
+            pao: new FormControl(''),
+            ficha: new FormControl('')
+        });
+    }
 
     ngOnInit(): void {
         this._sustanciaService.getSustancias().subscribe((data) => {
-        this.sustancias = data;
-      });
-
-
+            this.sustancias = data;
+        });
     }
 
-    selectFile(event) {
-        this.selectedFile = event.target.files[0];
-        this.form.ficha = event.target.files[0];
-        this.selectedFileName = event.target.files[0].name;
+    onProductSelected(sustancia) {
+        this.form.patchValue({
+            producto: sustancia.name,
+            subpartida: sustancia.subpartida,
+            grupo: sustancia.grupo_sust,
+            paoSustancia: sustancia.pao,
 
+        });
     }
 
-    onSubmit() {
-        if (this.isDataComplete()) {
-        const formData = this.form;
-        console.log(formData);
-        this.dialogRef.close(formData);
+    selectFile(event: MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const fileInput: HTMLElement = document.querySelector('#fileInput');
+        fileInput.click();
+        const file = (event.target as HTMLInputElement).files[0];
+        if (file) {
+            this.selectedFile = file;
+            this.form.patchValue({ ficha: file });
+            this.selectedFileName = file.name;
         }
+    }
+
+    onKgChange(value: string) {
+        const result = Number(value) * this.form.value.paoSustancia;
+
+        this.form.patchValue({ pao: result });
+    }
+    onSubmit() {
+        console.log(this.form.value);
+        if (this.isDataComplete()) {
+
+            const formData = this.form.value;
+            console.log(formData);
+            this.dialogRef.close(formData);
+
+    }
     }
     isDataComplete(): boolean {
-        if (!this.form) {
-            return false;
-        }
-        const requiredFields = ['producto', 'subpartida', 'cif', 'kg', 'fob', 'ficha'];
-        for (const field of requiredFields) {
-            if (!this.form[field]) {
-                return false;
-            }
-        }
-        return true;
-    }
+        return this.form.valid;
 
+    }
 }

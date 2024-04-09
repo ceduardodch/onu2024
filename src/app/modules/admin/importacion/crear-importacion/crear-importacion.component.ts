@@ -29,6 +29,7 @@ import { DetalleProductosComponent } from '../detalle-productos/detalle-producto
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AnioService } from '../../anio/anio.service';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { CupoService } from '../../cupo/cupo.service';
 @Component({
   selector: 'app-crear-importacion',
   standalone: true,
@@ -65,6 +66,10 @@ export class CrearImportacionComponent implements OnInit {
     fileUrl: string;
     fechaAutorizacion: Date = new Date();
     fechaSolicitud: Date;
+    cupoAsignado: 0.00;
+    cupoRestante:0.00;
+    totalSolicitud: 0.00;
+    totalPesoKg: Number= 0.00;
 
 
     nroSolicitudVUE = new FormControl('', [
@@ -75,37 +80,48 @@ export class CrearImportacionComponent implements OnInit {
     currentStep = 'Borrador';
     currentType: any;
     selectedFileName: any;
-    anios: any;
-
+    anios = [];
+    cupos = [];
 
     constructor(private _proveedorService: ProveedorService,
                 private _anioService: AnioService,
                 private _paisService: PaisService,
                 private _importadorService: ImportadorService,
+                private _cupoService: CupoService,
                 private cdr: ChangeDetectorRef,
-                public dialog: MatDialog) { }
+                                public dialog: MatDialog) { }
+
+
                 ngAfterViewInit() {
                     Promise.resolve().then(() => {
                       this.cdr.detectChanges();
                     });
                   }
     ngOnInit(): void {
-        this._proveedorService.getProveedors().subscribe((data: any[]) => {
-          this.proveedores = data;
+        this.loadData().then(() => {
         });
-        this._paisService.getPaises().subscribe((data: any[]) => {
-            this.paises = data;
-            }
-        );
-        this._importadorService.getImportadors().subscribe((data: any[]) => {
-            this.importadores = data;
-            }
-        );
 
-        this._anioService.getAniosActivo().subscribe((data: any[]) => {
-            this.anios = data;
-            }
-        );
+      }
+
+      async loadData() {
+        this._proveedorService.getProveedors().subscribe((data: any[]) => {
+            this.proveedores = data;
+          });
+          this._paisService.getPaises().subscribe((data: any[]) => {
+              this.paises = data;
+              }
+          );
+          this._importadorService.getImportadors().subscribe((data: any[]) => {
+              this.importadores = data;
+              }
+          );
+
+          this._anioService.getAniosActivo().subscribe((data: any[]) => {
+              this.anios = data;
+              }
+          );
+
+
       }
       selectFile(event) {
         this.selectedFile = event.target.files[0];
@@ -113,7 +129,30 @@ export class CrearImportacionComponent implements OnInit {
 
 
       }
+      onImportadorSelected(event) {
+        this._cupoService.getCuposByName(event).subscribe((data: any[]) => {
+            this.cupos = data;
+            console.log(this.cupos);
+            this.calculoResumen(this.cupos[0].hfc);
 
+            }
+        );
+    }
+    calculoResumen(cupo) {
+        let totalCIF = 0.00;
+        let totalKg = 0.00;
+        let totalFOB = 0.00;
+        let totalPAO = 0.00;
+        this.listaProductos.forEach((element) => {
+            totalCIF += element.cif;
+            totalKg += element.kg;
+            totalFOB += element.fob;
+            totalPAO += element.pao;
+        });
+        this.cupoAsignado = cupo;
+        this.totalPesoKg = totalPAO;
+
+    }
       openDialog() {
 
         const dialogRef = this.dialog.open(DetalleProductosComponent, {

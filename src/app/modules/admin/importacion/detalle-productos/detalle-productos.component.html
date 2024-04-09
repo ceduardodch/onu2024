@@ -1,53 +1,50 @@
 <div class="popup-container">
-
-<form (ngSubmit)="onSubmit()" class="contents flex-wrap mt-0 px-0 pt-5 shadow-none overflow-scroll">
-    <div class="flex w-full">
-        <mat-form-field class="px-5 w-1/2">
-            <mat-label>Producto</mat-label>
-            <input [(ngModel)]="form.producto" type="text" matInput [formControl]="productoControl" [matAutocomplete]="auto">
-            <mat-autocomplete #auto="matAutocomplete">
-                <mat-option *ngFor="let sustancia of sustancias" [value]="sustancia.name">
-                    {{sustancia.name}}
-                </mat-option>
-            </mat-autocomplete>
-            <button mat-icon-button color="primary">
-                <mat-icon>search</mat-icon>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="contents flex-wrap mt-0 px-0 pt-5 shadow-none overflow-scroll">
+        <div class="flex w-full">
+            <mat-form-field class="px-5 w-1/2">
+                <mat-label>Producto</mat-label>
+                <input type="text" matInput formControlName="producto" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProductSelected($event.option.value)">
+                    <mat-option *ngFor="let sustancia of sustancias" [value]="sustancia">
+                        {{sustancia.name}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <div class="px-5 w-1/2">
+                <p class="font-bold">Subpartida</p>
+                <input type="text" formControlName="subpartida" readonly>
+            </div>
+        </div>
+        <div class="flex w-full">
+            <mat-form-field class="px-5 w-1/2">
+                <mat-label>Valor CIF</mat-label>
+                <input type="number" matInput formControlName="cif">
+            </mat-form-field>
+            <mat-form-field class="px-5 w-1/2">
+                <mat-label>Peso Kg</mat-label>
+                <input type="number" matInput formControlName="kg"  (input)="onKgChange($event.target.value)">
+            </mat-form-field>
+        </div>
+        <div class="flex w-full">
+            <mat-form-field class="px-5 w-1/2">
+                <mat-label>Valor Fob</mat-label>
+                <input type="number" matInput formControlName="fob"  >
+                        </mat-form-field>
+            <div class="px-5 w-1/2">
+                <p class="font-bold">Peso Kg PAO</p>
+                <input type="number" formControlName="pao" readonly>
+            </div>
+        </div>
+        <div class="flex w-full">
+            <button type="button" class="px-5" mat-icon-button color="primary" (click)="selectFile($event)">
+                <mat-icon>cloud_upload</mat-icon>
             </button>
-        </mat-form-field>
-        <div class="px-5 w-1/2">
-            <p class="font-bold">Subpartida</p>
-            <input [(ngModel)]="form.subpartida" [formControl]="productoControl">
-                </div>
-    </div>
-    <div class="flex w-full">
-        <mat-form-field class="px-5 w-1/2">
-            <mat-label>Valor CIF</mat-label>
-            <input [(ngModel)]="form.cif"  [formControl]="productoControl"  type="text" matInput>
-        </mat-form-field>
-        <mat-form-field class="px-5 w-1/2">
-            <mat-label>Peso Kg</mat-label>
-            <input [(ngModel)]="form.kg"  type="text"  [formControl]="productoControl" matInput>
-        </mat-form-field>
-    </div>
-    <div class="flex w-full">
-        <mat-form-field class="px-5 w-1/2">
-            <mat-label>Valor Fob</mat-label>
-            <input [(ngModel)]="form.fob" [formControl]="productoControl" type="text" matInput>
-        </mat-form-field>
-        <div class="px-5 w-1/2">
-            <p class="font-bold">Peso Kg PAO</p>
-            <input [(ngModel)]="form.pao" [formControl]="productoControl">        </div>
-    </div>
-    <input type="file" #fileInput (change)="selectFile($event)" style="display: none">
-    <mat-label class="px-5 w-1/2">Ficha Técnica</mat-label>
+            <input type="file" id="fileInput" (change)="selectFile($event)" style="display: none">
 
-    <button class="px-5" mat-icon-button color="primary" (click)="fileInput.click()">
-        <mat-icon>cloud_upload</mat-icon>
-    </button>
-    <p *ngIf="selectedFileName" class="px-5 filename">{{selectedFileName}}</p>
-    <button type="submit" class="px-5 save-button" mat-raised-button color="primary">
-        Guardar
-    </button>
-</form>
-
+            <p *ngIf="selectedFileName" class="px-5 filename">{{selectedFileName}}</p>
+        </div>
+        <button type="submit" class="px-5 save-button" mat-raised-button color="primary">
+            Guardar
+        </button>
+    </form>
 </div>
