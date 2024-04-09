@@ -52,7 +52,13 @@
                     
                     <div *ngIf="selectedCupo?.id === cupo.id" @fadeOutRight class="flex items-center">
                         <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                        <input [(ngModel)]="selectedCupo.importador" placeholder="Importador" class="flex-1">
+                            <mat-form-field class="w-full">                            
+                                <mat-select [(ngModel)]="selectedCupo.importador">
+                                  <mat-option *ngFor="let import2 of importadors" [value]="import2.name">
+                                    {{ import2.name }}
+                                  </mat-option>
+                                </mat-select>
+                              </mat-form-field>
                         
                         <mat-form-field class="w-full">                            
                             <mat-select [(ngModel)]="selectedCupo.anio">
@@ -83,19 +89,31 @@
         <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
             <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <input [(ngModel)]="newCupo.importador" placeholder="Importador">                 
                 <mat-form-field class="w-full">                    
                     <input type="text"
-                    placeholder="Año"
-                    matInput
-                    [(ngModel)]="newCupo.anio"
-                    [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAnioSelected($event)">
-                <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
-                 {{ anio2.name }}
-                </mat-option>
-                </mat-autocomplete>                       
-                </mat-form-field>      
+                           placeholder="Importador"
+                           matInput
+                           [(ngModel)]="newCupo.importador"
+                           [matAutocomplete]="autoImportador">
+                    <mat-autocomplete #autoImportador="matAutocomplete" (optionSelected)="onImportSelected($event)">
+                      <mat-option *ngFor="let import2 of importadors" [value]="import2.name">
+                        {{ import2.name }}
+                      </mat-option>
+                    </mat-autocomplete>                       
+                  </mat-form-field>
+                  
+                  <mat-form-field class="w-full">                    
+                    <input type="text"
+                           placeholder="Año"
+                           matInput
+                           [(ngModel)]="newCupo.anio"
+                           [matAutocomplete]="autoAnio">
+                    <mat-autocomplete #autoAnio="matAutocomplete" (optionSelected)="onAnioSelected($event)">
+                      <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
+                        {{ anio2.name }}
+                      </mat-option>
+                    </mat-autocomplete>                       
+                  </mat-form-field>     
                 <input [(ngModel)]="newCupo.hfc" placeholder="HFC">    
                 <input [(ngModel)]="newCupo.hcfc" placeholder="HCFC">       
                 <div>

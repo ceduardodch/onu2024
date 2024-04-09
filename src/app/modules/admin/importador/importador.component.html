@@ -21,23 +21,25 @@
         cdkScrollable>    
         <div class="h-400 min-h-400 max-h-400 border-2 border-dashed border-gray-300 rounded-2xl">
         <ng-container *ngIf="(importadors ) as importadors">
-            <div class="grid grid-cols-4 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
+            <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
                 <div [mat-sort-header]="'name'" (click)="orderBy('name')">Nombre</div>
                 <div [mat-sort-header]="'ruc'" (click)="orderBy('ruc')">RUC</div>
+                <div [mat-sort-header]="'phone'" (click)="orderBy('phone')">Teléfono</div>
                 <div [mat-sort-header]="'user_import'" (click)="orderBy('user_import')">Usuario Importador</div>
                 
                 <div>Acciones</div> <!-- Columna para acciones -->
             </div>
             <!-- Rows -->
             <ng-container *ngFor="let importador of filteredImportadores; let i = index">
-                <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <ng-container *ngIf="selectedImportador?.id !== importador.id">
-                        <div class="truncate">{{ importador.name }}</div>
-                        <div class="truncate">{{ importador.ruc }}</div>
-                        <div class="truncate">{{ importador.user_import }}</div>
+                        <div class="col-span-1">{{ importador.name }}</div>
+                        <div class="col-span-1">{{ importador.ruc }}</div>
+                        <div class="col-span-1">{{ importador.phone }}</div>
+                        <div class="col-span-1">{{ importador.user_import }}</div>
 
                     <!-- Mostrar botones solo si no se está editando este país -->
-                    <div *ngIf="selectedImportador?.id !== importador.id" class="flex items-center">
+                    <div *ngIf="selectedImportador?.id !== importador.id" class="col-span-1 flex items-center">
                         <button mat-stroked-button (click)="selectImportadorForEdit(importador)" >
                             <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
                             <span>Editar</span>
@@ -48,11 +50,12 @@
                     <!-- Formulario de edición para el país actual -->
                     
                     <div *ngIf="selectedImportador?.id === importador.id" @fadeOutRight class="flex items-center">
-                        <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                        <input [(ngModel)]="selectedImportador.name" placeholder="Importador" class="flex-1">
-                        <input [(ngModel)]="selectedImportador.ruc" placeholder="RUC" class="flex-1">
+                        <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                        <input [(ngModel)]="selectedImportador.name" placeholder="Importador" class="col-span-1">
+                        <input [(ngModel)]="selectedImportador.ruc" placeholder="RUC" class="col-span-1">
+                        <input [(ngModel)]="selectedImportador.phone" placeholder="Teléfono" class="col-span-1">
 
-                        <mat-form-field class="w-full">                            
+                        <mat-form-field class="w-full col-span-1">                            
                             <mat-select [(ngModel)]="selectedImportador.user_import">
                               <mat-option *ngFor="let usuario of usuarios" [value]="usuario.name">
                                 {{ usuario.name }}
@@ -60,7 +63,7 @@
                             </mat-select>
                         </mat-form-field>
 
-                        <div class="flex items-center col-span-1 space-x-1">
+                        <div class="flex items-center space-x-1">
                         <button mat-button (click)="updateImportador(selectedImportador)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
                         </button>
@@ -77,9 +80,10 @@
             </ng-container>
         <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
-            <div class="grid grid-cols-4 items-center gap-4 py-2 px-6 md:px-12 border-b">
+            <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                 <input [(ngModel)]="newImportador.name" placeholder="Nombre">   
                 <input [(ngModel)]="newImportador.ruc" placeholder="RUC">  
+                <input [(ngModel)]="newImportador.phone" placeholder="Teléfono">  
                 <mat-form-field class="w-full">                    
                     <input type="text"
                     placeholder="Usuario"

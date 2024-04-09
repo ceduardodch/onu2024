@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
@@ -40,14 +40,14 @@ import { UserService } from '../users/user.service';
 export class ImportadorsComponent implements OnInit{
         importadors: Importador[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newImportador:Importador = {
-          name: '', ruc: '',user_import:''};
+          name: '', ruc: '', phone: '', user_import:''};
         filteredImportadores: Importador[] = [];
         searchTerm: string = '';
         selectedImportador:  Importador | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
         usuarios: any[];
-        importadorControl = new FormControl();
+        
 
         constructor(
           private _importadorService: ImportadorService,
@@ -77,7 +77,7 @@ export class ImportadorsComponent implements OnInit{
             this._importadorService.addImportador(this.newImportador).subscribe({
               next: () => {
                 this.loadImportadores();
-                this.newImportador = { id: 0, name: '', ruc: '',user_import:''}; // Restablece el objeto `newImportador`
+                this.newImportador = { name: '', ruc: '', phone: '', user_import:''}; // Restablece el objeto `newImportador`
               },
               error: (error) => {
                 console.error('Error al agregar el importador', error);
@@ -152,6 +152,7 @@ export class ImportadorsComponent implements OnInit{
                 ? this.importadors.filter(importador =>
                     importador.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                     importador.ruc.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                    importador.phone.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                     importador.user_import.toLowerCase().includes(this.searchTerm.toLowerCase())                                      
                   )
                 : this.importadors;

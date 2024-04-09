@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AnioService } from '../anio/anio.service';
+import { ImportadorService } from '../importador/importador.service';
 
 @Component({
   selector: 'app-cupoes',
@@ -48,21 +49,36 @@ export class CuposComponent implements OnInit{
         currentField: string = '';
 
         anios: any[];
-        importadorControl = new FormControl();
+        importadors: any[];
 
         constructor(
           private _cupoService: CupoService,
+          private _importadorService: ImportadorService,
           private _anioService: AnioService
+          
         ) { }
 
             ngOnInit(): void {
 
             this.loadCupos();
 
-            this._anioService.getAnios().subscribe((data: any[]) => {
-              this.anios = data;
+            this._importadorService.getImportadors().subscribe((data: any[]) => {
+              this.importadors = data;
             });
 
+            this._anioService.getAnios().subscribe((data1: any[]) => {
+              this.anios = data1;
+            });
+
+            }
+
+            onImportSelected(event: MatAutocompleteSelectedEvent) {
+              if (event?.option?.value) {
+                this.newCupo.importador = event.option.value;
+              } else {
+                // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
+                console.error('El evento o la opción seleccionada son indefinidos');
+              }
             }
 
             onAnioSelected(event: MatAutocompleteSelectedEvent) {

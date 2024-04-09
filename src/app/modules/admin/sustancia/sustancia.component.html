@@ -70,7 +70,7 @@
 
                         <!--input [(ngModel)]="selectedSustancia.grupo_sust" placeholder="Grupo" class="flex-1"-->
                         <mat-form-field class="w-full">                            
-                            <mat-select [(ngModel)]="selectedSustancia.grupo_sust" name="grupoSust">
+                            <mat-select [(ngModel)]="selectedSustancia.grupo_sust">
                               <mat-option *ngFor="let grupo of gruposusts" [value]="grupo.name">
                                 {{ grupo.name }}
                               </mat-option>
