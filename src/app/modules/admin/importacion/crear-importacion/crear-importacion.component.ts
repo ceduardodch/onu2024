@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSortModule } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
@@ -30,6 +30,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AnioService } from '../../anio/anio.service';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { CupoService } from '../../cupo/cupo.service';
+import { ImportacionService } from '../importacion.service';
+
 @Component({
   selector: 'app-crear-importacion',
   standalone: true,
@@ -66,11 +68,13 @@ export class CrearImportacionComponent implements OnInit {
     fileUrl: string;
     fechaAutorizacion: Date = new Date();
     fechaSolicitud: Date;
-    cupoAsignado: 0.00;
-    cupoRestante:0.00;
-    totalSolicitud: 0.00;
+    cupoAsignado:Number= 0.00;
+    cupoRestante:Number=0.00;
+    totalPao:Number= 0.00;
     totalPesoKg: Number= 0.00;
-
+    paisSeleccionado: any;
+    proveedorSeleccionado: string;
+    nombresDeMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
     nroSolicitudVUE = new FormControl('', [
         Validators.required,
@@ -82,13 +86,16 @@ export class CrearImportacionComponent implements OnInit {
     selectedFileName: any;
     anios = [];
     cupos = [];
+    importacion :any;
 
     constructor(private _proveedorService: ProveedorService,
                 private _anioService: AnioService,
                 private _paisService: PaisService,
                 private _importadorService: ImportadorService,
                 private _cupoService: CupoService,
+                private _importacioService: ImportacionService,
                 private cdr: ChangeDetectorRef,
+                private _importacionService: ImportacionService,
                                 public dialog: MatDialog) { }
 
 
@@ -122,6 +129,8 @@ export class CrearImportacionComponent implements OnInit {
           );
 
 
+
+
       }
       selectFile(event) {
         this.selectedFile = event.target.files[0];
@@ -129,14 +138,17 @@ export class CrearImportacionComponent implements OnInit {
 
 
       }
-      onImportadorSelected(event) {
+    onImportadorSelected(event) {
         this._cupoService.getCuposByName(event).subscribe((data: any[]) => {
             this.cupos = data;
             console.log(this.cupos);
             this.calculoResumen(this.cupos[0].hfc);
-
-            }
-        );
+        });
+        this._importacioService.getImportacionByImportador(event).subscribe((data: any[]) => {
+            console.log(data);
+            this.importacion = data;
+            this.cupoRestante = Number(this.cupoAsignado) - Number(this.importacion.total_solicitud);
+        });
     }
     calculoResumen(cupo) {
         let totalCIF = 0.00;
@@ -150,7 +162,9 @@ export class CrearImportacionComponent implements OnInit {
             totalPAO += element.pao;
         });
         this.cupoAsignado = cupo;
-        this.totalPesoKg = totalPAO;
+        this.totalPesoKg =totalKg ;
+        this.totalPao = totalPAO;
+
 
     }
       openDialog() {
@@ -162,17 +176,71 @@ export class CrearImportacionComponent implements OnInit {
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.fileUrl= URL.createObjectURL(result.ficha);
-
-
-            // Actualiza la tabla "Lista Productos" con los datos recibidos
-            this.listaProductos = [...this.listaProductos, result];
-            this.dataSource = this.listaProductos;
-
+                this.listaProductos = [...this.listaProductos, result];
+                this.dataSource = this.listaProductos;
             console.log(this.dataSource);
           }
         });
       }
+      onProveedorSeleccionado(event: MatSelectChange) {
+        this.proveedorSeleccionado = event.value;
+      }
+      onPaisSeleccionado(event: MatSelectChange) {
+        this.paisSeleccionado = event.value;
+      }
 
+      save() {
+        let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
+        console.log(this.selectedFile);
 
+        let fileReadPromises = this.listaProductos.map(producto => {
+          return new Promise((resolve, reject) => {
+            let reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(producto.ficha);
+          });
+        });
+
+        Promise.all(fileReadPromises).then(fichas => {
+          let mainFileReader = new FileReader();
+          mainFileReader.onload = () => {
+            let body = {
+              "authorization_date": this.fechaAutorizacion,
+              "month": nombreDelMes,
+              "cupo_asignado": this.cupoAsignado,
+              "status": this.currentStep,
+              "cupo_restante": this.cupoRestante,
+              "tota_solicitud": this.totalPao,
+              "total_pesokg": this.totalPesoKg,
+              "vue": this.nroSolicitudVUE.value,
+              "data_file": btoa(String.fromCharCode.apply(null, new Uint8Array(mainFileReader.result as ArrayBuffer))),
+              "importador": this.importadorControl.value,
+              "years": this.anios[0]?.name,
+              "pais": this.paisSeleccionado,
+              "proveedor": this.proveedorSeleccionado,
+              "details": this.listaProductos.map((producto, index) => ({
+                cif: producto.cif,
+                fob: producto.fob,
+                peso_kg: producto.kg,
+                pao: producto.pao,
+                sustancia: producto.producto,
+                subpartida: producto.subpartida,
+                ficha_file: btoa(String.fromCharCode.apply(null, new Uint8Array(fichas[index] as ArrayBufferLike)))
+            }))
+            };
+            console.log(body);
+
+            this._importacioService.addImportacion(body).subscribe({
+              error: (error) => {
+                console.error('Error al agregar el importador', error);
+              }
+            });
+          };
+          mainFileReader.readAsArrayBuffer(this.selectedFile);
+        }).catch(error => {
+          console.error('Error al leer los archivos', error);
+        });
+      }
 
 }

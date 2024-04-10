@@ -6,20 +6,26 @@
     </mat-toolbar>
     <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
         <ng-container *ngIf="(importaciones) as importaciones">
-            <div class="grid grid-cols-5 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
+            <div class="grid grid-cols-7 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
                 <div [mat-sort-header]="'name'">Estado</div>
                 <div [mat-sort-header]="'email'">Año</div>
                 <div [mat-sort-header]="'phone'">Mes</div>
                 <div [mat-sort-header]="'company'">Vue</div>
+                <div [mat-sort-header]="'company'">Importador</div>
+                <div [mat-sort-header]="'company'">Proveedor</div>
                 <div>Acciones</div> <!-- Columna para acciones -->
             </div>
             <!-- Rows -->
             <ng-container *ngFor="let importacion of importaciones">
-                <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                    <div class="truncate">{{importacion.status_select}}</div>
+                <div class="grid grid-cols-7 items-center gap-4 py-2 px-6 md:px-12 border-b">
+                    <div class="truncate">{{importacion.status}}</div>
                     <div class="truncate">{{importacion.years}}</div>
                     <div class="truncate">{{importacion.month}}</div>
                     <div class="truncate">{{importacion.vue}}</div>
+                    <div class="truncate">{{importacion.importador}}</div>
+                    <div class="truncate">{{importacion.proveedor}}</div>
+
+
                 </div>
             </ng-container>
 

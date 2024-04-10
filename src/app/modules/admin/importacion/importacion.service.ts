@@ -7,14 +7,19 @@ import { Importacion } from './importacion.model';
   providedIn: 'root'
 })
 export class ImportacionService {
-  private apiUrl = 'http://localhost:3000/imports';
+  private apiUrl = 'http://localhost:3000/importacion';
 
   constructor(private http: HttpClient) { }
 
   getImportacion(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }
-  addImportacion(user: Importacion): Observable<Importacion> {
-    return this.http.post<Importacion>(this.apiUrl, user);
+  addImportacion(importacion: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, importacion);
   }
+
+  getImportacionByImportador(importador: string): Observable<any> {
+
+    return this.http.get<Importacion>(`${this.apiUrl}/${importador}`);
+    }
 }

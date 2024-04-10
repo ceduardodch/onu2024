@@ -4,7 +4,7 @@
 
     <div class="w-3/4 bg-white float-left">
         <mat-toolbar class="mb-4 shadow-lg flex items-center justify-between">
-            <button mat-icon-button aria-label="Guardar">
+            <button mat-icon-button aria-label="Guardar" (click)="save()">
               <mat-icon>save</mat-icon>
             </button>
             <div class="flex items-center">
@@ -47,8 +47,8 @@
                     <mat-form-field class="w-full">
                         <mat-label>Proveedor</mat-label>
 
-                        <mat-select placeholder="Proveedor">
-                            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.id">{{ proveedor.name }}</mat-option>
+                        <mat-select placeholder="Proveedor" (selectionChange)="onProveedorSeleccionado($event)">
+                            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.name">{{ proveedor.name }}</mat-option>
                         </mat-select>
                         <mat-icon class="icon-size-5" matPrefix ></mat-icon>
                     </mat-form-field>
@@ -56,8 +56,8 @@
                     <mat-form-field class="w-full">
                         <mat-label>Pais</mat-label>
 
-                        <mat-select placeholder="Pais">
-                            <mat-option *ngFor="let pais of paises" [value]="pais.id">{{ pais.name }}</mat-option>
+                        <mat-select placeholder="Pais" (selectionChange)="onPaisSeleccionado($event)">
+                            <mat-option *ngFor="let pais of paises" [value]="pais.name">{{ pais.name }}</mat-option>
                         </mat-select>
                     </mat-form-field>
 
@@ -179,19 +179,19 @@
                     <h2 class="w-full">Resumen</h2>
                     <div class="px-2  w-1/2">
                         <p class="font-bold">Cupo Asignado</p>
-                        <p>{{cupoAsignado}}</p>
+                        <p>{{cupoAsignado | number:'1.2-2'}}</p>
                       </div>
                       <div class="px-2  w-1/2">
                         <p class="font-bold">Cupo Restante</p>
-                        <p>{{cupoRestante}}</p>
+                        <p>{{cupoRestante| number:'1.2-2'}}</p>
                       </div>
                       <div class="px-2  w-1/2">
                         <p class="font-bold">Total Solicitud</p>
-                        <p>{{totalSolicitud}}</p>
+                        <p>{{totalPao | number:'1.2-2'}}</p>
                       </div>
                       <div class="px-2  w-1/2">
                         <p class="font-bold">Total Peso Kg</p>
-                        <p>{{totalPesoKg}}</p>
+                        <p>{{totalPesoKg | number:'1.2-2' }}</p>
                       </div>
                 </div>
             </ng-container>
