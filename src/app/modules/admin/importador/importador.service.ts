@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Importador } from './importador.model';
+import { environment } from '../../../../enviroments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImportadorService {
-  private apiUrl = 'http://localhost:3000/importadors';
+  private apiUrl = environment.apiUrl+'/importadors';
 
   constructor(private http: HttpClient) { }
 

@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Anio } from './anio.model';
+import { environment } from '../../../../enviroments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnioService {
-  private apiUrl = 'http://localhost:3000/anios';
+  private apiUrl = environment.apiUrl+'/anios';
 
   constructor(private http: HttpClient) { }
 

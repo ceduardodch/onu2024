@@ -69,13 +69,14 @@ export class CrearImportacionComponent implements OnInit {
     fechaAutorizacion: Date = new Date();
     fechaSolicitud: Date;
     cupoAsignado:Number= 0.00;
+
     cupoRestante:Number=0.00;
     totalPao:Number= 0.00;
     totalPesoKg: Number= 0.00;
     paisSeleccionado: any;
     proveedorSeleccionado: string;
     nombresDeMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-
+    grupoSustancia :string;
     nroSolicitudVUE = new FormControl('', [
         Validators.required,
         Validators.pattern('^\\d{19}P$')      ]);
@@ -139,18 +140,18 @@ export class CrearImportacionComponent implements OnInit {
 
       }
     onImportadorSelected(event) {
+    this.calculoResumen(event);
+    }
+    calculoResumen(event) {
+    console.log('calculoResumen event',event);
         this._cupoService.getCuposByName(event).subscribe((data: any[]) => {
             this.cupos = data;
-            console.log(this.cupos);
-            this.calculoResumen(this.cupos[0].hfc);
+            console.log(data);
         });
         this._importacioService.getImportacionByImportador(event).subscribe((data: any[]) => {
             console.log(data);
             this.importacion = data;
-            this.cupoRestante = Number(this.cupoAsignado) - Number(this.importacion.total_solicitud);
         });
-    }
-    calculoResumen(cupo) {
         let totalCIF = 0.00;
         let totalKg = 0.00;
         let totalFOB = 0.00;
@@ -161,8 +162,19 @@ export class CrearImportacionComponent implements OnInit {
             totalFOB += element.fob;
             totalPAO += element.pao;
         });
-        this.cupoAsignado = cupo;
+
+        console.log('this.grupoSustancia',this.grupoSustancia);
+        if (this.grupoSustancia === 'HCFC') {
+            this.cupoAsignado = this.cupos[0].hfc;
+        }
+        if (this.grupoSustancia === 'HFC') {
+            this.cupoAsignado =  this.cupos[0].hcfc;
+        }
+
+
+
         this.totalPesoKg =totalKg ;
+        this.cupoRestante = Number(this.cupoAsignado) - Number(this.importacion.total_solicitud)- Number(totalPAO);
         this.totalPao = totalPAO;
 
 
@@ -178,7 +190,9 @@ export class CrearImportacionComponent implements OnInit {
                 this.fileUrl= URL.createObjectURL(result.ficha);
                 this.listaProductos = [...this.listaProductos, result];
                 this.dataSource = this.listaProductos;
-            console.log(this.dataSource);
+            this.grupoSustancia = result.grupo;
+            this.calculoResumen(this.importadorControl.value);
+
           }
         });
       }
@@ -219,6 +233,7 @@ export class CrearImportacionComponent implements OnInit {
               "years": this.anios[0]?.name,
               "pais": this.paisSeleccionado,
               "proveedor": this.proveedorSeleccionado,
+              "grupo": this.grupoSustancia,
               "details": this.listaProductos.map((producto, index) => ({
                 cif: producto.cif,
                 fob: producto.fob,

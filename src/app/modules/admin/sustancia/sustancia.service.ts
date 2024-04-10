@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Sustancia } from './sustancia.model';
+import { environment } from '../../../../enviroments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SustanciaService {
-  private apiUrl = 'http://localhost:3000/sustancias';
+  private apiUrl = environment.apiUrl+'/sustancias';
 
   constructor(private http: HttpClient) { }
 

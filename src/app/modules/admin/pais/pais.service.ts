@@ -2,19 +2,19 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Pais } from './pais.model';
-
+import { environment } from '../../../../enviroments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class PaisService {
-  private apiUrl = 'http://localhost:3000/paises';
+  private apiUrl = environment.apiUrl+'/paises';
 
   constructor(private http: HttpClient) { }
 
   getPaises(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }
-  
+
   addPais(pais: Pais): Observable<Pais> {
     return this.http.post<Pais>(this.apiUrl, pais);
   }

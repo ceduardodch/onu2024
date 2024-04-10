@@ -2,19 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Gruposust } from './gruposust.model';
+import { environment } from '../../../../enviroments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GruposustService {
-  private apiUrl = 'http://localhost:3000/gruposusts';
+  private apiUrl = environment.apiUrl+'/gruposusts';
 
   constructor(private http: HttpClient) { }
 
   getGruposusts(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }
-  
+
   addGruposust(gruposust: Gruposust): Observable<Gruposust> {
     return this.http.post<Gruposust>(this.apiUrl, gruposust);
   }
