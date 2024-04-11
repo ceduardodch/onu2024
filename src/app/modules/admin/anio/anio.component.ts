@@ -108,7 +108,7 @@ export class AniosComponent implements OnInit{
                   this.loadAnios();
                 },
                 error: (error) => {                  
-                  console.error('Error al agregar el año', error);
+                  //console.error('Error al agregar el año', error);
                   this.openSnackBar('Error al agregar el año. Intente de nuevo.', 'Error');
                 }
               });
@@ -209,8 +209,5 @@ export class AniosComponent implements OnInit{
                 this.selectedAnio = null;
                 this.searchTerm = '';
                 this.applyFilter();
-              }
-
-              
-              
+              }                
 }

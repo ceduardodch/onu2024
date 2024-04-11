@@ -1,0 +1,41 @@
+<div class="popup-container">
+    <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="contents flex-wrap mt-0 px-0 pt-5 shadow-none overflow-scroll">
+        <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
+            <mat-form-field class="col-span-1">                    
+                <input type="text"
+                       placeholder="Importador"
+                       matInput
+                       formControlName="importador"
+                       [matAutocomplete]="autoImportador">
+                <mat-autocomplete #autoImportador="matAutocomplete" (optionSelected)="onImportSelected($event)">
+                  <mat-option *ngFor="let import2 of importadors" [value]="import2.name">
+                    {{ import2.name }}
+                  </mat-option>
+                </mat-autocomplete>                  
+              </mat-form-field>
+              
+              <mat-form-field class="col-span-1">  
+                                 
+                <input type="text"
+                       placeholder="Año"
+                       matInput
+                       formControlName="anio"
+                       [matAutocomplete]="autoAnio">
+                <mat-autocomplete #autoAnio="matAutocomplete" (optionSelected)="onAnioSelected($event)">
+                  <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
+                    {{ anio2.name }}
+                  </mat-option>
+                </mat-autocomplete>                 
+              </mat-form-field>     
+            <mat-form-field class="col-span-1"> 
+            <input matInput type="number" formControlName="hfc" id="hfc">                 
+            </mat-form-field>
+            <mat-form-field class="col-span-1"> 
+            <input matInput type="number" formControlName="hcfc" id="hcfc">              
+            </mat-form-field>   
+            <div class="col-span-1">
+                <button type="submit" class="px-5 save-button" mat-stroked-button color="primary">Guardar</button>
+              </div>
+        </div>
+    </form>
+</div>
