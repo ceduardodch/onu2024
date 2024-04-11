@@ -31,7 +31,7 @@
                 <div class="grid grid-cols-2 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
                     <ng-container *ngIf="selectedPais?.id !== pais.id">
-                    <div class="truncate">{{ pais.name }}</div>
+                    <div class="col-span-1">{{ pais.name }}</div>
 
                     <!-- Mostrar botones solo si no se está editando este país -->
                     <div *ngIf="selectedPais?.id !== pais.id" class="flex items-center">
@@ -64,13 +64,19 @@
             </ng-container>
         <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
+            <form [formGroup]="signInForm" (ngSubmit)="addPais()">
             <div class="grid grid-cols-2 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <input [(ngModel)]="newPais.name" placeholder="New Country">
-                <div>
-                    <!-- Botón para guardar el nuevo usuario -->
-                    <button (click)="addPais()" mat-stroked-button color="primary">Guardar</button>
-                </div>
+                <mat-form-field class="w-full">                          
+                    <input matInput formControlName="name" id="name">
+                    <mat-error *ngIf="signInForm.get('name').errors?.required">
+                      Nombre requerido
+                    </mat-error>
+                  </mat-form-field>
+                  <div>
+                    <button type="submit" mat-stroked-button color="primary">Guardar</button>
+                  </div>
             </div>
+            </form>
         </ng-container>
         </div>
 

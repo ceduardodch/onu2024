@@ -116,3 +116,21 @@
 .side-right {
   flex: 4; /* Ocupará 4 partes del espacio disponible */
 }
+
+
+//////////////////////////agregar nuevo
+/// 
+.add-new-year-section {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 1rem;
+  z-index: 1000;
+  border-bottom: 1px solid #ccc;
+}
+
+.list-years-content {
+  padding-top: 1rem; /* Asegúrate de que haya espacio para la sección fija en la parte superior */
+}
+
+/////////////////////////////

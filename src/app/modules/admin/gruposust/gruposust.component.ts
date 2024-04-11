@@ -2,15 +2,18 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDivider } from '@angular/material/divider';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { Gruposust } from './gruposust.model'; // Import the 'gruposust' class from the appropriate file
 import { GruposustService } from './gruposust.service';
@@ -23,6 +26,7 @@ import { GruposustService } from './gruposust.service';
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
     MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
+    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -45,12 +49,31 @@ export class GruposustComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        constructor(private _gruposustService: GruposustService) { }
+        signInForm: FormGroup; 
+
+        constructor(
+          private _gruposustService: GruposustService,
+          private _formBuilder: FormBuilder,
+          private _snackBar: MatSnackBar,
+        ) { }
 
             ngOnInit(): void {
 
             this.loadGruposusts();
 
+            this.signInForm = this._formBuilder.group({            
+              name     : ['', [Validators.required]],            
+              activo    : [false],
+            });
+
+            }
+
+            openSnackBar(message: string, action: string) {
+              this._snackBar.open(message, action, {
+                duration: 2000, // Duración de la notificación
+                horizontalPosition: 'center', // Posición horizontal
+                verticalPosition: 'top', // Posición vertical
+              });
             }
 
             onActivoChange(event: MatSlideToggleChange, gruposust: Gruposust): void {
@@ -59,13 +82,33 @@ export class GruposustComponent implements OnInit{
             
 
             addGruposust(): void {
-              this._gruposustService.addGruposust(this.newGruposust).subscribe({
+
+              const name = this.signInForm.get('name').value;
+              if (!name.trim()) {
+                this.openSnackBar('Ingrese el Nombre.', 'Error');
+                return;
+              }
+            
+              const yearExists = this.gruposusts.some(anio => anio.name === name.trim());
+              if (yearExists) {
+                this.openSnackBar('El nombre de grupo ya existe.', 'Error');
+                return;
+              }
+
+              const newGruposust: Gruposust = {
+                name: name.trim(),
+                activo: this.signInForm.get('activo').value
+              };
+
+              this._gruposustService.addGruposust(newGruposust).subscribe({
                 next: () => {
-                  this.loadGruposusts();
-                  this.newGruposust = { name: '', activo: false}; // Restablece el objeto `newGruposust`
+                  this.openSnackBar('Grupo agregado exitosamente.', 'Success');                  
+                  this.signInForm.reset();
+                  this.loadGruposusts();                  
                 },
                 error: (error) => {
                   console.error('Error al agregar el grupo', error);
+                  this.openSnackBar('Error al agregar el grupo. Por favor intente nuevamente.', 'Error');    
                 }
               });
             }

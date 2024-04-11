@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
@@ -15,6 +15,10 @@ import { RouterLink } from '@angular/router';
 import { Proveedor } from './proveedor.model'; // Import the 'User' class from the appropriate file
 import { ProveedorService } from './proveedor.service';
 
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Observable } from 'rxjs';
 import { PaisService } from '../pais/pais.service';
 
 @Component({
@@ -25,6 +29,7 @@ import { PaisService } from '../pais/pais.service';
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
     MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
+    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -46,22 +51,45 @@ export class ProveedorsComponent implements OnInit{
         selectedProveedor:  Proveedor | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
-        countrys: any[];
-        importadorControl = new FormControl();
+
+        countrys: any[];   
+        filteredCountry: Observable<any[]>;
+        
+        signInForm: FormGroup;    
 
         constructor(
           private _proveedorService: ProveedorService,
-          private _paisService: PaisService
+          private _paisService: PaisService,
+          private _formBuilder: FormBuilder,
+          private _snackBar: MatSnackBar,
         ) { }
 
         ngOnInit(): void {
 
           this.loadProveedors();
 
+          this.signInForm = this._formBuilder.group({
+            name     : ['', [Validators.required]],  
+            country     : [''],            
+            activo: [false],
+          });
+
           this._paisService.getPaises().subscribe((data: any[]) => {
             this.countrys = data;
           });
 
+            }
+
+            openSnackBar(message: string, action: string) {
+              this._snackBar.open(message, action, {
+                duration: 2000, // Duración de la notificación
+                horizontalPosition: 'center', // Posición horizontal
+                verticalPosition: 'top', // Posición vertical
+              });
+            }
+
+            onActivoChange(event: MatSlideToggleChange, proveedor: Proveedor): void {
+              proveedor.activo = event.checked;
             }
 
             onPaisSelected(event: MatAutocompleteSelectedEvent) {
@@ -73,21 +101,33 @@ export class ProveedorsComponent implements OnInit{
               }
             }
 
-            // Esta función se activa cuando se cambia el estado del checkbox de 'activo'
-            onActivoChange(event: MatSlideToggleChange, proveedor: Proveedor): void {
-              proveedor.activo = event.checked;
-            }
-
             addProveedor(): void {
-              this._proveedorService.addProveedor(this.newProveedor).subscribe({
+
+              const name = this.signInForm.get('name').value;
+              if (!this.signInForm.valid) {
+                this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
+                return;
+              }          
+              const proveExists = this.proveedors.some(prove => prove.name === name.trim());
+              if (proveExists) {
+                this.openSnackBar('El importador ya tiene cupo.', 'Error');
+                return;
+              }    
+
+              const newProveedor: Proveedor = {                
+                name: this.signInForm.value.name.trim(),
+                country: this.newProveedor.country,
+                activo: this.signInForm.get('activo').value
+              };
+              this._proveedorService.addProveedor(newProveedor).subscribe({
                 next: () => {
+                  this.openSnackBar('Proveedor agregado exitosamente.', 'Success');                  
+                  this.signInForm.reset();
                   this.loadProveedors();
-                  this.newProveedor = { 
-                    name: '', country: '',activo: false}; 
-                    // Restablece el objeto `newProveedor`
                 },
                 error: (error) => {
-                  console.error('Error al agregar la proveedor', error);
+                  console.error('Error al agregar el proveedor', error);
+                  this.openSnackBar('Error al agregar el proveedor. Por favor intente nuevamente.', 'Error');    
                 }
               });
             }

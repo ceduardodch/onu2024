@@ -2,11 +2,18 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDivider } from '@angular/material/divider';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { Pais } from './pais.model'; // Import the 'pais' class from the appropriate file
 import { PaisService } from './pais.service';
@@ -16,8 +23,10 @@ import { PaisService } from './pais.service';
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
-    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule, 
-    RouterLink, MatButtonModule, CdkScrollable,MatFormField
+    AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
+    RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
+    MatCheckboxModule,MatProgressSpinnerModule,MatSnackBarModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -39,25 +48,63 @@ export class PaisesComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        constructor(private _paisService: PaisService) { }
+        signInForm: FormGroup;
+
+        constructor(
+          private _paisService: PaisService,
+          private _formBuilder: FormBuilder,
+          private _snackBar: MatSnackBar,
+        ) { }
 
             ngOnInit(): void {
 
             this.loadPaises();
 
+            this.signInForm = this._formBuilder.group({
+              name     : ['', [Validators.required]]                          
+            });
+
+            }
+
+            openSnackBar(message: string, action: string) {
+              this._snackBar.open(message, action, {
+                duration: 2000, // Duración de la notificación
+                horizontalPosition: 'center', // Posición horizontal
+                verticalPosition: 'top', // Posición vertical
+              });
             }
 
             addPais(): void {
-              this._paisService.addPais(this.newPais).subscribe({
+
+              const name = this.signInForm.get('name').value;
+              if (!name.trim()) {
+                this.openSnackBar('Ingrese el nombre del país.', 'Error');
+                return;
+              }
+            
+              const nameExists = this.paises.some(pais => pais.name === name.trim());
+              if (nameExists) {
+                this.openSnackBar('El nombre del país ya existe.', 'Error');
+                return;
+              }
+            
+              // Crear un nuevo objeto Anio con el nombre y el estado activo
+              const newPais: Pais = {
+                name: name.trim()                
+              };
+              
+              this._paisService.addPais(newPais).subscribe({
                 next: () => {
-                  this.loadPaises();
-                  this.newPais = { name: '' }; // Restablece el objeto `newPais`
+                  this.openSnackBar('País agregado exitosamente.', 'Success');                  
+                  this.signInForm.reset();
+                  this.loadPaises();                  
                 },
-                error: (error) => {
+                error: (error) => {                  
                   console.error('Error al agregar el país', error);
+                  this.openSnackBar('Error al agregar el país. Intente de nuevo.', 'Error');
                 }
               });
-            }
+              }        
 
             selectPaisForEdit(pais: Pais): void {
               console.log('Seleccionando país para editar:', pais);

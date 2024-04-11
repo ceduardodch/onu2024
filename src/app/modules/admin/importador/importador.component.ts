@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
@@ -15,6 +15,10 @@ import { RouterLink } from '@angular/router';
 import { Importador } from './importador.model'; // Import the 'User' class from the appropriate file
 import { ImportadorService } from './importador.service';
 
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Observable } from 'rxjs';
 import { UserService } from '../users/user.service';
 
 @Component({
@@ -25,6 +29,7 @@ import { UserService } from '../users/user.service';
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
     MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
+    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -46,22 +51,42 @@ export class ImportadorsComponent implements OnInit{
         selectedImportador:  Importador | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
+
         usuarios: any[];
-        
+        filteredUsr: Observable<any[]>;
+
+        signInForm: FormGroup;
 
         constructor(
           private _importadorService: ImportadorService,
-          private _userService: UserService
+          private _userService: UserService,
+          private _formBuilder: FormBuilder,
+          private _snackBar: MatSnackBar,
         ) { }
 
         ngOnInit(): void {
 
           this.loadImportadores();
 
+          this.signInForm = this._formBuilder.group({                           
+            name     : ['', [Validators.required]],            
+            ruc    : ['', [Validators.required]],
+            phone    : ['', [Validators.required]],
+            user_import : [''], // Igual que con importador   
+          });
+
           this._userService.getUsers().subscribe((data: any[]) => {
             this.usuarios = data;
           });
 
+          }
+
+          openSnackBar(message: string, action: string) {
+            this._snackBar.open(message, action, {
+              duration: 2000, // Duración de la notificación
+              horizontalPosition: 'center', // Posición horizontal
+              verticalPosition: 'top', // Posición vertical
+            });
           }
 
           onUserSelected(event: MatAutocompleteSelectedEvent) {
@@ -74,13 +99,36 @@ export class ImportadorsComponent implements OnInit{
           }
 
           addImportador(): void {
-            this._importadorService.addImportador(this.newImportador).subscribe({
+
+            const name = this.signInForm.get('user_import').value;
+              if (!this.signInForm.valid) {
+                this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
+                return;
+              }          
+              const importExists = this.importadors.some(importador => importador.name === name.trim());
+              if (importExists) {
+                this.openSnackBar('El importador ya existe.', 'Error');
+                return;
+              }    
+            
+              // Crear un nuevo objeto Anio con el nombre y el estado activo
+              const newImportador: Importador = {
+                
+                name: this.signInForm.value.name.trim(),
+                ruc: this.signInForm.value.ruc.trim(),
+                phone: this.signInForm.value.phone.trim(),
+                user_import: this.newImportador.user_import, // Asegúrate de que estos valores se establezcan correctamente                
+              };
+
+            this._importadorService.addImportador(newImportador).subscribe({
               next: () => {
-                this.loadImportadores();
-                this.newImportador = { name: '', ruc: '', phone: '', user_import:''}; // Restablece el objeto `newImportador`
+                this.openSnackBar('Cupo agregado exitosamente.', 'Success');                  
+                this.signInForm.reset();
+                this.loadImportadores();                
               },
               error: (error) => {
                 console.error('Error al agregar el importador', error);
+                this.openSnackBar('Error al agregar el importador. Por favor intente nuevamente.', 'Error');    
               }
             });
           }

@@ -34,13 +34,13 @@
                 <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
                     <ng-container *ngIf="selectedCupo?.id !== cupo.id">
-                    <div class="truncate">{{ cupo.importador }}</div>
-                    <div class="truncate">{{ cupo.anio }}</div>
-                    <div class="truncate">{{ cupo.hfc }}</div>
-                    <div class="truncate">{{ cupo.hcfc }}</div>
+                    <div class="col-span-1">{{ cupo.importador }}</div>
+                    <div class="col-span-1">{{ cupo.anio }}</div>
+                    <div class="col-span-1">{{ cupo.hfc }}</div>
+                    <div class="col-span-1">{{ cupo.hcfc }}</div>
                     
                     <!-- Mostrar botones solo si no se está editando este país -->
-                    <div *ngIf="selectedCupo?.id !== cupo.id" class="flex items-center">
+                    <div *ngIf="selectedCupo?.id !== cupo.id" class="col-span-1 flex items-center">
                         <button mat-stroked-button (click)="selectCupoForEdit(cupo)" >
                             <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
                             <span>Editar</span>
@@ -88,12 +88,13 @@
             </ng-container>
         <!--/ng-container-->
             <!-- Fila para agregar un nuevo usuario -->
+            <form [formGroup]="signInForm" (ngSubmit)="addCupo()">
             <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                 <mat-form-field class="w-full">                    
                     <input type="text"
                            placeholder="Importador"
                            matInput
-                           [(ngModel)]="newCupo.importador"
+                           formControlName="importador"
                            [matAutocomplete]="autoImportador">
                     <mat-autocomplete #autoImportador="matAutocomplete" (optionSelected)="onImportSelected($event)">
                       <mat-option *ngFor="let import2 of importadors" [value]="import2.name">
@@ -106,7 +107,7 @@
                     <input type="text"
                            placeholder="Año"
                            matInput
-                           [(ngModel)]="newCupo.anio"
+                           formControlName="anio"
                            [matAutocomplete]="autoAnio">
                     <mat-autocomplete #autoAnio="matAutocomplete" (optionSelected)="onAnioSelected($event)">
                       <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
@@ -114,14 +115,23 @@
                       </mat-option>
                     </mat-autocomplete>                       
                   </mat-form-field>     
-                <input [(ngModel)]="newCupo.hfc" placeholder="HFC">    
-                <input [(ngModel)]="newCupo.hcfc" placeholder="HCFC">       
+                <mat-form-field class="w-full"> 
+                <input matInput formControlName="hfc" id="hfc"> 
+                <mat-error *ngIf="signInForm.get('hfc').errors?.required">
+                    HFC requerido
+                  </mat-error>   
+                </mat-form-field>
+                <mat-form-field class="w-full"> 
+                <input matInput formControlName="hcfc" id="hcfc">
+                <mat-error *ngIf="signInForm.get('hcfc').errors?.required">
+                    HCFC requerido
+                  </mat-error>   
+                </mat-form-field>   
                 <div>
-                    <!-- Botón para guardar el nuevo usuario -->
-                    <button (click)="addCupo()" mat-stroked-button color="primary">Guardar</button>
-                </div>
+                    <button type="submit" mat-stroked-button color="primary">Guardar</button>
+                  </div>
             </div>
-            
+        </form>
         </ng-container>
         </div>
 
