@@ -70,7 +70,7 @@ export class ProveedorsComponent implements OnInit{
 
           this.signInForm = this._formBuilder.group({
             name     : ['', [Validators.required]],  
-            country     : [''],            
+            country     : ['', [Validators.required]],            
             activo: [false],
           });
 
@@ -110,7 +110,7 @@ export class ProveedorsComponent implements OnInit{
               }          
               const proveExists = this.proveedors.some(prove => prove.name === name.trim());
               if (proveExists) {
-                this.openSnackBar('El importador ya tiene cupo.', 'Error');
+                this.openSnackBar('El proveedor ya existe.', 'Error');
                 return;
               }    
 

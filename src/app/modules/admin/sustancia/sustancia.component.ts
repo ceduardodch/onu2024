@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
@@ -12,9 +12,12 @@ import { Sustancia } from './sustancia.model'; // Import the 'User' class from t
 import { SustanciaService } from './sustancia.service';
 
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { GruposustService } from '../gruposust/gruposust.service';
 
 @Component({
@@ -25,6 +28,7 @@ import { GruposustService } from '../gruposust/gruposust.service';
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
     MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
+    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -46,22 +50,44 @@ export class SustanciasComponent implements OnInit{
         selectedSustancia:  Sustancia | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
-        gruposusts: any[];
-        importadorControl = new FormControl();
+
+        gruposusts: any[];        
+
+        signInForm: FormGroup; 
 
         constructor(
           private _sustanciaService: SustanciaService,
-          private _gruposustService: GruposustService
+          private _gruposustService: GruposustService,
+          private _formBuilder: FormBuilder,
+          private _snackBar: MatSnackBar,
         ) { }
 
         ngOnInit(): void {
 
           this.loadSustancias();
 
+          this.signInForm = this._formBuilder.group({
+            name     : ['', [Validators.required]], 
+            subpartida     : ['', [Validators.required]], 
+            pao     : ['', [Validators.required]], 
+            pcg     : ['', [Validators.required]], 
+            grupo_sust: ['', Validators.required],                  
+            activo: [false],
+            cupo_prod: [false],    
+          });
+
           this._gruposustService.getGruposusts().subscribe((data: any[]) => {
             this.gruposusts = data;
           });
 
+            }
+
+            openSnackBar(message: string, action: string) {
+              this._snackBar.open(message, action, {
+                duration: 2000, // Duración de la notificación
+                horizontalPosition: 'center', // Posición horizontal
+                verticalPosition: 'top', // Posición vertical
+              });
             }
 
             onGrupoSelected(event: MatAutocompleteSelectedEvent) {
@@ -83,22 +109,38 @@ export class SustanciasComponent implements OnInit{
             }
 
             addSustancia(): void {
-              // Validación de que todos los campos necesarios están presentes
-              if (!this.newSustancia.name || !this.newSustancia.subpartida || !this.newSustancia.pao || !this.newSustancia.pcg || !this.newSustancia.grupo_sust) {
-                console.error('Todos los campos deben estar llenos.');
-                return; // Salir de la función si alguna validación falla
-              }
+              const name = this.signInForm.get('name').value;
+              if (!this.signInForm.valid) {
+                this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
+                return;
+              }          
+              const nameExists = this.sustancias.some(sust => sust.name === name.trim());
+              if (nameExists) {
+                this.openSnackBar('La sustancia ya existe.', 'Error');
+                return;
+              }    
             
+              // Crear un nuevo objeto Anio con el nombre y el estado activo
+              const newSustancia: Sustancia = {                
+                name: this.signInForm.value.name.trim(),
+                subpartida: this.signInForm.value.subpartida.trim(),
+                pao: this.signInForm.value.pao.trim(),
+                pcg: this.signInForm.value.pcg.trim(),
+                grupo_sust: this.newSustancia.grupo_sust,
+                activo: this.signInForm.get('activo').value,
+                cupo_prod: this.signInForm.get('cupo_prod').value
+              };
+
               // Si todo está bien, procede a agregar la sustancia
-              this._sustanciaService.addSustancia(this.newSustancia).subscribe({
+              this._sustanciaService.addSustancia(newSustancia).subscribe({
                 next: () => {
-                  this.loadSustancias();
-                  // Restablece el objeto `newSustancia` a sus valores por defecto
-                  this.newSustancia = {  
-                    name: '', subpartida: '', pao:'', pcg: '', grupo_sust: '', activo: false, cupo_prod: false};
+                  this.openSnackBar('Sustancia agregada exitosamente.', 'Success');                  
+                  this.signInForm.reset();
+                  this.loadSustancias();                  
                 },
                 error: (error) => {
-                  console.error('Error al agregar la sustancia', error);
+                  console.error('Error al agregar el cupo', error);
+                  this.openSnackBar('Error al agregar el cupo. Por favor intente nuevamente.', 'Error');    
                 }
               });
             }

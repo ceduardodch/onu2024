@@ -18,7 +18,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Observable } from 'rxjs';
 import { AnioService } from '../anio/anio.service';
 import { ImportadorService } from '../importador/importador.service';
 
@@ -53,14 +52,11 @@ export class CuposComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        anios: any[];
-        filteredAnios: Observable<any[]>;
+        anios: any[];        
 
-        importadors: any[];
-        filteredImportadors: Observable<any[]>;
+        importadors: any[];        
 
-        importControl = new FormControl();
-        anioControl = new FormControl();
+        importControl = new FormControl();        
 
         signInForm: FormGroup; 
 
@@ -78,8 +74,8 @@ export class CuposComponent implements OnInit{
             this.loadCupos();
 
             this.signInForm = this._formBuilder.group({
-              importador: [''], // No es necesario hacerlo required si se llena con una selección
-              anio: [''], // Igual que con importador      
+              importador: ['', Validators.required],
+              anio: ['', Validators.required],
               hfc     : ['', [Validators.required]],            
               hcfc    : ['', [Validators.required]],
             });

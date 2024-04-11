@@ -83,25 +83,40 @@
                       
             </ng-container>
             <!-- Fila para agregar un nuevo user -->
+            <form [formGroup]="signInForm" (ngSubmit)="addUser()">
             <div class="grid grid-cols-7 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <input [(ngModel)]="newUser.name" placeholder="Nombre">
-                <input [(ngModel)]="newUser.email" placeholder="Email">
+              <mat-form-field class="w-full"> 
+                <input matInput formControlName="name" id="name"> 
+                <mat-error *ngIf="signInForm.get('name').errors?.required"/>                    
+                </mat-form-field>
+                <mat-form-field class="w-full"> 
+                  <input matInput formControlName="email" id="email"> 
+                  <mat-error *ngIf="signInForm.get('email').errors?.required"/>                    
+                  </mat-form-field>
                 <mat-form-field class="w-full">                    
-                    <input matInput [type]="hide ? 'password' : 'text'" [(ngModel)]="newUser.password">
+                    <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
                     <button mat-icon-button matSuffix (click)="hide = !hide">
                       <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
                     </button>
-                  </mat-form-field>
-                <input [(ngModel)]="newUser.phone" placeholder="Telefono">
-                <input [(ngModel)]="newUser.company" placeholder="Empresa">    
-                <input [(ngModel)]="newUser.address" placeholder="Dirección">                            
+                </mat-form-field>
+                <mat-form-field class="w-full"> 
+                    <input matInput formControlName="phone" id="phone"> 
+                    <mat-error *ngIf="signInForm.get('phone').errors?.required"/>                    
+                </mat-form-field>
+                <mat-form-field class="w-full"> 
+                    <input matInput formControlName="company" id="company"> 
+                    <mat-error *ngIf="signInForm.get('company').errors?.required"/>                    
+                </mat-form-field>   
+                <mat-form-field class="w-full"> 
+                  <input matInput formControlName="address" id="address"> 
+                  <mat-error *ngIf="signInForm.get('address').errors?.required"/>                    
+                </mat-form-field>                            
                 
                 <div>
-                    <!-- Botón para guardar el nuevo user -->
-                    <button (click)="addUser()" mat-stroked-button color="primary">Guardar</button>
+                  <button type="submit" mat-stroked-button color="primary">Guardar</button>
                 </div>
             </div>
-            
+          </form>
         </ng-container>
     </div>
     </div>

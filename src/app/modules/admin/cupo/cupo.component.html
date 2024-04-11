@@ -100,7 +100,8 @@
                       <mat-option *ngFor="let import2 of importadors" [value]="import2.name">
                         {{ import2.name }}
                       </mat-option>
-                    </mat-autocomplete>                       
+                    </mat-autocomplete>  
+                    <mat-error *ngIf="signInForm.get('importador').touched && signInForm.get('importador').hasError('required')"/>                                                            
                   </mat-form-field>
                   
                   <mat-form-field class="w-full">                    
@@ -113,19 +114,16 @@
                       <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
                         {{ anio2.name }}
                       </mat-option>
-                    </mat-autocomplete>                       
+                    </mat-autocomplete> 
+                    <mat-error *ngIf="signInForm.get('anio').touched && signInForm.get('anio').hasError('required')"/>                                                             
                   </mat-form-field>     
                 <mat-form-field class="w-full"> 
                 <input matInput formControlName="hfc" id="hfc"> 
-                <mat-error *ngIf="signInForm.get('hfc').errors?.required">
-                    HFC requerido
-                  </mat-error>   
+                <mat-error *ngIf="signInForm.get('hfc').errors?.required"/>                    
                 </mat-form-field>
                 <mat-form-field class="w-full"> 
                 <input matInput formControlName="hcfc" id="hcfc">
-                <mat-error *ngIf="signInForm.get('hcfc').errors?.required">
-                    HCFC requerido
-                  </mat-error>   
+                <mat-error *ngIf="signInForm.get('hcfc').errors?.required"/>                    
                 </mat-form-field>   
                 <div>
                     <button type="submit" mat-stroked-button color="primary">Guardar</button>
