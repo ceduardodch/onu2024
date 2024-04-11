@@ -18,7 +18,6 @@ import { ImportadorService } from './importador.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Observable } from 'rxjs';
 import { UserService } from '../users/user.service';
 
 @Component({
@@ -53,8 +52,7 @@ export class ImportadorsComponent implements OnInit{
         currentField: string = '';
 
         usuarios: any[];
-        filteredUsr: Observable<any[]>;
-
+        
         signInForm: FormGroup;
 
         constructor(
@@ -72,7 +70,7 @@ export class ImportadorsComponent implements OnInit{
             name     : ['', [Validators.required]],            
             ruc    : ['', [Validators.required]],
             phone    : ['', [Validators.required]],
-            user_import : [''], // Igual que con importador   
+            user_import : ['', [Validators.required]],
           });
 
           this._userService.getUsers().subscribe((data: any[]) => {

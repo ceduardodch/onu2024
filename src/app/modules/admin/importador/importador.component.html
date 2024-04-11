@@ -110,7 +110,8 @@
                 <mat-option *ngFor="let usuario of usuarios" [value]="usuario.name">
                  {{ usuario.name }}
                 </mat-option>
-                </mat-autocomplete>                       
+                </mat-autocomplete>  
+                <mat-error *ngIf="signInForm.get('user_import').touched && signInForm.get('user_import').hasError('required')"/>                                                            
                 </mat-form-field>  
                 <div>
                     <button type="submit" mat-stroked-button color="primary">Guardar</button>

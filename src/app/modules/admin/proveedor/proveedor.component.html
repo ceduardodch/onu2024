@@ -98,7 +98,8 @@
                 <mat-option *ngFor="let country2 of countrys" [value]="country2.name">
                  {{ country2.name }}
                 </mat-option>
-                </mat-autocomplete>                       
+                </mat-autocomplete> 
+                <mat-error *ngIf="signInForm.get('country').touched && signInForm.get('country').hasError('required')"/>                                                             
                 </mat-form-field>  
                 <mat-slide-toggle formControlName="activo"/>
 
