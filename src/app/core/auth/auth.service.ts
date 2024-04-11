@@ -3,13 +3,14 @@ import { inject, Injectable } from '@angular/core';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
-
+import { environment } from '../../../enviroments/environment';
 @Injectable({providedIn: 'root'})
 export class AuthService
 {
     private _authenticated: boolean = false;
     private _httpClient = inject(HttpClient);
     private _userService = inject(UserService);
+    private apiUrl = environment.apiUrl+'/users/login';
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -57,19 +58,20 @@ export class AuthService
      *
      * @param credentials
      */
-    signIn(credentials: { email: string; password: string }): Observable<any>
+    signIn(credentials: { usuario: string; password: string }): Observable<any>
     {
         // Throw error, if the user is already logged in
-        if ( this._authenticated )
-        {
-            return throwError('User is already logged in.');
-        }
+       // if ( this._authenticated )
+       // {
+       //     return throwError('Usuario esta logeado.');
+       // }
 
-        return this._httpClient.post('api/auth/sign-in', credentials).pipe(
+        return this._httpClient.post(this.apiUrl, credentials).pipe(
             switchMap((response: any) =>
             {
+                console.log(response);
                 // Store the access token in the local storage
-                this.accessToken = response.accessToken;
+                //this.accessToken = response.accessToken;
 
                 // Set the authenticated flag to true
                 this._authenticated = true;

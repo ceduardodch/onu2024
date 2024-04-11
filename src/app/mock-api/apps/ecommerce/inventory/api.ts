@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FuseMockApiService, FuseMockApiUtils } from '@fuse/lib/mock-api';
-import {
-    brands as brandsData, categories as categoriesData, exportacion as exportacionData, importacion as importacionData, laexportacion as laexportacionData,
-    products as productsData, tags as tagsData, vendors as vendorsData
-} from 'app/mock-api/apps/ecommerce/inventory/data';
+import { brands as brandsData, categories as categoriesData, products as productsData, tags as tagsData, vendors as vendorsData } from 'app/mock-api/apps/ecommerce/inventory/data';
 import { assign, cloneDeep } from 'lodash-es';
 
 @Injectable({providedIn: 'root'})
@@ -12,10 +9,6 @@ export class ECommerceInventoryMockApi
     private _categories: any[] = categoriesData;
     private _brands: any[] = brandsData;
     private _products: any[] = productsData;
-
-    private _importaciones: any[] = importacionData;
-    private _exportaciones: any[] = exportacionData;
-    private _laexportaciones: any[] = laexportacionData;
     private _tags: any[] = tagsData;
     private _vendors: any[] = vendorsData;
 
@@ -51,12 +44,11 @@ export class ECommerceInventoryMockApi
             .onGet('api/apps/ecommerce/inventory/brands')
             .reply(() => [200, cloneDeep(this._brands)]);
 
-
         // -----------------------------------------------------------------------------------------------------
-        // @ Importaciones - GET
+        // @ Products - GET
         // -----------------------------------------------------------------------------------------------------
-      this._fuseMockApiService
-            .onGet('api/apps/ecommerce/inventory/importaciones', 300)
+        this._fuseMockApiService
+            .onGet('api/apps/ecommerce/inventory/products', 300)
             .reply(({request}) =>
             {
                 // Get available queries
@@ -66,11 +58,13 @@ export class ECommerceInventoryMockApi
                 const page = parseInt(request.params.get('page') ?? '1', 10);
                 const size = parseInt(request.params.get('size') ?? '10', 10);
 
-                let importaciones: any[] | null = cloneDeep(this._importaciones);
+                // Clone the products
+                let products: any[] | null = cloneDeep(this._products);
 
-                if ( sort === 'id'  )
+                // Sort the products
+                if ( sort === 'sku' || sort === 'name' || sort === 'active' )
                 {
-                    importaciones.sort((a, b) =>
+                    products.sort((a, b) =>
                     {
                         const fieldA = a[sort].toString().toUpperCase();
                         const fieldB = b[sort].toString().toUpperCase();
@@ -79,28 +73,34 @@ export class ECommerceInventoryMockApi
                 }
                 else
                 {
-                    importaciones.sort((a, b) => order === 'asc' ? a[sort] - b[sort] : b[sort] - a[sort]);
+                    products.sort((a, b) => order === 'asc' ? a[sort] - b[sort] : b[sort] - a[sort]);
                 }
 
+                // If search exists...
+                if ( search )
+                {
+                    // Filter the products
+                    products = products.filter(contact => contact.name && contact.name.toLowerCase().includes(search.toLowerCase()));
+                }
 
                 // Paginate - Start
-                const importacionesLength = importaciones.length;
+                const productsLength = products.length;
 
                 // Calculate pagination details
                 const begin = page * size;
-                const end = Math.min((size * (page + 1)), importacionesLength);
-                const lastPage = Math.max(Math.ceil(importacionesLength / size), 1);
+                const end = Math.min((size * (page + 1)), productsLength);
+                const lastPage = Math.max(Math.ceil(productsLength / size), 1);
 
                 // Prepare the pagination object
                 let pagination = {};
 
                 // If the requested page number is bigger than
                 // the last possible page number, return null for
-                //  but also send the last possible page so
+                // products but also send the last possible page so
                 // the app can navigate to there
                 if ( page > lastPage )
                 {
-                    importaciones = null;
+                    products = null;
                     pagination = {
                         lastPage,
                     };
@@ -108,11 +108,11 @@ export class ECommerceInventoryMockApi
                 else
                 {
                     // Paginate the results by size
-                    importaciones = importaciones.slice(begin, end);
+                    products = products.slice(begin, end);
 
                     // Prepare the pagination mock-api
                     pagination = {
-                        length    : importacionesLength,
+                        length    : productsLength,
                         size      : size,
                         page      : page,
                         lastPage  : lastPage,
@@ -125,170 +125,12 @@ export class ECommerceInventoryMockApi
                 return [
                     200,
                     {
-                        importaciones,
+                        products,
                         pagination,
                     },
                 ];
             });
 
-            // -----------------------------------------------------------------------------------------------------
-        // @ Importaciones - GET
-        // -----------------------------------------------------------------------------------------------------
-      this._fuseMockApiService
-      .onGet('api/apps/ecommerce/inventory/exportaciones', 300)
-      .reply(({request}) =>
-      {
-          // Get available queries
-          const search = request.params.get('search');
-          const sort = request.params.get('sort') || 'name';
-          const order = request.params.get('order') || 'asc';
-          const page = parseInt(request.params.get('page') ?? '1', 10);
-          const size = parseInt(request.params.get('size') ?? '10', 10);
-
-          let exportaciones: any[] | null = cloneDeep(this._exportaciones);
-
-          if ( sort === 'id'  )
-          {
-              exportaciones.sort((a, b) =>
-              {
-                  const fieldA = a[sort].toString().toUpperCase();
-                  const fieldB = b[sort].toString().toUpperCase();
-                  return order === 'asc' ? fieldA.localeCompare(fieldB) : fieldB.localeCompare(fieldA);
-              });
-          }
-          else
-          {
-              exportaciones.sort((a, b) => order === 'asc' ? a[sort] - b[sort] : b[sort] - a[sort]);
-          }
-
-
-          // Paginate - Start
-          const exportacionesLength = exportaciones.length;
-
-          // Calculate pagination details
-          const begin = page * size;
-          const end = Math.min((size * (page + 1)), exportacionesLength);
-          const lastPage = Math.max(Math.ceil(exportacionesLength / size), 1);
-
-          // Prepare the pagination object
-          let pagination = {};
-
-          // If the requested page number is bigger than
-          // the last possible page number, return null for
-          //  but also send the last possible page so
-          // the app can navigate to there
-          if ( page > lastPage )
-          {
-              exportaciones = null;
-              pagination = {
-                  lastPage,
-              };
-          }
-          else
-          {
-              // Paginate the results by size
-              exportaciones = exportaciones.slice(begin, end);
-
-              // Prepare the pagination mock-api
-              pagination = {
-                  length    : exportacionesLength,
-                  size      : size,
-                  page      : page,
-                  lastPage  : lastPage,
-                  startIndex: begin,
-                  endIndex  : end - 1,
-              };
-          }
-
-          // Return the response
-          return [
-              200,
-              {
-                  exportaciones,
-                  pagination,
-              },
-          ];
-      });
-
-
-                  // -----------------------------------------------------------------------------------------------------
-        // @ Importaciones - GET
-        // -----------------------------------------------------------------------------------------------------
-        this._fuseMockApiService
-        .onGet('api/apps/ecommerce/inventory/laexportaciones', 300)
-        .reply(({request}) =>
-        {
-            // Get available queries
-            const search = request.params.get('search');
-            const sort = request.params.get('sort') || 'name';
-            const order = request.params.get('order') || 'asc';
-            const page = parseInt(request.params.get('page') ?? '1', 10);
-            const size = parseInt(request.params.get('size') ?? '10', 10);
-  
-            let laexportaciones: any[] | null = cloneDeep(this._laexportaciones);
-  
-            if ( sort === 'id'  )
-            {
-                laexportaciones.sort((a, b) =>
-                {
-                    const fieldA = a[sort].toString().toUpperCase();
-                    const fieldB = b[sort].toString().toUpperCase();
-                    return order === 'asc' ? fieldA.localeCompare(fieldB) : fieldB.localeCompare(fieldA);
-                });
-            }
-            else
-            {
-                laexportaciones.sort((a, b) => order === 'asc' ? a[sort] - b[sort] : b[sort] - a[sort]);
-            }
-  
-  
-            // Paginate - Start
-            const laexportacionesLength = laexportaciones.length;
-  
-            // Calculate pagination details
-            const begin = page * size;
-            const end = Math.min((size * (page + 1)), laexportacionesLength);
-            const lastPage = Math.max(Math.ceil(laexportacionesLength / size), 1);
-  
-            // Prepare the pagination object
-            let pagination = {};
-  
-            // If the requested page number is bigger than
-            // the last possible page number, return null for
-            //  but also send the last possible page so
-            // the app can navigate to there
-            if ( page > lastPage )
-            {
-                laexportaciones = null;
-                pagination = {
-                    lastPage,
-                };
-            }
-            else
-            {
-                // Paginate the results by size
-                laexportaciones = laexportaciones.slice(begin, end);
-  
-                // Prepare the pagination mock-api
-                pagination = {
-                    length    : laexportacionesLength,
-                    size      : size,
-                    page      : page,
-                    lastPage  : lastPage,
-                    startIndex: begin,
-                    endIndex  : end - 1,
-                };
-            }
-  
-            // Return the response
-            return [
-                200,
-                {
-                    laexportaciones,
-                    pagination,
-                },
-            ];
-        });
         // -----------------------------------------------------------------------------------------------------
         // @ Product - GET
         // -----------------------------------------------------------------------------------------------------

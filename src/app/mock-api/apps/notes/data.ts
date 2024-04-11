@@ -149,7 +149,7 @@ export const notes = [
             },
             {
                 id       : '34013111-ab2c-4b2f-9352-d2ae282f57d3',
-                content  : 'DIEGOOOOOOOOOOO',
+                content  : 'Milk',
                 completed: false,
             },
             {
