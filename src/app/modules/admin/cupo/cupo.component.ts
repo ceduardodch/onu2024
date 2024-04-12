@@ -13,7 +13,6 @@ import { CupoService } from './cupo.service';
 
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
@@ -21,7 +20,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AnioService } from '../anio/anio.service';
 import { ImportadorService } from '../importador/importador.service';
-import { CrearCupo } from './nuevo/crear-cupo';
 
 @Component({
   selector: 'app-cupoes',
@@ -54,18 +52,13 @@ export class CuposComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        anios: any[];   
-        listaAsnios = [];
+        anios: any[];
 
-        importadors: any[]; 
-        listaImports: [];
+        importadors: any[];
 
-        signInForm: FormGroup; 
+        importControl = new FormControl();
 
-        fileUrl: string;
-        dataSource: any[];
-        anioSeleccionado: string;
-        importSeleccionado: string;
+        signInForm: FormGroup;
 
         constructor(
           private _cupoService: CupoService,
@@ -73,8 +66,7 @@ export class CuposComponent implements OnInit{
           private _anioService: AnioService,
           private _formBuilder: FormBuilder,
           private _snackBar: MatSnackBar,
-          public dialog: MatDialog,
-          
+
         ) { }
 
             ngOnInit(): void {
@@ -84,18 +76,18 @@ export class CuposComponent implements OnInit{
             this.signInForm = this._formBuilder.group({
               importador: ['', Validators.required],
               anio: ['', Validators.required],
-              hfc     :new FormControl ('', [Validators.required]),            
-              hcfc    :new FormControl ('', [Validators.required]),
+              hfc     : ['', [Validators.required]],
+              hcfc    : ['', [Validators.required]],
             });
 
             this._importadorService.getImportadors().subscribe((data: any[]) => {
               this.importadors = data;
-              
+
             });
 
             this._anioService.getAnios().subscribe((data1: any[]) => {
               this.anios = data1;
-              
+
             });
 
             }
@@ -126,34 +118,18 @@ export class CuposComponent implements OnInit{
               }
             }
 
-            openDialog() {
-
-              const dialogRef = this.dialog.open(CrearCupo, {
-                  width: '600px',
-                  height: '420px'
-                });
-                dialogRef.afterClosed().subscribe(result => {
-                  if (result) {
-                      this.fileUrl= URL.createObjectURL(result.ficha);
-                      this.anios = [...this.anios, result];
-                      this.importadors = [...this.importadors, result];
-                      this.dataSource = this.listaAsnios;                  
-                }
-              });
-            }
-
-           /* addCupo(): void {
+            addCupo(): void {
               const importo = this.signInForm.get('importador').value;
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
-              }          
+              }
               const importExists = this.cupos.some(cupo => cupo.importador === importo.trim());
               if (importExists) {
                 this.openSnackBar('El importador ya tiene cupo.', 'Error');
                 return;
-              }    
-            
+              }
+
               // Crear un nuevo objeto Anio con el nombre y el estado activo
               const newCupo: Cupo = {
                 importador: this.newCupo.importador, // Asegúrate de que estos valores se establezcan correctamente
@@ -164,23 +140,23 @@ export class CuposComponent implements OnInit{
 
               this._cupoService.addCupo(newCupo).subscribe({
                 next: () => {
-                  this.openSnackBar('Cupo agregado exitosamente.', 'Success');                  
+                  this.openSnackBar('Cupo agregado exitosamente.', 'Success');
                   this.signInForm.reset();
-                  this.loadCupos();                  
+                  this.loadCupos();
                 },
                 error: (error) => {
                   console.error('Error al agregar el cupo', error);
-                  this.openSnackBar('Error al agregar el cupo. Por favor intente nuevamente.', 'Error');    
+                  this.openSnackBar('Error al agregar el cupo. Por favor intente nuevamente.', 'Error');
                 }
               });
-            }*/
+            }
 
               selectCupoForEdit(cupo: Cupo): void {
-                this.selectedCupo = { ...cupo };               
+                this.selectedCupo = { ...cupo };
               }
-            
+
               updateCupo(updatedCupo: Cupo): void {
-                
+
                 if (!updatedCupo.id) {
                   console.error('Error al actualizar: ID de cupo no proporcionado');
                   return;
@@ -206,12 +182,12 @@ export class CuposComponent implements OnInit{
                   console.error('Error al eliminar: ID de cupo no proporcionado');
                   return;
                 }
-              
+
                 const confirmation = confirm('¿Estás seguro de que deseas eliminar este cupo?');
                 if (!confirmation) {
                   return;
                 }
-              
+
                 this._cupoService.deleteCupo(cupoId).subscribe({
                   next: () => {
                     // Eliminar el país de la lista en el frontend
@@ -224,7 +200,7 @@ export class CuposComponent implements OnInit{
                     console.error('Error al eliminar el cupo', error);
                   }
                 });
-              }             
+              }
 
               loadCupos(): void {
                 this._cupoService.getCupos().subscribe({
@@ -243,11 +219,11 @@ export class CuposComponent implements OnInit{
                       cupo.importador.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                       cupo.anio.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                       cupo.hfc.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                      cupo.hcfc.toLowerCase().includes(this.searchTerm.toLowerCase())                    
+                      cupo.hcfc.toLowerCase().includes(this.searchTerm.toLowerCase())
                     )
                   : this.cupos;
               }
-            
+
               orderBy(field: string): void {
                 // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
                 if (this.currentField === field) {
@@ -256,11 +232,11 @@ export class CuposComponent implements OnInit{
                   this.orderAsc = true;
                   this.currentField = field;
                 }
-              
+
                 this.filteredCupos.sort((a, b) => {
                   const valueA = a[field] ? a[field].toString().toLowerCase() : '';
                   const valueB = b[field] ? b[field].toString().toLowerCase() : '';
-              
+
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {
                     return this.orderAsc ? -1 : 1;
@@ -277,6 +253,6 @@ export class CuposComponent implements OnInit{
                 this.applyFilter();
               }
 
-              
-              
+
+
 }
