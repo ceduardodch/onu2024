@@ -13,6 +13,7 @@ import { CupoService } from './cupo.service';
 
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
@@ -20,6 +21,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AnioService } from '../anio/anio.service';
 import { ImportadorService } from '../importador/importador.service';
+import { CrearCupo } from './nuevo/crear-cupo';
 
 @Component({
   selector: 'app-cupoes',
@@ -52,13 +54,18 @@ export class CuposComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        anios: any[];        
+        anios: any[];   
+        listaAsnios = [];
 
-        importadors: any[];        
-
-        importControl = new FormControl();        
+        importadors: any[]; 
+        listaImports: [];
 
         signInForm: FormGroup; 
+
+        fileUrl: string;
+        dataSource: any[];
+        anioSeleccionado: string;
+        importSeleccionado: string;
 
         constructor(
           private _cupoService: CupoService,
@@ -66,6 +73,7 @@ export class CuposComponent implements OnInit{
           private _anioService: AnioService,
           private _formBuilder: FormBuilder,
           private _snackBar: MatSnackBar,
+          public dialog: MatDialog,
           
         ) { }
 
@@ -76,8 +84,8 @@ export class CuposComponent implements OnInit{
             this.signInForm = this._formBuilder.group({
               importador: ['', Validators.required],
               anio: ['', Validators.required],
-              hfc     : ['', [Validators.required]],            
-              hcfc    : ['', [Validators.required]],
+              hfc     :new FormControl ('', [Validators.required]),            
+              hcfc    :new FormControl ('', [Validators.required]),
             });
 
             this._importadorService.getImportadors().subscribe((data: any[]) => {
@@ -118,7 +126,23 @@ export class CuposComponent implements OnInit{
               }
             }
 
-            addCupo(): void {
+            openDialog() {
+
+              const dialogRef = this.dialog.open(CrearCupo, {
+                  width: '600px',
+                  height: '420px'
+                });
+                dialogRef.afterClosed().subscribe(result => {
+                  if (result) {
+                      this.fileUrl= URL.createObjectURL(result.ficha);
+                      this.anios = [...this.anios, result];
+                      this.importadors = [...this.importadors, result];
+                      this.dataSource = this.listaAsnios;                  
+                }
+              });
+            }
+
+           /* addCupo(): void {
               const importo = this.signInForm.get('importador').value;
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
@@ -149,7 +173,7 @@ export class CuposComponent implements OnInit{
                   this.openSnackBar('Error al agregar el cupo. Por favor intente nuevamente.', 'Error');    
                 }
               });
-            }
+            }*/
 
               selectCupoForEdit(cupo: Cupo): void {
                 this.selectedCupo = { ...cupo };               

@@ -120,7 +120,7 @@ export class ImportadorsComponent implements OnInit{
 
             this._importadorService.addImportador(newImportador).subscribe({
               next: () => {
-                this.openSnackBar('Cupo agregado exitosamente.', 'Success');                  
+                this.openSnackBar('Importador agregado exitosamente.', 'Success');                  
                 this.signInForm.reset();
                 this.loadImportadores();                
               },

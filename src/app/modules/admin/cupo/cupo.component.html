@@ -67,9 +67,12 @@
                               </mat-option>
                             </mat-select>
                           </mat-form-field>
-
-                        <input [(ngModel)]="selectedCupo.hfc" placeholder="HFC" class="flex-1">
-                        <input [(ngModel)]="selectedCupo.hcfc" placeholder="HCFC" class="flex-1">
+                        <mat-form-field class="col-span-1">
+                        <input matInput type="number" [(ngModel)]="selectedCupo.hfc" placeholder="HFC">
+                        </mat-form-field>
+                        <mat-form-field class="col-span-1">
+                        <input matInput type="number" [(ngModel)]="selectedCupo.hcfc" placeholder="HCFC">
+                        </mat-form-field>
                         <div class="flex items-center col-span-1 space-x-1">
                         <button mat-icon-button (click)="updateCupo(selectedCupo)" color="primary">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
@@ -87,10 +90,13 @@
                 </div>
             </ng-container>
         <!--/ng-container-->
+        <button mat-icon-button color="primary" (click)="openDialog()" matTooltip="Agregar producto">
+          <mat-icon>control_point</mat-icon>
+      </button>
             <!-- Fila para agregar un nuevo usuario -->
-            <form [formGroup]="signInForm" (ngSubmit)="addCupo()">
+            <!--form [formGroup]="signInForm" (ngSubmit)="addCupo()">
             <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <mat-form-field class="w-full">                    
+                <mat-form-field class="col-span-1">                    
                     <input type="text"
                            placeholder="Importador"
                            matInput
@@ -101,10 +107,11 @@
                         {{ import2.name }}
                       </mat-option>
                     </mat-autocomplete>  
-                    <mat-error *ngIf="signInForm.get('importador').touched && signInForm.get('importador').hasError('required')"/>                                                            
+                    
                   </mat-form-field>
                   
-                  <mat-form-field class="w-full">                    
+                  <mat-form-field class="col-span-1">  
+                                     
                     <input type="text"
                            placeholder="Año"
                            matInput
@@ -115,21 +122,19 @@
                         {{ anio2.name }}
                       </mat-option>
                     </mat-autocomplete> 
-                    <mat-error *ngIf="signInForm.get('anio').touched && signInForm.get('anio').hasError('required')"/>                                                             
+                    
                   </mat-form-field>     
-                <mat-form-field class="w-full"> 
-                <input matInput formControlName="hfc" id="hfc"> 
-                <mat-error *ngIf="signInForm.get('hfc').errors?.required"/>                    
+                <mat-form-field class="col-span-1"> 
+                <input matInput type="number" formControlName="hfc" id="hfc">                 
                 </mat-form-field>
-                <mat-form-field class="w-full"> 
-                <input matInput formControlName="hcfc" id="hcfc">
-                <mat-error *ngIf="signInForm.get('hcfc').errors?.required"/>                    
+                <mat-form-field class="col-span-1"> 
+                <input matInput type="number" formControlName="hcfc" id="hcfc">              
                 </mat-form-field>   
-                <div>
-                    <button type="submit" mat-stroked-button color="primary">Guardar</button>
+                <div class="col-span-1">
+                    <button type="submit" class="px-5 save-button" mat-stroked-button color="primary">Guardar</button>
                   </div>
             </div>
-        </form>
+        </form-->
         </ng-container>
         </div>
 
