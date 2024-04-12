@@ -40,7 +40,10 @@ jobs:
         # Install dependencies and build the project
         npm install
         npm run build --prod
-        # Handle PM2 process management
-        pm2 delete app || true  # Ignore the error if the app does not exist
-        pm2 serve dist/ --name app
+        # Copy build artifacts to the NGINX serving directory
+        sudo cp -r dist/* /var/www/html/
+        # Set the correct permissions
+        sudo chown -R www-data:www-data /var/www/html/
+        # Optionally restart NGINX, if needed (usually not required for static content)
+        sudo systemctl reload nginx
         EOF
