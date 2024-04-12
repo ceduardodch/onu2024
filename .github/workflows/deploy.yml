@@ -18,4 +18,4 @@ jobs:
 
     - name: Deploy to server
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /var/www/onu2024 && git pull && sudo chown -R $(whoami) /usr/local/ && export N_PREFIX=\"$HOME/n\" && export PATH=\"$N_PREFIX/bin:$PATH\" && npm install -g n && n latest && npm install && npm run build && pm2 delete app && pm2 serve dist/ --name app --spa"
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /var/www/onu2024 && git pull && export N_PREFIX=\"$HOME/n\" && export PATH=\"$N_PREFIX/bin:$PATH\" && npm install -g n && n latest && npm install && npm run build && pm2 delete app && pm2 serve dist/ --name app --spa"
