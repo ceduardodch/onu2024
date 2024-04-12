@@ -18,20 +18,29 @@ jobs:
 
     - name: Deploy to server
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} <<EOF
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+        # Navigate to the project directory
         cd /var/www/onu2024
+        # Ensure the repository is up to date
         git pull
+        # Install 'n' to manage Node versions
+        npm install -g n
+        # Install and use Node v18.13
+        n 18.13
+        # Ensure the Node version is correctly updated in the session
         export N_PREFIX="$HOME/n"
         export PATH="$N_PREFIX/bin:$PATH"
-        npm install -g n
-        n 18.13
-        PATH="$N_PREFIX/bin:$PATH" # Ensure updated PATH is used
-        node -v  # Confirm Node version
-        if [ $(node -v) != 'v18.13.*' ]; then
+        # Check Node.js version
+        node -v
+        # Condition to check if the Node version is as expected
+        if [[ $(node -v) != v18.13.* ]]; then
           echo "Node version not updated correctly."
           exit 1
         fi
+        # Install dependencies and build the project
         npm install
-        npm run build
-        pm2 delete app || true  # Ignore error if app does not exist
-        pm2 serve dist/ --
+        npm run build --prod
+        # Handle PM2 process management
+        pm2 delete app || true  # Ignore the error if the app does not exist
+        pm2 serve dist/ --name app
+        EOF
