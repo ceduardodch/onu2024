@@ -25,10 +25,13 @@ jobs:
         export PATH="$N_PREFIX/bin:$PATH"
         npm install -g n
         n 18.13
-        PATH="$N_PREFIX/bin:$PATH"  # Re-export PATH to use the updated Node version
-        node -v  # Check the Node version
+        PATH="$N_PREFIX/bin:$PATH" # Ensure updated PATH is used
+        node -v  # Confirm Node version
+        if [ $(node -v) != 'v18.13.*' ]; then
+          echo "Node version not updated correctly."
+          exit 1
+        fi
         npm install
         npm run build
-        pm2 delete app
-        pm2 serve dist/ --name app --spa
-        EOF
+        pm2 delete app || true  # Ignore error if app does not exist
+        pm2 serve dist/ --
