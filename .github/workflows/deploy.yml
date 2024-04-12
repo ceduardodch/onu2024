@@ -20,4 +20,4 @@ jobs:
 
     - name: Deploy to server
       run: |
-ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /var/www/myapp && git pull && npm install && pm2 restart app"
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /var/www/myapp && git pull && npm install && pm2 restart app"
