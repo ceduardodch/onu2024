@@ -18,8 +18,8 @@ import { ProveedorService } from './proveedor.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Observable } from 'rxjs';
-import { debounceTime, startWith, switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, debounceTime, startWith, switchMap } from 'rxjs/operators';
 import { PaisService } from '../pais/pais.service';
 
 
@@ -253,16 +253,25 @@ export class ProveedorsComponent implements OnInit{
                 this.selectedProveedor = null;
                 this.searchTerm = '';
                 this.applyFilter();
-              }       
+              }      
               
               onSearchChange(searchValue: string): void {
                 this.paisesFiltrados$ = this.paisControl.valueChanges.pipe(
                   startWith(''),
                   debounceTime(300),
                   switchMap(value => {
-                    return value ? this._paisService.searchPaises(value) : [];
+                    if (value) {
+                      return this._paisService.searchPaises(value).pipe(
+                        catchError(error => {
+                          this.openSnackBar('Error al buscar países: ' + error, 'Cerrar');
+                          return of([]); // Retorna un Observable vacío en caso de error.
+                        })
+                      );
+                    } else {
+                      return of([]); // Retorna un Observable vacío si la cadena de búsqueda está vacía.
+                    }
                   })
-                );
-              }
+                );                         
 
+              }
 }

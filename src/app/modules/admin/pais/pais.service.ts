@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../../../enviroments/environment';
 import { Pais } from './pais.model';
 @Injectable({
@@ -33,19 +33,19 @@ export class PaisService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
   
-  searchPaises(term: string): Observable<any[]> {
-    if (term === '') {
-      return of([]); // Si el término de búsqueda está vacío, retorna un Observable de un array vacío.
-    }
-    return this.http.get<any[]>(`${this.apiUrl}/search?name=${term}`).pipe(
-      catchError(this.handleError<any[]>('searchPaises', []))
+  searchPaises(searchValue: string): Observable<any[]> {
+    // Construye la URL de la solicitud aquí con `searchValue`
+    const url = `${this.apiUrl}/search?name=${encodeURIComponent(searchValue)}`;
+    
+    return this.http.get<any[]>(url).pipe(
+      catchError(this.handleError)
     );
   }
 
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed: ${error.message}`);
-      return of(result as T); // Debes importar 'of' de 'rxjs' para que esto funcione.
-    };
+  private handleError(error: HttpErrorResponse) {
+    // Puedes mejorar el log de errores aquí
+    console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
+    // TODO: Mejorar el manejo de errores dependiendo de tu aplicación
+    return throwError('Something bad happened; please try again later.');
   }
 }
