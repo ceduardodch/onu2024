@@ -32,18 +32,18 @@ import { CupoService } from './../cupo.service';
     FormsModule,QuillEditorComponent
   ],
   templateUrl: './crear-cupo.html',
-  
+
 })
 export class CrearCupo implements OnInit{
         cupos: Cupo[] = []; // Cambiado a array regular para manejar la lista
-        newCupo:Cupo = {
+        newCupo:Cupo = { importador_id:0,
           importador: '', anio: '', hfc: '', hcfc: ''};
 
-        anios: any[];   
+        anios: any[];
 
-        importadors: any[];        
+        importadors: any[];
 
-        signInForm: FormGroup; 
+        signInForm: FormGroup;
 
         constructor(
           private _cupoService: CupoService,
@@ -52,21 +52,21 @@ export class CrearCupo implements OnInit{
           private _formBuilder: FormBuilder,
           private _snackBar: MatSnackBar,
           public dialogRef: MatDialogRef<CrearCupo>,
-          
+
         ) {}
 
             ngOnInit(): void {
 
                 this._cupoService.getCupos().subscribe({
                     next: (data) => {
-                      this.cupos = data;                      
+                      this.cupos = data;
                     },
                     error: (error) => console.error(error)
                   });
 
                 this._importadorService.getImportadors().subscribe({
                     next: (data) => {
-                        this.importadors = data;                        
+                        this.importadors = data;
                     },
                     error: (error) => {
                         console.error('Error al cargar importadores', error);
@@ -76,7 +76,7 @@ export class CrearCupo implements OnInit{
 
                 this._anioService.getAnios().subscribe({
                     next: (data) => {
-                        this.anios = data;                        
+                        this.anios = data;
                     },
                     error: (error) => {
                         console.error('Error al cargar años', error);
@@ -87,12 +87,12 @@ export class CrearCupo implements OnInit{
             this.signInForm = this._formBuilder.group({
                 importador: ['', Validators.required],
                 anio: ['', Validators.required],
-                hfc     :new FormControl ('', [Validators.required]),          
+                hfc     :new FormControl ('', [Validators.required]),
                 hcfc    :new FormControl ('', [Validators.required]),
               });
 
             }
-            
+
 
             openSnackBar(message: string, action: string) {
               this._snackBar.open(message, action, {
@@ -100,27 +100,27 @@ export class CrearCupo implements OnInit{
                 horizontalPosition: 'center', // Posición horizontal
                 verticalPosition: 'top', // Posición vertical
               });
-            }            
+            }
 
             onSubmit() {
                 // Primero verifica si el formulario es válido
                 if (this.signInForm.valid) {
                   // Se usa value del formulario reactivo en lugar de newCupo
                   const cupoData = this.signInForm.value;
-                  
+
                   // Revisar si el importador ya tiene un cupo asignado
                   const importExists = this.cupos.some(cupo => cupo.importador === cupoData.importador.trim());
                   if (importExists) {
                     this.openSnackBar('El importador ya tiene un cupo asignado.', 'Error');
                     return;
                   }
-                  
+
                   // Llamar al servicio para agregar el cupo con los datos del formulario
                   this._cupoService.addCupo(cupoData).subscribe({
                     next: () => {
                       this.openSnackBar('Cupo agregado exitosamente.', 'Success');
-                      this.signInForm.reset(); // Limpiar el formulario   
-                      this.dialogRef.close(cupoData); // Cerrar el diálogo (si se está utilizando)                                          
+                      this.signInForm.reset(); // Limpiar el formulario
+                      this.dialogRef.close(cupoData); // Cerrar el diálogo (si se está utilizando)
                     },
                     error: (error) => {
                       console.error('Error al agregar el cupo', error);
@@ -131,10 +131,10 @@ export class CrearCupo implements OnInit{
                   this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 }
               }
-              
-            isDataComplete(): boolean {        
+
+            isDataComplete(): boolean {
                 return this.signInForm.valid;
-        
+
             }
-    
+
     }
