@@ -15,6 +15,9 @@
             <mat-icon matPrefix svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
             <input type="text" placeholder=" Buscar " [(ngModel)]="searchTerm" (input)="applyFilter()" class="flex-1">
         </div>
+        <button mat-icon-button color="primary" (click)="openDialog()" matTooltip="Agregar producto">
+          <mat-icon>control_point</mat-icon>
+      </button>
     </div>
     <div
         class="flex-auto -mt-16 p-6 sm:p-10 rounded-t-2xl shadow overflow-y-auto bg-card"
@@ -90,9 +93,7 @@
                 </div>
             </ng-container>
         <!--/ng-container-->
-        <button mat-icon-button color="primary" (click)="openDialog()" matTooltip="Agregar producto">
-          <mat-icon>control_point</mat-icon>
-      </button>
+        
             <!-- Fila para agregar un nuevo usuario -->
             <!--form [formGroup]="signInForm" (ngSubmit)="addCupo()">
             <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">

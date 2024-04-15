@@ -19,19 +19,20 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { AnioService } from '../anio/anio.service';
 import { ImportadorService } from '../importador/importador.service';
 import { CrearCupo } from './nuevo/crear-cupo';
 
 @Component({
-  selector: 'app-cupoes',
+  selector: 'app-cupos',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
-    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
-    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule, CrearCupo,
+    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule, FuseVerticalNavigationComponent
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -63,9 +64,7 @@ export class CuposComponent implements OnInit{
         signInForm: FormGroup; 
 
         fileUrl: string;
-        dataSource: any[];
-        anioSeleccionado: string;
-        importSeleccionado: string;
+        dataSource: any[];        
 
         constructor(
           private _cupoService: CupoService,
@@ -73,7 +72,7 @@ export class CuposComponent implements OnInit{
           private _anioService: AnioService,
           private _formBuilder: FormBuilder,
           private _snackBar: MatSnackBar,
-          public dialog: MatDialog,
+          public dialog: MatDialog,          
           
         ) { }
 
@@ -129,52 +128,20 @@ export class CuposComponent implements OnInit{
             openDialog() {
 
               const dialogRef = this.dialog.open(CrearCupo, {
-                  width: '600px',
-                  height: '420px'
+                  //width: '600px',
+                  //height: '420px'
                 });
                 dialogRef.afterClosed().subscribe(result => {
                   if (result) {
-                      this.fileUrl= URL.createObjectURL(result.ficha);
-                      this.anios = [...this.anios, result];
-                      this.importadors = [...this.importadors, result];
-                      this.dataSource = this.listaAsnios;                  
-                }
+                    this.cupos.push(result);
+                    this.cupos = [...this.cupos]; 
+                    this.filteredCupos = this.cupos.slice();
+                    //this.filteredCupos = [...this.cupos]; // Actualiza la lista filtrada con la lista de cupos actualizada
+                    // Forzamos la detección de cambios para asegurarnos de que la vista se actualice
+                    //this.cdr.detectChanges();
+                    }                
               });
-            }
-
-           /* addCupo(): void {
-              const importo = this.signInForm.get('importador').value;
-              if (!this.signInForm.valid) {
-                this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
-                return;
-              }          
-              const importExists = this.cupos.some(cupo => cupo.importador === importo.trim());
-              if (importExists) {
-                this.openSnackBar('El importador ya tiene cupo.', 'Error');
-                return;
-              }    
-            
-              // Crear un nuevo objeto Anio con el nombre y el estado activo
-              const newCupo: Cupo = {
-                importador: this.newCupo.importador, // Asegúrate de que estos valores se establezcan correctamente
-                anio: this.newCupo.anio,
-                hfc: this.signInForm.value.hfc.trim(),
-                hcfc: this.signInForm.value.hcfc.trim()
-              };
-
-              this._cupoService.addCupo(newCupo).subscribe({
-                next: () => {
-                  this.openSnackBar('Cupo agregado exitosamente.', 'Success');                  
-                  this.signInForm.reset();
-                  this.loadCupos();                  
-                },
-                error: (error) => {
-                  console.error('Error al agregar el cupo', error);
-                  this.openSnackBar('Error al agregar el cupo. Por favor intente nuevamente.', 'Error');    
-                }
-              });
-            }*/
-
+            }         
               selectCupoForEdit(cupo: Cupo): void {
                 this.selectedCupo = { ...cupo };               
               }
