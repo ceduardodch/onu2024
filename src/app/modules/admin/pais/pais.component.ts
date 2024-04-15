@@ -1,7 +1,8 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +18,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { Pais } from './pais.model'; // Import the 'pais' class from the appropriate file
 import { PaisService } from './pais.service';
+
+@Injectable({
+  providedIn: 'root'
+})
 
 @Component({
   selector: 'app-paises',
@@ -48,12 +53,13 @@ export class PaisesComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        signInForm: FormGroup;
+        signInForm: FormGroup;        
 
         constructor(
           private _paisService: PaisService,
           private _formBuilder: FormBuilder,
           private _snackBar: MatSnackBar,
+          private http: HttpClient,
         ) { }
 
             ngOnInit(): void {
@@ -216,6 +222,6 @@ export class PaisesComponent implements OnInit{
                 this.selectedPais = null;
                 this.searchTerm = '';
                 this.applyFilter();
-              }
+              }         
               
 }

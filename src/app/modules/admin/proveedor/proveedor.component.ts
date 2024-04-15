@@ -1,8 +1,8 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, Injectable, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
@@ -19,7 +19,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
+import { debounceTime, startWith, switchMap } from 'rxjs/operators';
 import { PaisService } from '../pais/pais.service';
+
+
+@Injectable()
 
 @Component({
   selector: 'app-proveedors',
@@ -57,11 +61,16 @@ export class ProveedorsComponent implements OnInit{
         
         signInForm: FormGroup;    
 
+        paisControl = new FormControl();
+        paisesFiltrados$: Observable<any[]>;
+        
+
         constructor(
           private _proveedorService: ProveedorService,
           private _paisService: PaisService,
           private _formBuilder: FormBuilder,
           private _snackBar: MatSnackBar,
+          
         ) { }
 
         ngOnInit(): void {
@@ -78,6 +87,19 @@ export class ProveedorsComponent implements OnInit{
             this.countrys = data;
           });
 
+          this.paisesFiltrados$ = this.paisControl.valueChanges.pipe(
+            startWith(''),
+            debounceTime(300),
+            switchMap(value => {
+              return value ? this._paisService.searchPaises(value) : [];
+            })
+          );
+          
+            }
+
+            private _filter(value: string): string[] {
+              const filterValue = value.toLowerCase();
+              return this.countrys.filter(pais => pais.toLowerCase().includes(filterValue));
             }
 
             openSnackBar(message: string, action: string) {
@@ -231,5 +253,16 @@ export class ProveedorsComponent implements OnInit{
                 this.selectedProveedor = null;
                 this.searchTerm = '';
                 this.applyFilter();
+              }       
+              
+              onSearchChange(searchValue: string): void {
+                this.paisesFiltrados$ = this.paisControl.valueChanges.pipe(
+                  startWith(''),
+                  debounceTime(300),
+                  switchMap(value => {
+                    return value ? this._paisService.searchPaises(value) : [];
+                  })
+                );
               }
+
 }
