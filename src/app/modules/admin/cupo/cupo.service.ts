@@ -8,7 +8,6 @@ import { Cupo } from './cupo.model';
   providedIn: 'root'
 })
 export class CupoService {
-
   private apiUrl = environment.apiUrl+'/cupos';
 
   constructor(private http: HttpClient) { }
