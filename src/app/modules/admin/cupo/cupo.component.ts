@@ -13,23 +13,26 @@ import { CupoService } from './cupo.service';
 
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { AnioService } from '../anio/anio.service';
 import { ImportadorService } from '../importador/importador.service';
+import { CrearCupo } from './nuevo/crear-cupo';
 
 @Component({
-  selector: 'app-cupoes',
+  selector: 'app-cupos',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
-    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
-    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
+    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule, CrearCupo,
+    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule, FuseVerticalNavigationComponent
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -58,14 +61,19 @@ export class CuposComponent implements OnInit{
 
         importControl = new FormControl();
 
-        signInForm: FormGroup;
+        signInForm: FormGroup; 
 
+        fileUrl: string;
+        dataSource: any[];        
+        
         constructor(
           private _cupoService: CupoService,
           private _importadorService: ImportadorService,
           private _anioService: AnioService,
           private _formBuilder: FormBuilder,
           private _snackBar: MatSnackBar,
+          public dialog: MatDialog,          
+          
 
         ) { }
 
@@ -121,6 +129,23 @@ export class CuposComponent implements OnInit{
               }
             }
 
+            openDialog() {
+
+              const dialogRef = this.dialog.open(CrearCupo, {
+                  //width: '600px',
+                  //height: '420px'
+                });
+                dialogRef.afterClosed().subscribe(result => {
+                  if (result) {
+                    this.cupos.push(result);
+                    this.cupos = [...this.cupos]; 
+                    this.filteredCupos = this.cupos.slice();
+                    //this.filteredCupos = [...this.cupos]; // Actualiza la lista filtrada con la lista de cupos actualizada
+                    // Forzamos la detección de cambios para asegurarnos de que la vista se actualice
+                    //this.cdr.detectChanges();
+                    }                
+              });
+            }         
             addCupo(): void {
               const importo = this.signInForm.get('importador').value;
               if (!this.signInForm.valid) {
@@ -227,7 +252,7 @@ export class CuposComponent implements OnInit{
                     )
                   : this.cupos;
               }
-
+            
               orderBy(field: string): void {
                 // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
                 if (this.currentField === field) {
@@ -236,11 +261,11 @@ export class CuposComponent implements OnInit{
                   this.orderAsc = true;
                   this.currentField = field;
                 }
-
+              
                 this.filteredCupos.sort((a, b) => {
                   const valueA = a[field] ? a[field].toString().toLowerCase() : '';
                   const valueB = b[field] ? b[field].toString().toLowerCase() : '';
-
+              
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {
                     return this.orderAsc ? -1 : 1;
@@ -257,6 +282,6 @@ export class CuposComponent implements OnInit{
                 this.applyFilter();
               }
 
-
-
+              
+              
 }

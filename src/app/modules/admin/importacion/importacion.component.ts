@@ -1,12 +1,11 @@
-import { Component,OnInit } from '@angular/core';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { ImportacionService } from './importacion.service';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Importacion } from './importacion.model'; // Import the 'User' class from the appropriate file
-import { Observable, of } from 'rxjs'; // Import the 'Observable' class from the appropriate package
-import { Router } from '@angular/router'; // Import Router
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router } from '@angular/router'; // Import Router
+import { Importacion } from './importacion.model'; // Import the 'User' class from the appropriate file
+import { ImportacionService } from './importacion.service';
 
 @Component({
   selector: 'app-users',
@@ -64,5 +63,3 @@ export class ImportacionComponent implements OnInit{
 function subscribe(arg0: (importacion: Importacion) => void) {
     throw new Error('Function not implemented.');
 }
-
-

@@ -1,10 +1,12 @@
-import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component,OnInit, ChangeDetectorRef } from '@angular/core';
-import { FormsModule, ReactiveFormsModule , Validators} from '@angular/forms';
+import { AsyncPipe, CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatOptionModule, MatRippleModule } from '@angular/material/core';
+import { MAT_DATE_LOCALE, MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,21 +17,17 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSortModule } from '@angular/material/sort';
-import { FormControl } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { CommonModule  } from '@angular/common';
-import { ProveedorService } from '../../proveedor/proveedor.service';
-import { PaisService } from '../../pais/pais.service';
-import { ImportadorService } from '../../importador/importador.service';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { startWith } from 'rxjs';
 import { AnioService } from '../../anio/anio.service';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { CupoService } from '../../cupo/cupo.service';
+import { ImportadorService } from '../../importador/importador.service';
+import { PaisService } from '../../pais/pais.service';
+import { ProveedorService } from '../../proveedor/proveedor.service';
+import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { ImportacionService } from '../importacion.service';
 
 @Component({
@@ -89,6 +87,8 @@ export class CrearImportacionComponent implements OnInit {
     cupos = [];
     importacion :any;
 
+    importadoresFiltrados: any[];
+
     constructor(private _proveedorService: ProveedorService,
                 private _anioService: AnioService,
                 private _paisService: PaisService,
@@ -97,7 +97,13 @@ export class CrearImportacionComponent implements OnInit {
                 private _importacioService: ImportacionService,
                 private cdr: ChangeDetectorRef,
                 private _importacionService: ImportacionService,
-                                public dialog: MatDialog) { }
+                                public dialog: MatDialog
+
+               ) {
+
+                this.importadoresFiltrados = this.importadores;
+
+                }
 
 
                 ngAfterViewInit() {
@@ -108,6 +114,13 @@ export class CrearImportacionComponent implements OnInit {
     ngOnInit(): void {
         this.loadData().then(() => {
         });
+
+        this.importadorControl.valueChanges
+      .pipe(
+        startWith(''),
+        //map(valor => this._filtrarImportadores(valor))
+      )
+      .subscribe(filtrados => this.importadoresFiltrados = filtrados);
 
       }
 
@@ -128,9 +141,6 @@ export class CrearImportacionComponent implements OnInit {
               this.anios = data;
               }
           );
-
-
-
 
       }
       selectFile(event) {
@@ -224,7 +234,6 @@ export class CrearImportacionComponent implements OnInit {
                 reader.readAsDataURL(producto.ficha);
             });
         });
-
         Promise.all(fileReadPromises).then(fichas => {
             let mainFileReader = new FileReader();
             mainFileReader.onload = () => {
@@ -257,17 +266,33 @@ export class CrearImportacionComponent implements OnInit {
                 };
                 console.log(body);
 
-                this._importacioService.addImportacion(body).subscribe({
-                    error: (error) => {
-                        console.error('Error al agregar el importador', error);
-                    }
-                });
-            };
-            mainFileReader.readAsDataURL(this.selectedFile);
-        }).catch(error => {
-            console.error('Error al leer los archivos', error);
-        });
+              this._importacioService.addImportacion(body).subscribe({
+                  error: (error) => {
+                      console.error('Error al agregar el importador', error);
+                  }
+              });
+          };
+          mainFileReader.readAsDataURL(this.selectedFile);
+      }).catch(error => {
+          console.error('Error al leer los archivos', error);
+      });
+
+      }
+
+    eliminarProducto(productoEliminar) {
+
+      this.listaProductos = this.listaProductos.filter(producto => producto !== productoEliminar);
+      this.dataSource = [...this.listaProductos]; // Actualiza el dataSource de la tabla
+
+      this.cdr.detectChanges();
     }
 
+    private _filtrarImportadores(value: string): any[] {
+      const filterValue = value.toLowerCase();
+      // Filtrar el arreglo de importadores
+      return this.importadores.filter(importador =>
+        importador.name.toLowerCase().includes(filterValue)
+      );
+    }
 
 }
