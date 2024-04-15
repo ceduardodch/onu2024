@@ -99,7 +99,7 @@ export class CrearImportacionComponent implements OnInit {
                 private cdr: ChangeDetectorRef,
                 private _importacionService: ImportacionService,
                                 public dialog: MatDialog
-                              
+
                ) {
 
                 this.importadoresFiltrados = this.importadores;
@@ -151,15 +151,19 @@ export class CrearImportacionComponent implements OnInit {
 
       }
     onImportadorSelected(event) {
+        console.log('onImportadorSelected',event);
     this.calculoResumen(event);
+    }
+    displayFn(importador: any): string {
+        return importador && importador.name ? importador.name : '';
     }
     calculoResumen(event) {
     console.log('calculoResumen event',event);
-        this._cupoService.getCuposByName(event).subscribe((data: any[]) => {
+        this._cupoService.getCuposByName(event.name).subscribe((data: any[]) => {
             this.cupos = data;
             console.log(data);
         });
-        this._importacioService.getImportacionByImportador(event).subscribe((data: any[]) => {
+        this._importacioService.getImportacionByImportador(event.name).subscribe((data: any[]) => {
             console.log(data);
             this.importacion = data;
         });
@@ -201,7 +205,8 @@ export class CrearImportacionComponent implements OnInit {
                 this.fileUrl= URL.createObjectURL(result.ficha);
                 this.listaProductos = [...this.listaProductos, result];
                 this.dataSource = this.listaProductos;
-            this.grupoSustancia = result.grupo;
+
+                this.grupoSustancia = result.grupo;
             this.calculoResumen(this.importadorControl.value);
 
           }
@@ -217,9 +222,9 @@ export class CrearImportacionComponent implements OnInit {
       save() {
         let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
         console.log('Paso1 Save', this.selectedFile);
-        
-        // Preparar promesas para leer fichas como Data URL      
-        let fileReadPromises = this.listaProductos.map(producto => {            
+
+        // Preparar promesas para leer fichas como Data URL
+        let fileReadPromises = this.listaProductos.map(producto => {
             return new Promise<string>((resolve, reject) => {
                 let reader = new FileReader();
                 reader.onload = () => {
@@ -231,34 +236,36 @@ export class CrearImportacionComponent implements OnInit {
             });
         });
         Promise.all(fileReadPromises).then(fichas => {
-          let mainFileReader = new FileReader();
-          mainFileReader.onload = () => {
-              let body = {
-                  "authorization_date": this.fechaAutorizacion,
-                  "month": nombreDelMes,
-                  "cupo_asignado": this.cupoAsignado,
-                  "status": this.currentStep,
-                  "cupo_restante": this.cupoRestante,
-                  "total_solicitud": this.totalPao,
-                  "total_pesokg": this.totalPesoKg,
-                  "vue": this.nroSolicitudVUE.value,
-                  "data_file": (mainFileReader.result as string).split(',')[1],
-                  "importador": this.importadorControl.value,
-                  "years": this.anios[0]?.name,
-                  "pais": this.paisSeleccionado,
-                  "proveedor": this.proveedorSeleccionado,
-                  "grupo": this.grupoSustancia,
-                  "details": this.listaProductos.map((producto, index) => ({
-                      cif: producto.cif,
-                      fob: producto.fob,
-                      peso_kg: producto.kg,
-                      pao: producto.pao,
-                      sustancia: producto.producto,
-                      subpartida: producto.subpartida,
-                      ficha_file: fichas[index]
-                  }))
-              };
-              console.log(body);
+            let mainFileReader = new FileReader();
+            mainFileReader.onload = () => {
+                let body = {
+                    "authorization_date": this.fechaAutorizacion,
+                    "month": nombreDelMes,
+                    "cupo_asignado": this.cupoAsignado,
+                    "status": this.currentStep,
+                    "cupo_restante": this.cupoRestante,
+                    "total_solicitud": this.totalPao,
+                    "total_pesokg": this.totalPesoKg,
+                    "vue": this.nroSolicitudVUE.value,
+                    "data_file": (mainFileReader.result as string).split(',')[1],
+                    "importador": this.importadorControl.value.name,
+                    "importador_id": this.importadorControl.value.id,
+
+                    "years": this.anios[0]?.name,
+                    "pais": this.paisSeleccionado,
+                    "proveedor": this.proveedorSeleccionado,
+                    "grupo": this.grupoSustancia,
+                    "details": this.listaProductos.map((producto, index) => ({
+                        cif: producto.cif,
+                        fob: producto.fob,
+                        peso_kg: producto.kg,
+                        pao: producto.pao,
+                        sustancia: producto.producto,
+                        subpartida: producto.subpartida,
+                        ficha_file: fichas[index]
+                    }))
+                };
+                console.log(body);
 
               this._importacioService.addImportacion(body).subscribe({
                   error: (error) => {
@@ -274,13 +281,13 @@ export class CrearImportacionComponent implements OnInit {
       }
 
     eliminarProducto(productoEliminar) {
-      
+
       this.listaProductos = this.listaProductos.filter(producto => producto !== productoEliminar);
       this.dataSource = [...this.listaProductos]; // Actualiza el dataSource de la tabla
-    
+
       this.cdr.detectChanges();
     }
-    
+
     private _filtrarImportadores(value: string): any[] {
       const filterValue = value.toLowerCase();
       // Filtrar el arreglo de importadores

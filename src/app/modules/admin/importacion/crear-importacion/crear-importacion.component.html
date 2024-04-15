@@ -30,16 +30,14 @@
                         <mat-icon class="icon-size-5" matPrefix svgIcon="heroicons_solid:hashtag"></mat-icon>
                     </mat-form-field>
 
-                    <mat-form-field class="col-span-1">
-                        <input type="text"
-                               placeholder="Importador"
-                               matInput
-                               [formControl]="importadorControl"
-                               [matAutocomplete]="auto">
-                        <mat-autocomplete #auto="matAutocomplete">
-                          <mat-option *ngFor="let importador of importadoresFiltrados" [value]="importador.name">
-                            {{ importador.name }}
-                          </mat-option>
+                    <mat-form-field class="w-full">
+                        <mat-label>Importador</mat-label>
+
+                        <input type="text" placeholder="Importador" matInput [formControl]="importadorControl" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onImportadorSelected($event.option.value)">
+                            <mat-option *ngFor="let importador of importadores" [value]="importador">
+                                {{importador.name}}
+                            </mat-option>
                         </mat-autocomplete>
                         <button mat-icon-button matSuffix>
                           <mat-icon>search</mat-icon>
