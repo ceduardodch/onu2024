@@ -205,7 +205,7 @@ export class CrearImportacionComponent implements OnInit {
 
       save() {
         let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
-        console.log(this.selectedFile);
+        console.log('Paso1 Save',this.selectedFile);
 
         let fileReadPromises = this.listaProductos.map(producto => {
           return new Promise((resolve, reject) => {
@@ -215,6 +215,7 @@ export class CrearImportacionComponent implements OnInit {
             reader.readAsArrayBuffer(producto.ficha);
           });
         });
+        console.log('Paso2 Save',fileReadPromises);
 
         Promise.all(fileReadPromises).then(fichas => {
           let mainFileReader = new FileReader();
