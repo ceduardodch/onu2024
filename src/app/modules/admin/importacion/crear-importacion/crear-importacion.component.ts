@@ -205,58 +205,62 @@ export class CrearImportacionComponent implements OnInit {
 
       save() {
         let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
-        console.log('Paso1 Save',this.selectedFile);
+        console.log('Paso1 Save', this.selectedFile);
 
+        // Preparar promesas para leer fichas como Data URL
         let fileReadPromises = this.listaProductos.map(producto => {
-          return new Promise((resolve, reject) => {
-            let reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsArrayBuffer(producto.ficha);
-          });
+            return new Promise<string>((resolve, reject) => {
+                let reader = new FileReader();
+                reader.onload = () => {
+                    // Convertir directamente a Base64 eliminando el prefijo Data URL
+                    resolve((reader.result as string).split(',')[1]);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(producto.ficha);
+            });
         });
-        console.log('Paso2 Save',fileReadPromises);
 
         Promise.all(fileReadPromises).then(fichas => {
-          let mainFileReader = new FileReader();
-          mainFileReader.onload = () => {
-            let body = {
-              "authorization_date": this.fechaAutorizacion,
-              "month": nombreDelMes,
-              "cupo_asignado": this.cupoAsignado,
-              "status": this.currentStep,
-              "cupo_restante": this.cupoRestante,
-              "tota_solicitud": this.totalPao,
-              "total_pesokg": this.totalPesoKg,
-              "vue": this.nroSolicitudVUE.value,
-              "data_file": btoa(String.fromCharCode.apply(null, new Uint8Array(mainFileReader.result as ArrayBuffer))),
-              "importador": this.importadorControl.value,
-              "years": this.anios[0]?.name,
-              "pais": this.paisSeleccionado,
-              "proveedor": this.proveedorSeleccionado,
-              "grupo": this.grupoSustancia,
-              "details": this.listaProductos.map((producto, index) => ({
-                cif: producto.cif,
-                fob: producto.fob,
-                peso_kg: producto.kg,
-                pao: producto.pao,
-                sustancia: producto.producto,
-                subpartida: producto.subpartida,
-                ficha_file: btoa(String.fromCharCode.apply(null, new Uint8Array(fichas[index] as ArrayBufferLike)))
-            }))
-            };
-            console.log(body);
+            let mainFileReader = new FileReader();
+            mainFileReader.onload = () => {
+                let body = {
+                    "authorization_date": this.fechaAutorizacion,
+                    "month": nombreDelMes,
+                    "cupo_asignado": this.cupoAsignado,
+                    "status": this.currentStep,
+                    "cupo_restante": this.cupoRestante,
+                    "total_solicitud": this.totalPao,
+                    "total_pesokg": this.totalPesoKg,
+                    "vue": this.nroSolicitudVUE.value,
+                    "data_file": (mainFileReader.result as string).split(',')[1],
+                    "importador": this.importadorControl.value,
+                    "years": this.anios[0]?.name,
+                    "pais": this.paisSeleccionado,
+                    "proveedor": this.proveedorSeleccionado,
+                    "grupo": this.grupoSustancia,
+                    "details": this.listaProductos.map((producto, index) => ({
+                        cif: producto.cif,
+                        fob: producto.fob,
+                        peso_kg: producto.kg,
+                        pao: producto.pao,
+                        sustancia: producto.producto,
+                        subpartida: producto.subpartida,
+                        ficha_file: fichas[index]
+                    }))
+                };
+                console.log(body);
 
-            this._importacioService.addImportacion(body).subscribe({
-              error: (error) => {
-                console.error('Error al agregar el importador', error);
-              }
-            });
-          };
-          mainFileReader.readAsArrayBuffer(this.selectedFile);
+                this._importacioService.addImportacion(body).subscribe({
+                    error: (error) => {
+                        console.error('Error al agregar el importador', error);
+                    }
+                });
+            };
+            mainFileReader.readAsDataURL(this.selectedFile);
         }).catch(error => {
-          console.error('Error al leer los archivos', error);
+            console.error('Error al leer los archivos', error);
         });
-      }
+    }
+
 
 }
