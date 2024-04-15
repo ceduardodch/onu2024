@@ -2,7 +2,7 @@
 
     <!-- Header -->
     <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 pb-22 sm:pt-12 sm:pb-28 sm:px-10 bg-default dark:bg-transparent">
-       
+
         <div class="flex-1 min-w-0">
             <!-- Title -->
             <div class="mt-2">
@@ -10,7 +10,7 @@
                     Lista de cupos
                 </h2>
             </div>
-        </div>             
+        </div>
         <div class="p-4 flex items-center border rounded">
             <mat-icon matPrefix svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
             <input type="text" placeholder=" Buscar " [(ngModel)]="searchTerm" (input)="applyFilter()" class="flex-1">
@@ -30,9 +30,9 @@
                 <div [mat-sort-header]="'hfc'" (click)="orderBy('hfc')">HFC</div>
                 <div [mat-sort-header]="'hcfc'" (click)="orderBy('hcfc')">HCFC</div>
 
-                <div>Acciones</div> <!-- Columna para acciones -->                
-            </div>            
-            <!-- Rows -->            
+                <div>Acciones</div> <!-- Columna para acciones -->
+            </div>
+            <!-- Rows -->
             <ng-container *ngFor="let cupo of filteredCupos; let i = index">
                 <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
                     <!-- Solo mostrar campos si no se está editando este país en particular -->
@@ -41,63 +41,59 @@
                     <div class="col-span-1">{{ cupo.anio }}</div>
                     <div class="col-span-1">{{ cupo.hfc }}</div>
                     <div class="col-span-1">{{ cupo.hcfc }}</div>
-                    
+
                     <!-- Mostrar botones solo si no se está editando este país -->
                     <div *ngIf="selectedCupo?.id !== cupo.id" class="col-span-1 flex items-center">
                         <button mat-stroked-button (click)="selectCupoForEdit(cupo)" >
                             <mat-icon class="icon-size-4" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
                             <span>Editar</span>
-                        </button>                        
+                        </button>
                     </div>
                 </ng-container>
                 </div>
                     <!-- Formulario de edición para el país actual -->
-                    
+
                     <div *ngIf="selectedCupo?.id === cupo.id" @fadeOutRight class="flex items-center">
                         <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                            <mat-form-field class="w-full">                            
+                            <mat-form-field class="w-full">
                                 <mat-select [(ngModel)]="selectedCupo.importador">
                                   <mat-option *ngFor="let import2 of importadors" [value]="import2.name">
                                     {{ import2.name }}
                                   </mat-option>
                                 </mat-select>
                               </mat-form-field>
-                        
-                        <mat-form-field class="w-full">                            
+
+                        <mat-form-field class="w-full">
                             <mat-select [(ngModel)]="selectedCupo.anio">
                               <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
                                 {{ anio2.name }}
                               </mat-option>
                             </mat-select>
                           </mat-form-field>
-                        <mat-form-field class="col-span-1">
-                        <input matInput type="number" [(ngModel)]="selectedCupo.hfc" placeholder="HFC">
-                        </mat-form-field>
-                        <mat-form-field class="col-span-1">
-                        <input matInput type="number" [(ngModel)]="selectedCupo.hcfc" placeholder="HCFC">
-                        </mat-form-field>
+
+                        <input [(ngModel)]="selectedCupo.hfc" placeholder="HFC" class="flex-1">
+                        <input [(ngModel)]="selectedCupo.hcfc" placeholder="HCFC" class="flex-1">
                         <div class="flex items-center col-span-1 space-x-1">
                         <button mat-icon-button (click)="updateCupo(selectedCupo)" color="primary">
-                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>                                                     
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>
                         </button>
                         <button mat-icon-button (click)="cancelEdit()" color="accent">
-                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:x-circle'"></mat-icon>                            
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:x-circle'"></mat-icon>
                         </button>
                         <button mat-icon-button (click)="deleteCupo(cupo.id)" color="warn">
-                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon> 
-                            
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
+
                         </button>
                     </div>
                     </div>
-                    
+
                 </div>
             </ng-container>
         <!--/ng-container-->
-        
             <!-- Fila para agregar un nuevo usuario -->
             <!--form [formGroup]="signInForm" (ngSubmit)="addCupo()">
             <div class="grid grid-cols-5 items-center gap-4 py-2 px-6 md:px-12 border-b">
-                <mat-form-field class="col-span-1">                    
+                <mat-form-field class="w-full">
                     <input type="text"
                            placeholder="Importador"
                            matInput
@@ -107,12 +103,11 @@
                       <mat-option *ngFor="let import2 of importadors" [value]="import2.name">
                         {{ import2.name }}
                       </mat-option>
-                    </mat-autocomplete>  
-                    
+                    </mat-autocomplete>
+                    <mat-error *ngIf="signInForm.get('importador').touched && signInForm.get('importador').hasError('required')"/>
                   </mat-form-field>
-                  
-                  <mat-form-field class="col-span-1">  
-                                     
+
+                  <mat-form-field class="w-full">
                     <input type="text"
                            placeholder="Año"
                            matInput
@@ -122,17 +117,19 @@
                       <mat-option *ngFor="let anio2 of anios" [value]="anio2.name">
                         {{ anio2.name }}
                       </mat-option>
-                    </mat-autocomplete> 
-                    
-                  </mat-form-field>     
-                <mat-form-field class="col-span-1"> 
-                <input matInput type="number" formControlName="hfc" id="hfc">                 
+                    </mat-autocomplete>
+                    <mat-error *ngIf="signInForm.get('anio').touched && signInForm.get('anio').hasError('required')"/>
+                  </mat-form-field>
+                <mat-form-field class="w-full">
+                <input matInput formControlName="hfc" id="hfc">
+                <mat-error *ngIf="signInForm.get('hfc').errors?.required"/>
                 </mat-form-field>
-                <mat-form-field class="col-span-1"> 
-                <input matInput type="number" formControlName="hcfc" id="hcfc">              
-                </mat-form-field>   
-                <div class="col-span-1">
-                    <button type="submit" class="px-5 save-button" mat-stroked-button color="primary">Guardar</button>
+                <mat-form-field class="w-full">
+                <input matInput formControlName="hcfc" id="hcfc">
+                <mat-error *ngIf="signInForm.get('hcfc').errors?.required"/>
+                </mat-form-field>
+                <div>
+                    <button type="submit" mat-stroked-button color="primary">Guardar</button>
                   </div>
             </div>
         </form-->
