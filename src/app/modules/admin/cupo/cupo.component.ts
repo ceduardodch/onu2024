@@ -44,7 +44,7 @@ import { ImportadorService } from '../importador/importador.service';
 })
 export class CuposComponent implements OnInit{
         cupos: Cupo[] = []; // Cambiado a array regular para manejar la lista
-        newCupo:Cupo = {
+        newCupo:Cupo = { importador_id: 0,
           importador: '', anio: '', hfc: '', hcfc: ''};
         filteredCupos: Cupo[] = [];
         searchTerm: string = '';
@@ -99,10 +99,13 @@ export class CuposComponent implements OnInit{
                 verticalPosition: 'top', // Posición vertical
               });
             }
-
+            displayFn(importador: any): string {
+                return importador && importador.name ? importador.name : '';
+            }
             onImportSelected(event: MatAutocompleteSelectedEvent) {
               if (event?.option?.value) {
-                this.newCupo.importador = event.option.value;
+                this.newCupo.importador_id = event.option.value.id;
+                this.newCupo.importador = event.option.value.name;
               } else {
                 // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
                 console.error('El evento o la opción seleccionada son indefinidos');
@@ -132,6 +135,7 @@ export class CuposComponent implements OnInit{
 
               // Crear un nuevo objeto Anio con el nombre y el estado activo
               const newCupo: Cupo = {
+                importador_id: this.newCupo.importador_id,
                 importador: this.newCupo.importador, // Asegúrate de que estos valores se establezcan correctamente
                 anio: this.newCupo.anio,
                 hfc: this.signInForm.value.hfc.trim(),

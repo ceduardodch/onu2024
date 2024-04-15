@@ -96,8 +96,8 @@
                            matInput
                            formControlName="importador"
                            [matAutocomplete]="autoImportador">
-                    <mat-autocomplete #autoImportador="matAutocomplete" (optionSelected)="onImportSelected($event)">
-                      <mat-option *ngFor="let import2 of importadors" [value]="import2.name">
+                    <mat-autocomplete [displayWith]="displayFn" #autoImportador="matAutocomplete" (optionSelected)="onImportSelected($event)">
+                      <mat-option *ngFor="let import2 of importadors" [value]="import2">
                         {{ import2.name }}
                       </mat-option>
                     </mat-autocomplete>

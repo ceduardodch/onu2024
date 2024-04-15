@@ -140,15 +140,19 @@ export class CrearImportacionComponent implements OnInit {
 
       }
     onImportadorSelected(event) {
+        console.log('onImportadorSelected',event);
     this.calculoResumen(event);
+    }
+    displayFn(importador: any): string {
+        return importador && importador.name ? importador.name : '';
     }
     calculoResumen(event) {
     console.log('calculoResumen event',event);
-        this._cupoService.getCuposByName(event).subscribe((data: any[]) => {
+        this._cupoService.getCuposByName(event.name).subscribe((data: any[]) => {
             this.cupos = data;
             console.log(data);
         });
-        this._importacioService.getImportacionByImportador(event).subscribe((data: any[]) => {
+        this._importacioService.getImportacionByImportador(event.name).subscribe((data: any[]) => {
             console.log(data);
             this.importacion = data;
         });
@@ -190,7 +194,8 @@ export class CrearImportacionComponent implements OnInit {
                 this.fileUrl= URL.createObjectURL(result.ficha);
                 this.listaProductos = [...this.listaProductos, result];
                 this.dataSource = this.listaProductos;
-            this.grupoSustancia = result.grupo;
+
+                this.grupoSustancia = result.grupo;
             this.calculoResumen(this.importadorControl.value);
 
           }
@@ -233,7 +238,9 @@ export class CrearImportacionComponent implements OnInit {
                     "total_pesokg": this.totalPesoKg,
                     "vue": this.nroSolicitudVUE.value,
                     "data_file": (mainFileReader.result as string).split(',')[1],
-                    "importador": this.importadorControl.value,
+                    "importador": this.importadorControl.value.name,
+                    "importador_id": this.importadorControl.value.id,
+
                     "years": this.anios[0]?.name,
                     "pais": this.paisSeleccionado,
                     "proveedor": this.proveedorSeleccionado,
