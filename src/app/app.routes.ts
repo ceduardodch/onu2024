@@ -36,7 +36,7 @@ export const appRoutes: Route[] = [
             {path: 'sustancias', loadChildren: () => import('app/modules/admin/sustancia/sustancia.routes')},
             {path: 'importadors', loadChildren: () => import('app/modules/admin/importador/importador.routes')},
             {path: 'imports', loadChildren: () => import('app/modules/admin/importacion/importacion.routes')},
-            { path: 'crear-importacion', component: CrearImportacionComponent },
+            { path: 'crear-importacion/:id', component: CrearImportacionComponent }
         ]
     },
 ];

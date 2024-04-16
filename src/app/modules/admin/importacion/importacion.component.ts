@@ -31,22 +31,14 @@ export class ImportacionComponent implements OnInit{
               }
             createImportacion(): void
             {
-                    this.router.navigate(['/crear-importacion']);
+                    this.router.navigate(['/crear-importacion',0]);
 
             }
-            deletePais(paisId: number): void {
-                if (!paisId) {
-                  console.error('Error al eliminar: ID de país no proporcionado');
-                  return;
-                }
 
-                const confirmation = confirm('¿Estás seguro de que deseas eliminar este país?');
-                if (!confirmation) {
-                  return;
-                }
+            editImportacion(id: number): void
+            {
+                this.router.navigate(['/crear-importacion',id]);
             }
-
-
 
 
             deleteImportacion(id: number): void {

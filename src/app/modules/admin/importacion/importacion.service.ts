@@ -20,7 +20,13 @@ export class ImportacionService {
     return this.http.post<any>(this.apiUrl, importacion);
   }
   getImportacionByImportador(importador: string): Observable<any> {
-    return this.http.get<Importacion>(`${this.apiUrl}/${importador}`);
+    return this.http.get<Importacion>(`${this.apiUrl}/cuposolicitud/${importador}`);
+    }
+    getImportacionById(id: number): Observable<any> {
+    if (!id || id <= 0) {
+      throw new Error('ID de importación no válido');
+    }
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
     }
 
     deleteImportacion(id: number): Observable<any> {

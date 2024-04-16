@@ -32,13 +32,13 @@ export const appConfig: ApplicationConfig = {
             provide : MAT_DATE_FORMATS,
             useValue: {
                 parse  : {
-                    dateInput: 'D',
+                    dateInput: 'dd/MM/yyyy',
                 },
                 display: {
-                    dateInput         : 'DDD',
-                    monthYearLabel    : 'LLL yyyy',
-                    dateA11yLabel     : 'DD',
-                    monthYearA11yLabel: 'LLLL yyyy',
+                    dateInput         : 'dd/MM/yyyy',
+                    monthYearLabel    : 'MMM yyyy',
+                    dateA11yLabel     : 'LL',
+                    monthYearA11yLabel: 'MMMM yyyy',
                 },
             },
         },
@@ -48,8 +48,8 @@ export const appConfig: ApplicationConfig = {
             config: {
                 availableLangs      : [
                     {
-                        id   : 'en',
-                        label: 'English',
+                        id   : 'es',
+                        label: 'Español',
                     },
                     {
                         id   : 'tr',
