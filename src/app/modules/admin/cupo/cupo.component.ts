@@ -20,6 +20,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FuseVerticalNavigationComponent } from '@fuse/components/navigation';
+import { Observable, map } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { AnioService } from '../anio/anio.service';
 import { ImportadorService } from '../importador/importador.service';
 import { CrearCupo } from './nuevo/crear-cupo';
@@ -56,15 +58,15 @@ export class CuposComponent implements OnInit{
         currentField: string = '';
 
         anios: any[];
+        anioControl = new FormControl();
+        aniosFiltrados$: Observable<any[]>;         
 
         importadors: any[];
-
         importControl = new FormControl();
+        importFiltrados$: Observable<any[]>;
 
         signInForm: FormGroup; 
-
-        fileUrl: string;
-        dataSource: any[];        
+        editCupoForm: FormGroup;                                    
         
         constructor(
           private _cupoService: CupoService,
@@ -89,16 +91,49 @@ export class CuposComponent implements OnInit{
             });
 
             this._importadorService.getImportadors().subscribe((data: any[]) => {
-              this.importadors = data;
-
+              this.importadors = data || [];
             });
 
             this._anioService.getAnios().subscribe((data1: any[]) => {
-              this.anios = data1;
+              this.anios = data1 || [];
+            });
 
+            this.aniosFiltrados$ = this.anioControl.valueChanges.pipe(
+              startWith(''),
+              map(value => typeof value === 'string' ? value : value.name),
+              map(name => name ? this._filter(name) : this.anios.slice())
+            );
+            
+            this.importFiltrados$ = this.anioControl.valueChanges.pipe(
+              startWith(''),
+              map(value => typeof value === 'string' ? value : value.name),
+              map(name => name ? this._filter2(name) : this.anios.slice())
+            );  
+  
+            this.editCupoForm = this._formBuilder.group({
+              name: ['', Validators.required],
+              country: ['', Validators.required],
+              activo: [false],
             });
 
             }
+
+            private _filter(name: string): any[] {
+              if (!name) {
+                return this.anios.slice();
+              }
+              const filterValue = name.toLowerCase();
+              return this.anios.filter(option => option.name.toLowerCase().includes(filterValue));
+            }
+
+            private _filter2(name: string): any[] {
+              if (!name) {
+                return this.importadors.slice();
+              }
+              const filterValue = name.toLowerCase();
+              return this.importadors.filter(option => option.name.toLowerCase().includes(filterValue));
+            }
+
 
             openSnackBar(message: string, action: string) {
               this._snackBar.open(message, action, {
@@ -144,12 +179,14 @@ export class CuposComponent implements OnInit{
               });
             }         
             addCupo(): void {
-              const importoValue = this.signInForm.get('importador').value;
-              const importo = typeof importoValue === 'string' ? importoValue.trim() : '';
+              
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
               }
+              const importoValue = this.signInForm.get('importador').value;
+              const importo = typeof importoValue === 'string' ? importoValue.trim() : '';
+
               const importExists = this.cupos.some(cupo => cupo.importador === importo.trim());
               if (importExists) {
                 this.openSnackBar('El importador ya tiene cupo.', 'Error');
