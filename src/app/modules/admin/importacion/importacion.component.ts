@@ -31,7 +31,7 @@ export class ImportacionComponent implements OnInit{
               }
             createImportacion(): void
             {
-                    this.router.navigate(['/crear-importacion']);
+                    this.router.navigate(['/crear-importacion',0]);
 
             }
 

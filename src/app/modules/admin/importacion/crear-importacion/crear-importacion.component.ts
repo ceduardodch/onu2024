@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MAT_DATE_LOCALE, MatOptionModule, MatRippleModule } from '@angular/material/core';
+import {  MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -31,13 +31,12 @@ import { ProveedorService } from '../../proveedor/proveedor.service';
 import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { ImportacionService } from '../importacion.service';
 import { ActivatedRoute } from '@angular/router';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 
 @Component({
   selector: 'app-crear-importacion',
   standalone: true,
   providers: [
-    // otros proveedores aquí...
-    { provide: MAT_DATE_LOCALE, useValue: 'es' }
   ],
   imports        : [
     MatFormFieldModule, MatInputModule, MatDatepickerModule, MatButtonModule,
@@ -91,6 +90,10 @@ export class CrearImportacionComponent implements OnInit {
 
     importadoresFiltrados: any[];
 
+    selectedProveedor: string;
+    selectedImportador: string;
+    selectedPais: string;
+
     constructor(private _proveedorService: ProveedorService,
                 private _anioService: AnioService,
                 private _paisService: PaisService,
@@ -118,26 +121,38 @@ export class CrearImportacionComponent implements OnInit {
         const id = this.route.snapshot.paramMap.get('id');
         console.log('id',id);
         //cargar data maestro detalle para editar importacion existente si id es diferente de null
-        if (id) {
+        if (id !== null && id !== '0') {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
-                console.log('data',data);
-                this.importadorControl.setValue(data.importador);
-                this.fechaAutorizacion = new Date(data.authorization_date);
-                this.cupoAsignado = data.cupo_asignado;
-                this.cupoRestante = data.cupo_restante;
-                this.totalPao = data.total_solicitud;
-                this.totalPesoKg = data.total_pesokg;
-                this.nroSolicitudVUE.setValue(data.vue);
-                this.paisSeleccionado = data.pais;
-                this.proveedorSeleccionado = data.proveedor;
-                this.grupoSustancia = data.grupo;
-                this.listaProductos = data.details;
+              console.log('data',data);
+                this.fechaAutorizacion = new Date(data[0].authorization_date);
+                this.fechaSolicitud = new Date(data[0].solicitud_date);
+                this.anios = [{name: data[0].years}];
+                this.nroSolicitudVUE.setValue(data[0].vue);
+                this.listaProductos = data[0].details;
+                this.selectedProveedor = data[0].proveedor;
+                this.selectedImportador = data[0].importador;
+                this.selectedPais = data[0].country;
+                this.cupoAsignado = data[0].cupo_asignado;
+                this.cupoRestante = data[0].cupo_restante;
+                this.totalPao = data[0].tota_solicitud;
+                this.totalPesoKg = data[0].total_pesokg;
+                this.listaProductos = data[0].details.map(item => {
+                    const array = new Uint8Array(item.ficha_file.data);
+                    const blob = new Blob([array], { type: 'Buffer' });
+                    const url = URL.createObjectURL(blob);
+                    return {
+                    producto: item.sustancia,
+                    subpartida: item.subpartida,
+                    cif: item.cif,
+                    kg: item.peso_kg,
+                    fob: item.fob,
+                    pao: item.peso_pao,
+                    ficha: url
+                  }});
                 this.dataSource = this.listaProductos;
-                this.currentStep = data.status;
-                this.importacion = data;
-                this.calculoResumen(data.importador);
+
             });
-        }
+          }
 
         this.loadData().then(() => {
         });
@@ -266,6 +281,7 @@ export class CrearImportacionComponent implements OnInit {
             mainFileReader.onload = () => {
                 let body = {
                     "authorization_date": this.fechaAutorizacion,
+                    "solicitud_date": this.fechaSolicitud,
                     "month": nombreDelMes,
                     "cupo_asignado": this.cupoAsignado,
                     "status": this.currentStep,

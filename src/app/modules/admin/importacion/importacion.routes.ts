@@ -7,8 +7,7 @@ const routes: Routes = [
         path: '', // quita la barra al principio
         component: ImportacionComponent,
     },
-    { path: 'crear-importacion', component: CrearImportacionComponent },
-
+    { path: 'crear-importacion/:id', component: CrearImportacionComponent }
 ];
 
 export default routes;
