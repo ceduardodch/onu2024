@@ -35,4 +35,12 @@ export class ImportacionService {
         }
         return this.http.delete(`${this.apiUrl}/${id}`);
       }
+      uploadFile(file: any): Observable<any> {
+        return this.http.post<any>(`${environment.apiUrl}/upload`, file);
+      }
+
+      downloadFile(fileId: number): Observable<any> {
+        return this.http.get<any>(`${environment.apiUrl}/upload/${fileId}`);
+      }
+
 }

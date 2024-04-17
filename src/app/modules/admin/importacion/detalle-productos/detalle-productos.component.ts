@@ -21,6 +21,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SustanciaService } from '../../sustancia/sustancia.service';
+import { ImportacionService } from '../importacion.service';
 
 @Component({
   selector: 'app-detalle-productos',
@@ -49,6 +50,7 @@ export class DetalleProductosComponent implements OnInit {
 
     constructor(
         private _sustanciaService: SustanciaService,
+        private _importacionService: ImportacionService,
         public dialogRef: MatDialogRef<DetalleProductosComponent>
     ) {
         this.form = new FormGroup({
@@ -60,7 +62,9 @@ export class DetalleProductosComponent implements OnInit {
             kg: new FormControl('', Validators.required),
             fob: new FormControl('', Validators.required),
             pao: new FormControl(''),
-            ficha: new FormControl('')
+            ficha: new FormControl(''),
+            ficha_id: new FormControl(''),
+
         });
     }
 
@@ -80,6 +84,10 @@ export class DetalleProductosComponent implements OnInit {
         });
     }
 
+
+
+
+
     selectFile(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
@@ -91,6 +99,28 @@ export class DetalleProductosComponent implements OnInit {
             this.selectedFile = file;
             this.form.patchValue({ ficha: file });
             this.selectedFileName = file.name;
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                let base64File = reader.result as string;
+
+                // Elimina el prefijo 'data:application/pdf;base64,' de la cadena
+                const prefix = 'data:application/pdf;base64,';
+                if (base64File.startsWith(prefix)) {
+                    base64File = base64File.substring(prefix.length);
+                }
+
+                this._importacionService.uploadFile(
+                    {'name': this.selectedFileName, 'file': base64File}
+                ).subscribe(response => {
+                    this.form.patchValue({ ficha_id: response.file });
+                }, error => {
+                    console.error('Error uploading file:', error);
+                });
+            };
+            reader.readAsDataURL(this.selectedFile);
+
+
         }
     }
 
