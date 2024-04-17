@@ -136,7 +136,7 @@ export class CrearImportacionComponent implements OnInit {
                 this.selectedPais = data[0].country;
                 this.cupoAsignado = data[0].cupo_asignado;
                 this.cupoRestante = data[0].cupo_restante;
-                this.totalPao = data[0].tota_solicitud;
+                this.totalPao = data[0].total_solicitud;
                 this.totalPesoKg = data[0].total_pesokg;
                 this._importacionService.downloadFile(data[0].data_file_id).subscribe((data: any) => {
                     console.log('File:', data);
