@@ -80,7 +80,7 @@ export class CrearImportacionComponent implements OnInit {
     grupoSustancia :string;
     nroSolicitudVUE = new FormControl('', [
         Validators.required,
-        Validators.pattern('^\\d{19}P$')      ]);
+        Validators.pattern('^\\d{20}P$')      ]);
         selectedFile: File;
     dataSource: any[];
     currentStep = 'Borrador';
