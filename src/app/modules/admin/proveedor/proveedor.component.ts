@@ -1,7 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,18 +12,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink } from '@angular/router';
-import { Proveedor } from './proveedor.model'; // Import the 'User' class from the appropriate file
+import { Proveedor } from './proveedor.model';
 import { ProveedorService } from './proveedor.service';
 
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Observable, of } from 'rxjs';
-import { catchError, debounceTime, startWith, switchMap } from 'rxjs/operators';
+import { Observable, map } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { PaisService } from '../pais/pais.service';
 
-
-@Injectable()
 
 @Component({
   selector: 'app-proveedors',
@@ -47,7 +45,7 @@ import { PaisService } from '../pais/pais.service';
   styleUrl: './proveedor.component.scss'
 })
 export class ProveedorsComponent implements OnInit{
-        proveedors: Proveedor[] = []; // Cambiado a array regular para manejar la lista de usuarios
+        proveedors: Proveedor[] = []; 
         newProveedor:Proveedor = {
           name: '', country: '', activo: false};
         filteredProveedors: Proveedor[] = [];
@@ -56,10 +54,11 @@ export class ProveedorsComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        countrys: any[];   
-        filteredCountry: Observable<any[]>;
+        countrys: any[] = [];   
+        //filteredCountry: Observable<any[]>;
         
-        signInForm: FormGroup;    
+        signInForm: FormGroup;   
+        editProveedorForm: FormGroup; 
 
         paisControl = new FormControl();
         paisesFiltrados$: Observable<any[]>;
@@ -84,22 +83,29 @@ export class ProveedorsComponent implements OnInit{
           });
 
           this._paisService.getPaises().subscribe((data: any[]) => {
-            this.countrys = data;
+            this.countrys = data || [];
           });
 
           this.paisesFiltrados$ = this.paisControl.valueChanges.pipe(
             startWith(''),
-            debounceTime(300),
-            switchMap(value => {
-              return value ? this._paisService.searchPaises(value) : [];
-            })
+            map(value => typeof value === 'string' ? value : value.name),
+            map(name => name ? this._filter(name) : this.countrys.slice())
           );
-          
-            }
 
-            private _filter(value: string): string[] {
-              const filterValue = value.toLowerCase();
-              return this.countrys.filter(pais => pais.toLowerCase().includes(filterValue));
+          this.editProveedorForm = this._formBuilder.group({
+            name: ['', Validators.required],
+            country: ['', Validators.required],
+            activo: [false],
+          });
+
+            }        
+
+            private _filter(name: string): any[] {
+              if (!name) {
+                return this.countrys.slice();
+              }
+              const filterValue = name.toLowerCase();
+              return this.countrys.filter(option => option.name.toLowerCase().includes(filterValue));
             }
 
             openSnackBar(message: string, action: string) {
@@ -115,70 +121,107 @@ export class ProveedorsComponent implements OnInit{
             }
 
             onPaisSelected(event: MatAutocompleteSelectedEvent) {
-              if (event?.option?.value) {
-                this.newProveedor.country = event.option.value;
-              } else {
-                // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
+              if (event?.option?.value) {                
+                this.signInForm.get('country').setValue(event.option.value);
+              } else {                
                 console.error('El evento o la opción seleccionada son indefinidos');
               }
             }
 
             addProveedor(): void {
-
-              const name = this.signInForm.get('name').value;
+              
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
-              }          
+              }
+                          
+              const name = this.signInForm.get('name').value;
+              const country = this.signInForm.get('country').value;           
+            
               const proveExists = this.proveedors.some(prove => prove.name === name.trim());
               if (proveExists) {
                 this.openSnackBar('El proveedor ya existe.', 'Error');
                 return;
-              }    
-
-              const newProveedor: Proveedor = {                
-                name: this.signInForm.value.name.trim(),
-                country: this.newProveedor.country,
+              }
+                        
+              const newProveedor: Proveedor = {
+                name: name.trim(),
+                country: country, 
                 activo: this.signInForm.get('activo').value
               };
+                          
               this._proveedorService.addProveedor(newProveedor).subscribe({
                 next: () => {
-                  this.openSnackBar('Proveedor agregado exitosamente.', 'Success');                  
+                  this.openSnackBar('Proveedor agregado exitosamente.', 'Success');
                   this.signInForm.reset();
                   this.loadProveedors();
                 },
                 error: (error) => {
                   console.error('Error al agregar el proveedor', error);
-                  this.openSnackBar('Error al agregar el proveedor. Por favor intente nuevamente.', 'Error');    
+                  this.openSnackBar('Error al agregar el proveedor. Por favor intente nuevamente.', 'Error');
                 }
               });
             }
-
+  
               selectProveedorForEdit(proveedor: Proveedor): void {
-                this.selectedProveedor = { ...proveedor };               
+                this.selectedProveedor = { ...proveedor };    
+
+                // Asegúrate de que el valor actual del país esté disponible para el autocompletado.
+                this.paisControl.setValue(proveedor.country);
+
+                // Actualiza la lista filtrada de países para el autocompletado.
+                this.paisesFiltrados$ = this.paisControl.valueChanges.pipe(
+                  startWith(''), // Inicia con el valor actual
+                  map(value => this._filter(value || '')) // Filtra los países basado en la entrada del usuario
+                );
+  
+                // Establece los valores del formulario de edición.
+                this.editProveedorForm.setValue({
+                  name: proveedor.name,
+                  country: proveedor.country,
+                  activo: proveedor.activo
+                });
               }
-            
-              updateProveedor(updatedProveedor: Proveedor): void {
-                
-                if (!updatedProveedor.id) {
-                  console.error('Error al actualizar: ID de proveedor no proporcionado');
+
+              updateProveedor(): void {
+                // Verificar si el formulario de edición es válido
+                if (!this.editProveedorForm.valid) {
+                  this.openSnackBar('Por favor complete el formulario.', 'Error');
                   return;
                 }
+                
+                // Asumiendo que this.selectedProveedor está actualmente seleccionado para edición
+                if (!this.selectedProveedor || this.selectedProveedor.id == null) {
+                  this.openSnackBar('No se ha seleccionado ningún proveedor.', 'Error');
+                  return;
+                }
+              
+                // Crear un nuevo objeto con los datos actualizados del formulario y el id del proveedor seleccionado
+                const updatedProveedor: Proveedor = {
+                  ...this.selectedProveedor,
+                  ...this.editProveedorForm.value
+                };
+              
+                // Llamar al servicio para actualizar el proveedor
                 this._proveedorService.updateProveedor(updatedProveedor.id, updatedProveedor).subscribe({
                   next: (response) => {
-                    // Actualizar la lista de proveedors en el frontend
-                    const index = this.proveedors.findIndex(proveedor => proveedor.id === updatedProveedor.id);
+                    // Encontrar y actualizar el proveedor en la lista local
+                    const index = this.proveedors.findIndex(proveedor => proveedor.id === this.selectedProveedor.id);
                     if (index !== -1) {
                       this.proveedors[index] = updatedProveedor;
                     }
                     console.log('Proveedor actualizado:', response);
-                    this.selectedProveedor = null; // Resetea la selección para cerrar el formulario de edición
+                    this.selectedProveedor = null;
+                    this.editProveedorForm.reset(); // Resetear el formulario de edición
+                    this.openSnackBar('Proveedor actualizado con éxito.', 'Success');
                   },
                   error: (error) => {
                     console.error('Error al actualizar el proveedor', error);
+                    this.openSnackBar('Error al actualizar el proveedor. Por favor intente nuevamente.', 'Error');
                   }
                 });
               }
+              
 
               deleteProveedor(proveedorId: number): void {
                 if (!proveedorId) {
@@ -253,25 +296,5 @@ export class ProveedorsComponent implements OnInit{
                 this.selectedProveedor = null;
                 this.searchTerm = '';
                 this.applyFilter();
-              }      
-              
-              onSearchChange(searchValue: string): void {
-                this.paisesFiltrados$ = this.paisControl.valueChanges.pipe(
-                  startWith(''),
-                  debounceTime(300),
-                  switchMap(value => {
-                    if (value) {
-                      return this._paisService.searchPaises(value).pipe(
-                        catchError(error => {
-                          this.openSnackBar('Error al buscar países: ' + error, 'Cerrar');
-                          return of([]); // Retorna un Observable vacío en caso de error.
-                        })
-                      );
-                    } else {
-                      return of([]); // Retorna un Observable vacío si la cadena de búsqueda está vacía.
-                    }
-                  })
-                );                         
-
-              }
+              }                                             
 }
