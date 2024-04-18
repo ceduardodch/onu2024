@@ -70,7 +70,7 @@
                     <button mat-icon-button color="primary" (click)="fileInput.click()" matTooltip="Subir proforma">
                         <mat-icon>cloud_upload</mat-icon>
                     </button>
-                    <a  href="{{fileDataUrl}}" download="Proforma.pdf">Proforma.pdf</a>
+                    <a *ngIf="selectedFileName"  href="{{fileDataUrl}}" download="{{selectedFileName}}">{{selectedFileName}}</a>
                 </mat-toolbar>
                 <div class="px-5">
                     <h3>Lista de productos</h3>

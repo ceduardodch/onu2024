@@ -31,7 +31,7 @@ import { ProveedorService } from '../../proveedor/proveedor.service';
 import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { ImportacionService } from '../importacion.service';
 import { ActivatedRoute } from '@angular/router';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-crear-importacion',
@@ -105,7 +105,8 @@ export class CrearImportacionComponent implements OnInit {
                 private cdr: ChangeDetectorRef,
                 private _importacionService: ImportacionService,
                 private route: ActivatedRoute,
-                public dialog: MatDialog
+                public dialog: MatDialog,
+                private router: Router
 
                ) {
 
@@ -140,6 +141,7 @@ export class CrearImportacionComponent implements OnInit {
                 this.totalPesoKg = data[0].total_pesokg;
                 this._importacionService.downloadFile(data[0].data_file_id).subscribe((data: any) => {
                     console.log('File:', data);
+                    this.selectedFileName = data.name;
                     this.fileDataUrl = data.file;
                 });
                 const requests = data[0].details.map(item => {
@@ -151,7 +153,7 @@ export class CrearImportacionComponent implements OnInit {
                             kg: item.peso_kg,
                             fob: item.fob,
                             pao: item.peso_pao,
-                            ficha: fileData.file
+                            ficha_id: fileData.file
                         }))
                     );
                 });
@@ -295,8 +297,9 @@ selectFile(event) {
       }
 
       save() {
-
-        let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
+        console.log('fechaAutorizacion', this.fechaAutorizacion);
+        let fechaAutorizacionDate = new Date(this.fechaAutorizacion);
+        let nombreDelMes = this.nombresDeMeses[fechaAutorizacionDate.getMonth()];
         console.log('Paso1 Save', this.selectedFile);
 
                 let body = {
@@ -328,11 +331,17 @@ selectFile(event) {
                 };
                 console.log(body);
 
-              this._importacionService.addImportacion(body).subscribe({
-                  error: (error) => {
-                      console.error('Error al agregar el importador', error);
-                  }
-              });
+                this._importacionService.addImportacion(body).subscribe({
+                    next: (response) => {
+                        console.log('Response received:', response);
+
+                        alert('Importación agregada con éxito');
+                        this.router.navigate(['/imports']);
+                    },
+                    error: (error) => {
+                        console.error('Error al agregar el importadacion', error);
+                    }
+                });
           };
 
 

@@ -47,7 +47,7 @@ export class DetalleProductosComponent implements OnInit {
     selectedFile: File;
     selectedFileName: string;
     sustancias: any[];
-
+    isLoading = false;
     constructor(
         private _sustanciaService: SustanciaService,
         private _importacionService: ImportacionService,
@@ -96,6 +96,7 @@ export class DetalleProductosComponent implements OnInit {
         fileInput.click();
         const file = (event.target as HTMLInputElement).files[0];
         if (file) {
+            this.isLoading = true;
             this.selectedFile = file;
             this.form.patchValue({ ficha: file });
             this.selectedFileName = file.name;
@@ -113,9 +114,14 @@ export class DetalleProductosComponent implements OnInit {
                 this._importacionService.uploadFile(
                     {'name': this.selectedFileName, 'file': base64File}
                 ).subscribe(response => {
+                    console.log('File uploaded:', response);
                     this.form.patchValue({ ficha_id: response.file });
+                    this.isLoading = false;
+
                 }, error => {
                     console.error('Error uploading file:', error);
+                    this.isLoading = false;
+
                 });
             };
             reader.readAsDataURL(this.selectedFile);
