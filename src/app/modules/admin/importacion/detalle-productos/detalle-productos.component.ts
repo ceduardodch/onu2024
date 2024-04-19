@@ -118,6 +118,10 @@ export class DetalleProductosComponent implements OnInit {
         });
     }
 
+
+
+
+
     /*selectFile(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
@@ -126,6 +130,7 @@ export class DetalleProductosComponent implements OnInit {
         fileInput.click();
         const file = (event.target as HTMLInputElement).files[0];
         if (file) {
+            this.isLoading = true;
             this.selectedFile = file;
             this.selectedFileName = file.name;
             this.form.patchValue({ ficha: file });            
