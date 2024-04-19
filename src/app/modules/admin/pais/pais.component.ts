@@ -1,8 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,12 +15,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
+
 import { Pais } from './pais.model'; // Import the 'pais' class from the appropriate file
 import { PaisService } from './pais.service';
 
-@Injectable({
+/*@Injectable({
   providedIn: 'root'
-})
+})*/
 
 @Component({
   selector: 'app-paises',
@@ -46,7 +46,9 @@ import { PaisService } from './pais.service';
 })
 export class PaisesComponent implements OnInit{
         paises: Pais[] = []; // Cambiado a array regular para manejar la lista de usuarios
-        newPais:Pais = {name: ''};
+        newPais:Pais = {
+          name: ''
+        };
         filteredPaises: Pais[] = [];
         searchTerm: string = '';
         selectedPais:  Pais | null = null;
@@ -58,8 +60,7 @@ export class PaisesComponent implements OnInit{
         constructor(
           private _paisService: PaisService,
           private _formBuilder: FormBuilder,
-          private _snackBar: MatSnackBar,
-          private http: HttpClient,
+          private _snackBar: MatSnackBar,          
         ) { }
 
             ngOnInit(): void {
@@ -163,8 +164,7 @@ export class PaisesComponent implements OnInit{
                 }
               
                 this._paisService.deletePais(paisId).subscribe({
-                  next: () => {
-                    // Eliminar el país de la lista en el frontend
+                  next: () => {                    
                     this.loadPaises();
                     this.paises = this.paises.filter(pais => pais.id !== paisId);
                     console.log('País eliminado con éxito');
@@ -205,8 +205,12 @@ export class PaisesComponent implements OnInit{
                 }
               
                 this.filteredPaises.sort((a, b) => {
+                  /*
                   const valueA = a[field].toLowerCase();
                   const valueB = b[field].toLowerCase();
+                  */
+                  const valueA = a[field] ? a[field].toString().toLowerCase() : '';
+                  const valueB = b[field] ? b[field].toString().toLowerCase() : '';
               
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {

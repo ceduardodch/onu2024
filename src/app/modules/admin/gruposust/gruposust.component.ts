@@ -114,7 +114,14 @@ export class GruposustComponent implements OnInit{
             }
 
               selectGruposustForEdit(gruposust: Gruposust): void {
-                this.selectedGruposust = { ...gruposust };               
+                //this.selectedGruposust = { ...gruposust };               
+                console.log('Seleccionando grupo para editar:', gruposust);
+                // Aquí se permite el ID cero como válido.
+                if (gruposust && (gruposust.id || gruposust.id === 0)) {
+                this.selectedGruposust = { ...gruposust };
+                } else {
+                console.error('El grupo seleccionado no tiene un ID válido.');
+                }
               }
             
               updateGruposust(updatedGruposust: Gruposust): void {
@@ -128,8 +135,12 @@ export class GruposustComponent implements OnInit{
                     // Actualizar la lista de grupo en el frontend
                     const index = this.gruposusts.findIndex(gruposust => gruposust.id === updatedGruposust.id);
                     if (index !== -1) {
-                      this.gruposusts[index] = updatedGruposust;
+                      this.gruposusts[index] = {...updatedGruposust, ...response};
                     }
+
+                    this.gruposusts = [...this.gruposusts];
+                    this.filteredGruposusts = this.gruposusts;
+
                     console.log('Grupo actualizado:', response);
                     this.selectedGruposust = null; // Resetea la selección para cerrar el formulario de edición
                   },

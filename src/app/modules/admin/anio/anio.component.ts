@@ -108,14 +108,21 @@ export class AniosComponent implements OnInit{
                   this.loadAnios();
                 },
                 error: (error) => {                  
-                  //console.error('Error al agregar el año', error);
+                  console.error('Error al agregar el año', error);
                   this.openSnackBar('Error al agregar el año. Intente de nuevo.', 'Error');
                 }
               });
               }
             
               selectAnioForEdit(anio: Anio): void {
-                this.selectedAnio = { ...anio };               
+                //this.selectedAnio = { ...anio };               
+              console.log('Seleccionando año para editar:', anio);
+              // Aquí se permite el ID cero como válido.
+              if (anio && (anio.id || anio.id === 0)) {
+                this.selectedAnio = { ...anio };
+              } else {
+                console.error('El año seleccionado no tiene un ID válido.');
+              }
               }
             
               updateAnio(updatedAnio: Anio): void {
@@ -128,8 +135,12 @@ export class AniosComponent implements OnInit{
                   next: (response) => {                    
                     const index = this.anios.findIndex(anio => anio.id === updatedAnio.id);
                     if (index !== -1) {
-                      this.anios[index] = updatedAnio;
+                      this.anios[index] = {...updatedAnio, ...response};
                     }
+
+                    this.anios = [...this.anios];
+                    this.filteredAnios = this.anios;
+
                     console.log('Año actualizado:', response);
                     this.selectedAnio = null; 
                   },

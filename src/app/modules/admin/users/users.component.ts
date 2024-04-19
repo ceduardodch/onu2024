@@ -81,12 +81,19 @@ export class UsersComponent implements OnInit{
             }
 
             addUser(): void {
-
-              const name = this.signInForm.get('name').value;
+              
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
-              }          
+              }      
+              
+                const name = this.signInForm.get('name').value;
+                const email = this.signInForm.get('email').value;
+                const password = this.signInForm.get('password').value;
+                const phone = this.signInForm.get('phone').value;
+                const company = this.signInForm.get('company').value;
+                const address = this.signInForm.get('address').value;
+
               const importExists = this.users.some(usr => usr.name === name.trim());
               if (importExists) {
                 this.openSnackBar('El usuario ya existe.', 'Error');
@@ -95,12 +102,12 @@ export class UsersComponent implements OnInit{
             
               // Crear un nuevo objeto Anio con el nombre y el estado activo
               const newUser: User = {                
-                name: this.signInForm.value.name.trim(),
-                email: this.signInForm.value.email.trim(),
-                password: this.signInForm.value.password.trim(),
-                phone: this.signInForm.value.phone.trim(),
-                company: this.signInForm.value.company.trim(),
-                address: this.signInForm.value.address.trim(),
+                name: name.trim(),
+                email: email.trim(),
+                password: password.trim(),
+                phone: phone.trim(),
+                company: company.trim(),
+                address: address.trim(),
               };
 
               this._userService.addUser(newUser).subscribe({
@@ -118,7 +125,14 @@ export class UsersComponent implements OnInit{
 
 
               selectUserForEdit(user: User): void {
-                this.selectedUser = { ...user };               
+                //this.selectedUser = { ...user };               
+                console.log('Seleccionando usuario para editar:', user);
+                // Aquí se permite el ID cero como válido.
+                if (user && (user.id || user.id === 0)) {
+                this.selectedUser = { ...user };
+                } else {
+                console.error('El usuario seleccionado no tiene un ID válido.');
+                }
               }
             
               updateUser(updatedUser: User): void {
@@ -132,8 +146,12 @@ export class UsersComponent implements OnInit{
                     // Actualizar la lista de users en el frontend
                     const index = this.users.findIndex(user => user.id === updatedUser.id);
                     if (index !== -1) {
-                      this.users[index] = updatedUser;
+                      this.users[index] = {...updatedUser, ...response};
                     }
+
+                    this.users = [...this.users];
+                    this.filteredUsers = this.users;
+
                     console.log('User actualizada:', response);
                     this.selectedUser = null; // Resetea la selección para cerrar el formulario de edición
                   },

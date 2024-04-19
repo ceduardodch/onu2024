@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
@@ -18,7 +18,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Observable, map } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { GruposustService } from '../gruposust/gruposust.service';
+
 
 @Component({
   selector: 'app-sustancias',
@@ -51,9 +54,12 @@ export class SustanciasComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        gruposusts: any[];        
+        gruposusts: any[] = [];     
+        gruposControl = new FormControl();
+        gruposFiltrados$: Observable<any[]>;    
 
         signInForm: FormGroup; 
+        editGrupoForm: FormGroup;                                   
 
         constructor(
           private _sustanciaService: SustanciaService,
@@ -80,6 +86,30 @@ export class SustanciasComponent implements OnInit{
             this.gruposusts = data;
           });
 
+          this.gruposFiltrados$ = this.gruposControl.valueChanges.pipe(
+            startWith(''),
+            map(value => typeof value === 'string' ? value : value.name),
+            map(name => name ? this._filter(name) : this.gruposusts.slice())
+          );
+
+          this.editGrupoForm = this._formBuilder.group({              
+            //importado_id: ['', Validators.required],
+            name: ['', Validators.required],
+            subpartida: ['', Validators.required],
+            pao: ['', Validators.required],
+            pcg: ['', Validators.required],  
+            grupo_sust: ['', Validators.required],
+            activo: ['', Validators.required],              
+          });
+
+            }
+
+            private _filter(name: string): any[] {
+              if (!name) {
+                return this.gruposusts.slice();
+              }
+              const filterValue = name.toLowerCase();
+              return this.gruposusts.filter(option => option.name.toLowerCase().includes(filterValue));
             }
 
             openSnackBar(message: string, action: string) {
@@ -91,10 +121,15 @@ export class SustanciasComponent implements OnInit{
             }
 
             onGrupoSelected(event: MatAutocompleteSelectedEvent) {
-              if (event?.option?.value) {
+              /*if (event?.option?.value) {
                 this.newSustancia.grupo_sust = event.option.value;
               } else {
                 // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
+                console.error('El evento o la opción seleccionada son indefinidos');
+              }*/
+              if (event?.option?.value) {                
+                this.signInForm.get('grupo_sust').setValue(event.option.value);
+              } else {                
                 console.error('El evento o la opción seleccionada son indefinidos');
               }
             }
@@ -109,11 +144,19 @@ export class SustanciasComponent implements OnInit{
             }
 
             addSustancia(): void {
-              const name = this.signInForm.get('name').value;
+              
+
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
-              }          
+              } 
+              
+              const name = this.signInForm.get('name').value;
+              const subpartida = this.signInForm.get('subpartida').value;
+              const pao = this.signInForm.get('pao').value;
+              const pcg = this.signInForm.get('pcg').value;
+              const grupo_sust = this.signInForm.get('grupo_sust').value;              
+
               const nameExists = this.sustancias.some(sust => sust.name === name.trim());
               if (nameExists) {
                 this.openSnackBar('La sustancia ya existe.', 'Error');
@@ -122,11 +165,11 @@ export class SustanciasComponent implements OnInit{
             
               // Crear un nuevo objeto Anio con el nombre y el estado activo
               const newSustancia: Sustancia = {                
-                name: this.signInForm.value.name.trim(),
-                subpartida: this.signInForm.value.subpartida.trim(),
-                pao: this.signInForm.value.pao.trim(),
-                pcg: this.signInForm.value.pcg.trim(),
-                grupo_sust: this.newSustancia.grupo_sust,
+                name: name.trim(),
+                subpartida: subpartida.trim(),
+                pao: pao.trim(),
+                pcg: pcg.trim(),
+                grupo_sust: grupo_sust,
                 activo: this.signInForm.get('activo').value,
                 cupo_prod: this.signInForm.get('cupo_prod').value
               };
@@ -146,7 +189,23 @@ export class SustanciasComponent implements OnInit{
             }
 
               selectSustanciaForEdit(sustancia: Sustancia): void {
-                this.selectedSustancia = { ...sustancia };               
+                this.selectedSustancia = { ...sustancia };  
+                
+                this.gruposControl.setValue(sustancia.grupo_sust);
+                
+                this.gruposFiltrados$ = this.gruposControl.valueChanges.pipe(
+                  startWith(''), // Inicia con el valor actual
+                  map(value => this._filter(value || '')) // Filtra los países basado en la entrada del usuario
+                );
+                  
+                this.editGrupoForm.setValue({
+                  name: sustancia.name,
+                  subpartida: sustancia.subpartida,
+                  pao: sustancia.pao,
+                  pcg: sustancia.pcg,
+                  grupo_sust: sustancia.grupo_sust,
+                  activo: sustancia.activo
+                });
               }
             
               updateSustancia(updatedSustancia: Sustancia): void {

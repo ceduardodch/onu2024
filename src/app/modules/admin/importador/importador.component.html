@@ -100,7 +100,7 @@
                             # Teléfono requerido
                            </mat-error>   
                 </mat-form-field> 
-                <mat-form-field class="w-full">                    
+                <!--mat-form-field class="w-full">                    
                     <input type="text"
                     placeholder="Usuario"
                     matInput
@@ -112,7 +112,21 @@
                 </mat-option>
                 </mat-autocomplete>  
                 <mat-error *ngIf="signInForm.get('user_import').touched && signInForm.get('user_import').hasError('required')"/>                                                            
-                </mat-form-field>  
+                </mat-form-field-->  
+
+                <mat-form-field appearance="fill" class="w-full">                    
+                    <input matInput
+                           placeholder="Add User"                           
+                           formControlName="user_import"
+                           [formControl]="usersControl"
+                           [matAutocomplete]="autoUser">
+                    <mat-autocomplete #autoUser="matAutocomplete" (optionSelected)="onUserSelected($event)">
+                      <mat-option *ngFor="let tuser of usersFiltrados$ | async" [value]="tuser.name">
+                        {{ tuser.name }}
+                      </mat-option>
+                    </mat-autocomplete>                    
+                  </mat-form-field>
+
                 <div>
                     <button type="submit" mat-stroked-button color="primary">Guardar</button>
                   </div>

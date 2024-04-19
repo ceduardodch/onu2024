@@ -119,21 +119,20 @@
                 <mat-form-field class="w-full">                          
                     <input matInput formControlName="pcg" id="pcg">
                     <mat-error *ngIf="signInForm.get('pcg').errors?.required"/>                    
-                  </mat-form-field>
+                  </mat-form-field> 
 
-                <mat-form-field class="w-full">                    
-                    <input type="text"
-                    placeholder="Grupo"
-                    matInput
-                    formControlName="grupo_sust"                    
-                    [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onGrupoSelected($event)">
-                <mat-option *ngFor="let grupo of gruposusts" [value]="grupo.name">
-                 {{ grupo.name }}
-                </mat-option>
-                </mat-autocomplete>
-                <mat-error *ngIf="signInForm.get('grupo_sust').touched && signInForm.get('grupo_sust').hasError('required')"/>                                       
-                </mat-form-field>  
+                <mat-form-field appearance="fill" class="w-full">                    
+                    <input matInput
+                           placeholder="Add group"                           
+                           formControlName="grupo_sust"
+                           [formControl]="gruposControl"
+                           [matAutocomplete]="autoGrupo">
+                    <mat-autocomplete #autoGrupo="matAutocomplete" (optionSelected)="onGrupoSelected($event)">
+                      <mat-option *ngFor="let grupo of gruposFiltrados$ | async" [value]="grupo.name">
+                        {{ grupo.name }}
+                      </mat-option>
+                    </mat-autocomplete>                    
+                  </mat-form-field>
 
                 <mat-slide-toggle formControlName="activo"/>
                 <mat-slide-toggle formControlName="cupo_prod"/>

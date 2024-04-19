@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink } from '@angular/router';
+
 import { Proveedor } from './proveedor.model';
 import { ProveedorService } from './proveedor.service';
 
@@ -20,6 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Observable, map } from 'rxjs';
 import { startWith } from 'rxjs/operators';
+
 import { PaisService } from '../pais/pais.service';
 
 
@@ -54,12 +56,13 @@ export class ProveedorsComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        countrys: any[] = [];   
+           
         //filteredCountry: Observable<any[]>;
         
         signInForm: FormGroup;   
         editProveedorForm: FormGroup; 
-
+        
+        countrys: any[] = [];
         paisControl = new FormControl();
         paisesFiltrados$: Observable<any[]>;
         

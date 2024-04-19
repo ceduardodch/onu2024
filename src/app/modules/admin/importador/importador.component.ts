@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
@@ -18,6 +18,8 @@ import { ImportadorService } from './importador.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Observable, map } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { UserService } from '../users/user.service';
 
 @Component({
@@ -51,9 +53,12 @@ export class ImportadorsComponent implements OnInit{
         orderAsc: boolean = true;
         currentField: string = '';
 
-        usuarios: any[];
+        usuarios: any[] = [];
+        usersControl = new FormControl();
+        usersFiltrados$: Observable<any[]>; 
         
         signInForm: FormGroup;
+        editImportForm: FormGroup;
 
         constructor(
           private _importadorService: ImportadorService,
@@ -77,6 +82,20 @@ export class ImportadorsComponent implements OnInit{
             this.usuarios = data;
           });
 
+          this.usersFiltrados$ = this.usersControl.valueChanges.pipe(
+            startWith(''),
+            map(value => typeof value === 'string' ? value : value.name),
+            map(name => name ? this._filter(name) : this.usuarios.slice())
+          );          
+
+          }
+
+          private _filter(name: string): any[] {
+            if (!name) {
+              return this.usuarios.slice();
+            }
+            const filterValue = name.toLowerCase();
+            return this.usuarios.filter(option => option.name.toLowerCase().includes(filterValue));
           }
 
           openSnackBar(message: string, action: string) {
@@ -88,21 +107,25 @@ export class ImportadorsComponent implements OnInit{
           }
 
           onUserSelected(event: MatAutocompleteSelectedEvent) {
-            if (event?.option?.value) {
-              this.newImportador.user_import = event.option.value;
-            } else {
-              // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
+            if (event?.option?.value) {                
+              this.signInForm.get('user_import').setValue(event.option.value);
+            } else {                
               console.error('El evento o la opción seleccionada son indefinidos');
             }
           }
 
-          addImportador(): void {
+          addImportador(): void {       
 
-            const name = this.signInForm.get('user_import').value;
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
               }          
+
+              const name = this.signInForm.get('name').value;
+              const ruc = this.signInForm.get('ruc').value;
+              const phone = this.signInForm.get('phone').value;
+              const user_import = this.signInForm.get('user_import').value; 
+
               const importExists = this.importadors.some(importador => importador.name === name.trim());
               if (importExists) {
                 this.openSnackBar('El importador ya existe.', 'Error');
@@ -112,10 +135,10 @@ export class ImportadorsComponent implements OnInit{
               // Crear un nuevo objeto Anio con el nombre y el estado activo
               const newImportador: Importador = {
                 
-                name: this.signInForm.value.name.trim(),
-                ruc: this.signInForm.value.ruc.trim(),
-                phone: this.signInForm.value.phone.trim(),
-                user_import: this.newImportador.user_import, // Asegúrate de que estos valores se establezcan correctamente                
+                name: name.trim(),
+                ruc: ruc.trim(),
+                phone: phone.trim(),
+                user_import: user_import, 
               };
 
             this._importadorService.addImportador(newImportador).subscribe({
@@ -132,7 +155,31 @@ export class ImportadorsComponent implements OnInit{
           }
 
             selectImportadorForEdit(importador: Importador): void {
-              this.selectedImportador = { ...importador };               
+              //this.selectedImportador = { ...importador };               
+              /*console.log('Seleccionando importador para editar:', importador);
+              // Aquí se permite el ID cero como válido.
+              if (importador && (importador.id || importador.id === 0)) {
+                this.selectedImportador = { ...importador };
+              } else {
+                console.error('El importador seleccionado no tiene un ID válido.');
+              }*/
+
+              this.selectedImportador = { ...importador };
+                
+                this.usersControl.setValue(importador.user_import);
+                
+                this.usersFiltrados$ = this.usersControl.valueChanges.pipe(
+                  startWith(''), // Inicia con el valor actual
+                  map(value => this._filter(value || '')) // Filtra los países basado en la entrada del usuario
+                );
+                  
+                this.editImportForm.setValue({
+                  name: importador.name,
+                  ruc: importador.ruc,
+                  phone: importador.phone,
+                  user_import: importador.user_import
+                });
+
             }
           
             updateImportador(updatedImportador: Importador): void {
@@ -203,6 +250,7 @@ export class ImportadorsComponent implements OnInit{
                   )
                 : this.importadors;
             }
+
           
             orderBy(field: string): void {
               // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
