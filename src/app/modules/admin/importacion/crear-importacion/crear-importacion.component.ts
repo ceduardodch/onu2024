@@ -65,8 +65,6 @@ export class CrearImportacionComponent implements OnInit {
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
     fileUrl: string;
-
-    fileDataUrl: string;
     fechaAutorizacion: Date = new Date();
     fechaSolicitud: Date;
     cupoAsignado:Number= 0.00;
@@ -80,7 +78,7 @@ export class CrearImportacionComponent implements OnInit {
     grupoSustancia :string;
     nroSolicitudVUE = new FormControl('', [
         Validators.required,
-        Validators.pattern('^\\d{20}P$')      ]);
+        Validators.pattern('^\\d{19}P$')      ]);
         selectedFile: File;
     dataSource: any[];
     currentStep = 'Borrador';
@@ -114,6 +112,7 @@ export class CrearImportacionComponent implements OnInit {
                 private _paisService: PaisService,
                 private _importadorService: ImportadorService,
                 private _cupoService: CupoService,
+                private _importacioService: ImportacionService,
                 private cdr: ChangeDetectorRef,
                 private _importacionService: ImportacionService,
                 private route: ActivatedRoute,
@@ -147,31 +146,22 @@ export class CrearImportacionComponent implements OnInit {
                 this.selectedPais = data[0].country;
                 this.cupoAsignado = data[0].cupo_asignado;
                 this.cupoRestante = data[0].cupo_restante;
-                this.totalPao = data[0].total_solicitud;
+                this.totalPao = data[0].tota_solicitud;
                 this.totalPesoKg = data[0].total_pesokg;
-                this._importacionService.downloadFile(data[0].data_file_id).subscribe((data: any) => {
-                    console.log('File:', data);
-                    this.selectedFileName = data.name;
-                    this.fileDataUrl = data.file;
-                });
-                const requests = data[0].details.map(item => {
-                    return this._importacionService.downloadFile(item.ficha_id).pipe(
-                        map(fileData => ({
-                            producto: item.sustancia,
-                            subpartida: item.subpartida,
-                            cif: item.cif,
-                            kg: item.peso_kg,
-                            fob: item.fob,
-                            pao: item.peso_pao,
-                            ficha_id: fileData.file
-                        }))
-                    );
-                });
-                forkJoin(requests).subscribe((products: any[]) => {
-                    this.listaProductos = products;
-                    console.log('Lista Productos:', this.listaProductos);
-                    this.dataSource = this.listaProductos;
-                });
+                this.listaProductos = data[0].details.map(item => {
+                    const array = new Uint8Array(item.ficha_file.data);
+                    const blob = new Blob([array], { type: 'Buffer' });
+                    const url = URL.createObjectURL(blob);
+                    return {
+                    producto: item.sustancia,
+                    subpartida: item.subpartida,
+                    cif: item.cif,
+                    kg: item.peso_kg,
+                    fob: item.fob,
+                    pao: item.peso_pao,
+                    ficha: url
+                  }});
+                this.dataSource = this.listaProductos;
 
             });
           }
@@ -338,7 +328,7 @@ export class CrearImportacionComponent implements OnInit {
             this.cupos = data;
             console.log(data);
         });
-        this._importacionService.getImportacionByImportador(event.name).subscribe((data: any[]) => {
+        this._importacioService.getImportacionByImportador(event.name).subscribe((data: any[]) => {
             console.log(data);
             this.importacion = data;
         });
@@ -403,6 +393,21 @@ export class CrearImportacionComponent implements OnInit {
         let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
         console.log('Paso1 Save', this.selectedFile);
 
+        // Preparar promesas para leer fichas como Data URL
+        let fileReadPromises = this.listaProductos.map(producto => {
+            return new Promise<string>((resolve, reject) => {
+                let reader = new FileReader();
+                reader.onload = () => {
+                    // Convertir directamente a Base64 eliminando el prefijo Data URL
+                    resolve((reader.result as string).split(',')[1]);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(producto.ficha);
+            });
+        });
+        Promise.all(fileReadPromises).then(fichas => {
+            let mainFileReader = new FileReader();
+            mainFileReader.onload = () => {
                 let body = {
                     "authorization_date": this.fechaAutorizacion,
                     "solicitud_date": this.fechaSolicitud,
@@ -416,6 +421,7 @@ export class CrearImportacionComponent implements OnInit {
                     "data_file": (mainFileReader.result as string).split(',')[1],
                     "importador": importo_n,
                     "importador_id": this.importadorControl.value.id,
+
                     "years": this.anios[0]?.name,
                     "pais": pais_n,
                     "proveedor": prove_n,
@@ -427,26 +433,23 @@ export class CrearImportacionComponent implements OnInit {
                         pao: producto.pao,
                         sustancia: producto.producto,
                         subpartida: producto.subpartida,
-                        ficha_id: producto.ficha_id
+                        ficha_file: fichas[index]
                     }))
                 };
                 console.log(body);
 
-                this._importacionService.addImportacion(body).subscribe({
-                    next: (response) => {
-                        console.log('Response received:', response);
-
-                        alert('Importación agregada con éxito');
-                        this.router.navigate(['/imports']);
-                    },
-                    error: (error) => {
-                        console.error('Error al agregar el importadacion', error);
-                    }
-                });
+              this._importacioService.addImportacion(body).subscribe({
+                  error: (error) => {
+                      console.error('Error al agregar el importador', error);
+                  }
+              });
           };
+          mainFileReader.readAsDataURL(this.selectedFile);
+      }).catch(error => {
+          console.error('Error al leer los archivos', error);
+      });
 
-
-
+      }
 
     eliminarProducto(productoEliminar) {
 

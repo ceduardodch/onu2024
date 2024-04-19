@@ -58,9 +58,7 @@
             </button>
             <p *ngIf="selectedFileName" class="px-5 filename">{{selectedFileName}}</p>
         </div>
-        <p *ngIf="isLoading">Cargando...</p>
-
-        <button [disabled]="isLoading" type="submit" class="px-5 save-button" mat-raised-button color="primary">
+        <button type="submit" class="px-5 save-button" mat-raised-button color="primary">
             Guardar
         </button>
     </form>
