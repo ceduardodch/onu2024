@@ -1,9 +1,10 @@
 
 
-<form [formGroup]="signInForm" (ngSubmit)="save()" class="contents flex-row mt-0 px-0 pt-5 overflow-scroll">
+<form class="contents flex-row mt-0 px-0 pt-5 shadow-none overflow-scroll">
+
     <div class="w-3/4 bg-white float-left">
         <mat-toolbar class="mb-4 shadow-lg flex items-center justify-between">
-            <button mat-icon-button aria-label="Guardar" type="submit">
+            <button mat-icon-button aria-label="Guardar" (click)="save()">
               <mat-icon>save</mat-icon>
             </button>
             <div class="flex items-center">
@@ -21,63 +22,51 @@
                 </button>
             </div>
           </mat-toolbar>
-          
+
                 <div class="grid grid-cols-2 gap-4 px-5"> <!-- Dos cuadros de texto por fila -->
                     <mat-form-field class="w-full" appearance="fill">
                         <mat-label>Nro Solicitud VUE</mat-label>
                         <input matInput [formControl]="nroSolicitudVUE" placeholder="Nro Solicitud VUE" maxlength="21">
                         <mat-icon class="icon-size-5" matPrefix svgIcon="heroicons_solid:hashtag"></mat-icon>
                     </mat-form-field>
-                      
-                      <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>Importador</mat-label>                    
-                        <input matInput
-                               placeholder="Importador"                           
-                               formControlName="importador"
-                               [formControl]="importadorControl"
-                               [matAutocomplete]="autoImport">
-                        <mat-autocomplete #autoImport="matAutocomplete" (optionSelected)="onImportadorSelected($event)">
-                          <mat-option *ngFor="let tuser of importadoresFiltrados$ | async" [value]="tuser.name">
-                            {{ tuser.name }}
-                          </mat-option>
-                        </mat-autocomplete>                    
-                      </mat-form-field>    
 
-                    <mat-form-field appearance="fill" class="w-full">
-                        <mat-label>Proveedor</mat-label>                    
-                        <input matInput
-                               placeholder="Proveedor"                           
-                               formControlName="proveedor"
-                               [formControl]="proveedoresControl"
-                               [matAutocomplete]="autoProv">
-                        <mat-autocomplete #autoProv="matAutocomplete" (optionSelected)="onProveedorSelected($event)">
-                          <mat-option *ngFor="let prov of proveedoresFiltrados$ | async" [value]="prov.name">
-                            {{ prov.name }}
-                          </mat-option>
-                        </mat-autocomplete>                    
-                      </mat-form-field>    
+                    <mat-form-field class="w-full">
+                        <mat-label>Importador</mat-label>
 
-                    <mat-form-field appearance="fill" class="w-full">       
-                        <mat-label>País</mat-label>              
-                        <input matInput
-                               placeholder="Add country"                           
-                               formControlName="pais"
-                               [formControl]="paisControl"
-                               [matAutocomplete]="autoCountry">
-                        <mat-autocomplete #autoCountry="matAutocomplete" (optionSelected)="onPaisSelected($event)">
-                          <mat-option *ngFor="let pais of paisesFiltrados$ | async" [value]="pais.name">
-                            {{ pais.name }}
-                          </mat-option>
-                        </mat-autocomplete>                    
+                        <input type="text" placeholder="Importador" [(value)]="selectedImportador" matInput [formControl]="importadorControl" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onImportadorSelected($event.option.value)">
+                            <mat-option *ngFor="let importador of importadores" [value]="importador">
+                                {{importador.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                        <button mat-icon-button matSuffix>
+                          <mat-icon>search</mat-icon>
+                        </button>
                       </mat-form-field>
 
-                </div>            
+                    <mat-form-field class="w-full">
+                        <mat-label>Proveedor</mat-label>
 
+                        <mat-select placeholder="Proveedor" [(value)]="selectedProveedor" (selectionChange)="onProveedorSeleccionado($event)">
+                            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.name">{{ proveedor.name }}</mat-option>
+                        </mat-select>
+                        <mat-icon class="icon-size-5" matPrefix ></mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full">
+                        <mat-label>Pais</mat-label>
+
+                        <mat-select placeholder="Pais" [(value)]="selectedPais" (selectionChange)="onPaisSeleccionado($event)">
+                            <mat-option *ngFor="let pais of paises" [value]="pais.name">{{ pais.name }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                </div>
                 <mat-toolbar class="flex items-center space-x-2 my-2">
                     <button mat-icon-button color="primary" (click)="openDialog()" matTooltip="Agregar producto">
                         <mat-icon>control_point</mat-icon>
                     </button>
-                    <input type="file" id="fileInput" #fileInput (change)="selectFile($event)" class="hidden">
+                    <input type="file" #fileInput (change)="selectFile($event)" class="hidden">
                     <button mat-icon-button color="primary" (click)="fileInput.click()" matTooltip="Subir proforma">
                         <mat-icon>cloud_upload</mat-icon>
                     </button>
@@ -154,7 +143,7 @@
                     </table>
                 </div>
     </div>
-</form>
+
     <div class="w-1/3 bg-white float-right  shadow-lg"> <!-- Contenedor derecho, más pequeño y ajustado -->        <div class="flex flex-col space-y-4"> <!-- Añadir espaciado vertical entre elementos -->
         <mat-toolbar class="mb-4 shadow-lg">
                 <div class="status-buttons">
@@ -217,3 +206,4 @@
         </div>
     </div>
     </div>
+</form>
