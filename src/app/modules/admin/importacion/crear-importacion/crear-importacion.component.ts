@@ -1,10 +1,10 @@
 import { AsyncPipe, CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatOptionModule, MatRippleModule } from '@angular/material/core';
+import {  MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -16,15 +16,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute } from '@angular/router';
-import { Observable, map } from 'rxjs';
-import { startWith } from 'rxjs/operators';
+import { forkJoin, startWith } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AnioService } from '../../anio/anio.service';
 import { CupoService } from '../../cupo/cupo.service';
 import { ImportadorService } from '../../importador/importador.service';
@@ -32,6 +30,8 @@ import { PaisService } from '../../pais/pais.service';
 import { ProveedorService } from '../../proveedor/proveedor.service';
 import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { ImportacionService } from '../importacion.service';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-crear-importacion',
@@ -56,15 +56,17 @@ import { ImportacionService } from '../importacion.service';
 
 
 export class CrearImportacionComponent implements OnInit {
-
-  @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
-
-    selectedButton: string = '';    
-    
+    selectedButton: string = '';
+    proveedores: any[];
+    paises: any[];
+    importadores: any[];
+    importadorControl = new FormControl();
     displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq','eliminar'];
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
     fileUrl: string;
+
+    fileDataUrl: string;
     fechaAutorizacion: Date = new Date();
     fechaSolicitud: Date;
     cupoAsignado:Number= 0.00;
@@ -78,50 +80,39 @@ export class CrearImportacionComponent implements OnInit {
     grupoSustancia :string;
     nroSolicitudVUE = new FormControl('', [
         Validators.required,
-        Validators.pattern('^\\d{19}P$')      ]);
+        Validators.pattern('^\\d{20}P$')      ]);
         selectedFile: File;
     dataSource: any[];
     currentStep = 'Borrador';
     currentType: any;
     selectedFileName: any;
-
     anios = [];
     cupos = [];
-    importacion :any;    
+    importacion :any;
+
+    importadoresFiltrados: any[];
 
     selectedProveedor: string;
     selectedImportador: string;
     selectedPais: string;
-
-    importadores: any[] = [];
-    importadorControl = new FormControl();
-    importadoresFiltrados$: Observable<any[]>; 
-
-    proveedores: any[] = [];
-    proveedoresControl = new FormControl();
-    proveedoresFiltrados$: Observable<any[]>; 
-
-    countrys: any[] = [];
-    paisControl = new FormControl();
-    paisesFiltrados$: Observable<any[]>;
-
-    signInForm: FormGroup;
+    fileDataId: Number;
 
     constructor(private _proveedorService: ProveedorService,
                 private _anioService: AnioService,
                 private _paisService: PaisService,
                 private _importadorService: ImportadorService,
                 private _cupoService: CupoService,
-                private _importacioService: ImportacionService,
                 private cdr: ChangeDetectorRef,
                 private _importacionService: ImportacionService,
                 private route: ActivatedRoute,
-                        public dialog: MatDialog,
+                public dialog: MatDialog,
+                private router: Router
 
-                private _formBuilder: FormBuilder,
-                private _snackBar: MatSnackBar,
+               ) {
 
-               ) {}
+                this.importadoresFiltrados = this.importadores;
+
+                }
 
 
                 ngAfterViewInit() {
@@ -146,22 +137,31 @@ export class CrearImportacionComponent implements OnInit {
                 this.selectedPais = data[0].country;
                 this.cupoAsignado = data[0].cupo_asignado;
                 this.cupoRestante = data[0].cupo_restante;
-                this.totalPao = data[0].tota_solicitud;
+                this.totalPao = data[0].total_solicitud;
                 this.totalPesoKg = data[0].total_pesokg;
-                this.listaProductos = data[0].details.map(item => {
-                    const array = new Uint8Array(item.ficha_file.data);
-                    const blob = new Blob([array], { type: 'Buffer' });
-                    const url = URL.createObjectURL(blob);
-                    return {
-                    producto: item.sustancia,
-                    subpartida: item.subpartida,
-                    cif: item.cif,
-                    kg: item.peso_kg,
-                    fob: item.fob,
-                    pao: item.peso_pao,
-                    ficha: url
-                  }});
-                this.dataSource = this.listaProductos;
+                this._importacionService.downloadFile(data[0].data_file_id).subscribe((data: any) => {
+                    console.log('File:', data);
+                    this.selectedFileName = data.name;
+                    this.fileDataUrl = data.file;
+                });
+                const requests = data[0].details.map(item => {
+                    return this._importacionService.downloadFile(item.ficha_id).pipe(
+                        map(fileData => ({
+                            producto: item.sustancia,
+                            subpartida: item.subpartida,
+                            cif: item.cif,
+                            kg: item.peso_kg,
+                            fob: item.fob,
+                            pao: item.peso_pao,
+                            ficha_id: fileData.file
+                        }))
+                    );
+                });
+                forkJoin(requests).subscribe((products: any[]) => {
+                    this.listaProductos = products;
+                    console.log('Lista Productos:', this.listaProductos);
+                    this.dataSource = this.listaProductos;
+                });
 
             });
           }
@@ -169,71 +169,17 @@ export class CrearImportacionComponent implements OnInit {
         this.loadData().then(() => {
         });
 
-        this.signInForm = this._formBuilder.group({                                     
-          importador : ['', [Validators.required]],
-          proveedor: ['', [Validators.required]],
-          pais: ['', [Validators.required]],
-        });
+        this.importadorControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(valor => this._filtrarImportadores(valor)),
+      )
+      .subscribe(filtrados => this.importadoresFiltrados = filtrados);
 
-        this._importadorService.getImportadors().subscribe((data: any[]) => {
-          this.importadores = data;
-        });
-
-        this.importadoresFiltrados$ = this.importadorControl.valueChanges.pipe(
-          startWith(''),
-          map(value => typeof value === 'string' ? value : value.name),
-          map(name => name ? this._filter(name) : this.importadores.slice())
-        );    
-
-        this._proveedorService.getProveedors().subscribe((data: any[]) => {
-          this.proveedores = data;
-        });
-
-        this.proveedoresFiltrados$ = this.proveedoresControl.valueChanges.pipe(
-          startWith(''),
-          map(value => typeof value === 'string' ? value : value.name),
-          map(name => name ? this._filter2(name) : this.proveedores.slice())
-        );    
-
-        this._paisService.getPaises().subscribe((data: any[]) => {
-          this.countrys = data || [];
-        });
-
-        this.paisesFiltrados$ = this.paisControl.valueChanges.pipe(
-          startWith(''),
-          map(value => typeof value === 'string' ? value : value.name),
-          map(name => name ? this._filter3(name) : this.countrys.slice())
-        );
-
-      }
-
-      private _filter(name: string): any[] {
-        if (!name) {
-          return this.importadores.slice();
-        }
-        const filterValue = name.toLowerCase();
-        return this.importadores.filter(option => option.name.toLowerCase().includes(filterValue));
-      }
-
-      private _filter2(name: string): any[] {
-        if (!name) {
-          return this.proveedores.slice();
-        }
-        const filterValue = name.toLowerCase();
-        return this.proveedores.filter(option => option.name.toLowerCase().includes(filterValue));
-      }
-
-      private _filter3(name: string): any[] {
-        if (!name) {
-          return this.countrys.slice();
-        }
-        const filterValue = name.toLowerCase();
-        return this.countrys.filter(option => option.name.toLowerCase().includes(filterValue));
       }
 
       async loadData() {
-          /*
-          this._proveedorService.getProveedors().subscribe((data: any[]) => {
+        this._proveedorService.getProveedors().subscribe((data: any[]) => {
             this.proveedores = data;
           });
           this._paisService.getPaises().subscribe((data: any[]) => {
@@ -243,7 +189,7 @@ export class CrearImportacionComponent implements OnInit {
           this._importadorService.getImportadors().subscribe((data: any[]) => {
               this.importadores = data;
               }
-          );*/
+          );
 
           this._anioService.getAniosActivo().subscribe((data: any[]) => {
               this.anios = data;
@@ -251,74 +197,40 @@ export class CrearImportacionComponent implements OnInit {
           );
 
       }
-      /*selectFile(event) {
-        this.selectedFile = event.target.files[0];
-        this.selectedFileName = event.target.files[0].name;
-      }
 
-      selectFile(event: Event): void {
-        //event.preventDefault();
-        //event.stopPropagation();
+selectFile(event) {
+    console.log('Event:', event);
+    console.log('Files:', event.target.files);
+    this.selectedFile = event.target.files[0];
+    this.selectedFileName = event.target.files[0].name;
+    console.log('Selected file:', this.selectedFile);
 
-        const element = event.currentTarget as HTMLInputElement;
-        let file: File | null = null;
-        
-        if (element.files && element.files[0]) {
-          file = element.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+        let base64File = reader.result as string;
+
+        // Elimina el prefijo 'data:application/pdf;base64,' de la cadena
+        const prefix = 'data:application/pdf;base64,';
+        if (base64File.startsWith(prefix)) {
+            base64File = base64File.substring(prefix.length);
         }
-        this.selectedFile = file;
-        this.selectedFileName = file.name;
-        //this.form.patchValue({ ficha: file });
-      }*/
 
-      selectFile(event: Event): void {
-        const element = event.target as HTMLInputElement;
-        const file = element.files && element.files[0] ? element.files[0] : null;
-        
-        if (file) {
-          this.selectedFile = file;
-          this.selectedFileName = file.name;          
-        }
-      }
-      
-
-      openSnackBar(message: string, action: string) {
-        this._snackBar.open(message, action, {
-          duration: 2000, // Duración de la notificación
-          horizontalPosition: 'center', // Posición horizontal
-          verticalPosition: 'top', // Posición vertical
+        this._importacionService.uploadFile(
+            {'name': this.selectedFileName, 'file': base64File}
+        ).subscribe(response => {
+            this.fileDataId= response.file;
+        }, error => {
+            console.error('Error uploading file:', error);
         });
-      }
+    };
+    reader.readAsDataURL(this.selectedFile);
+}
+
 
     onImportadorSelected(event) {
-        //console.log('onImportadorSelected',event);
+        console.log('onImportadorSelected',event);
     this.calculoResumen(event);
-    if (event?.option?.value) {                
-      this.signInForm.get('importador').setValue(event.option.value);
-    } else {                
-      console.error('El evento o la opción seleccionada son indefinidos');
     }
-    }
-
-    onProveedorSelected(event) {
-      //console.log('onImpSelected',event);
-    this.calculoResumen(event);
-    if (event?.option?.value) {                
-    this.signInForm.get('proveedor').setValue(event.option.value);
-    } else {                
-    console.error('El evento o la opción seleccionada son indefinidos');
-    }
-    }
-
-    //onPaisSelected(event: MatAutocompleteSelectedEvent) {
-    onPaisSelected(event) {
-      if (event?.option?.value) {                
-        this.signInForm.get('pais').setValue(event.option.value);
-      } else {                
-        console.error('El evento o la opción seleccionada son indefinidos');
-      }
-    }
-
     displayFn(importador: any): string {
         return importador && importador.name ? importador.name : '';
     }
@@ -328,7 +240,7 @@ export class CrearImportacionComponent implements OnInit {
             this.cupos = data;
             console.log(data);
         });
-        this._importacioService.getImportacionByImportador(event.name).subscribe((data: any[]) => {
+        this._importacionService.getImportacionByImportador(event.name).subscribe((data: any[]) => {
             console.log(data);
             this.importacion = data;
         });
@@ -385,29 +297,11 @@ export class CrearImportacionComponent implements OnInit {
       }
 
       save() {
-
-        const importo_n = this.signInForm.get('importador').value;
-        const prove_n = this.signInForm.get('proveedor').value;
-        const pais_n = this.signInForm.get('pais').value;
-
-        let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
+        console.log('fechaAutorizacion', this.fechaAutorizacion);
+        let fechaAutorizacionDate = new Date(this.fechaAutorizacion);
+        let nombreDelMes = this.nombresDeMeses[fechaAutorizacionDate.getMonth()];
         console.log('Paso1 Save', this.selectedFile);
 
-        // Preparar promesas para leer fichas como Data URL
-        let fileReadPromises = this.listaProductos.map(producto => {
-            return new Promise<string>((resolve, reject) => {
-                let reader = new FileReader();
-                reader.onload = () => {
-                    // Convertir directamente a Base64 eliminando el prefijo Data URL
-                    resolve((reader.result as string).split(',')[1]);
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(producto.ficha);
-            });
-        });
-        Promise.all(fileReadPromises).then(fichas => {
-            let mainFileReader = new FileReader();
-            mainFileReader.onload = () => {
                 let body = {
                     "authorization_date": this.fechaAutorizacion,
                     "solicitud_date": this.fechaSolicitud,
@@ -418,38 +312,40 @@ export class CrearImportacionComponent implements OnInit {
                     "total_solicitud": this.totalPao,
                     "total_pesokg": this.totalPesoKg,
                     "vue": this.nroSolicitudVUE.value,
-                    "data_file": (mainFileReader.result as string).split(',')[1],
-                    "importador": importo_n,
+                    "data_file_id": this.fileDataId,
+                    "importador": this.importadorControl.value.name,
                     "importador_id": this.importadorControl.value.id,
-
                     "years": this.anios[0]?.name,
-                    "pais": pais_n,
-                    "proveedor": prove_n,
-                    "grupo": 'prueba',//cambiar aquiiiii
-                    "details": this.listaProductos.map((producto, index) => ({
+                    "pais": this.paisSeleccionado,
+                    "proveedor": this.proveedorSeleccionado,
+                    "grupo": this.grupoSustancia,
+                    "details": this.listaProductos.map((producto) => ({
                         cif: producto.cif,
                         fob: producto.fob,
                         peso_kg: producto.kg,
                         pao: producto.pao,
                         sustancia: producto.producto,
                         subpartida: producto.subpartida,
-                        ficha_file: fichas[index]
+                        ficha_id: producto.ficha_id
                     }))
                 };
                 console.log(body);
 
-              this._importacioService.addImportacion(body).subscribe({
-                  error: (error) => {
-                      console.error('Error al agregar el importador', error);
-                  }
-              });
-          };
-          mainFileReader.readAsDataURL(this.selectedFile);
-      }).catch(error => {
-          console.error('Error al leer los archivos', error);
-      });
+                this._importacionService.addImportacion(body).subscribe({
+                    next: (response) => {
+                        console.log('Response received:', response);
 
-      }
+                        alert('Importación agregada con éxito');
+                        this.router.navigate(['/imports']);
+                    },
+                    error: (error) => {
+                        console.error('Error al agregar el importadacion', error);
+                    }
+                });
+          };
+
+
+
 
     eliminarProducto(productoEliminar) {
 
@@ -458,13 +354,13 @@ export class CrearImportacionComponent implements OnInit {
 
       this.cdr.detectChanges();
     }
-    /*
+
     private _filtrarImportadores(value: string): any[] {
       const filterValue = value.toLowerCase();
       // Filtrar el arreglo de importadores
       return this.importadores.filter(importador =>
         importador.name.toLowerCase().includes(filterValue)
       );
-    }*/
+    }
 
 }
