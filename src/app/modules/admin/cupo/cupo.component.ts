@@ -231,36 +231,7 @@ export class CuposComponent implements OnInit{
                   anio: cupo.anio,
                   hfc: cupo.hfc,
                   hcfc: cupo.hcfc
-                });
-                /*
-                this.selectedCupo = { ...cupo };
-  
-                // Establece los valores del formulario de edición con los valores actuales.
-                this.editCupoForm.setValue({
-                  importador: cupo.importador,
-                  anio: cupo.anio,
-                  hfc: cupo.hfc,
-                  hcfc: cupo.hcfc
-                });
-  
-                // Configura el Observable para el autocompletado del campo 'importador'.
-                this.importFiltrados$ = this.importControl.valueChanges
-                  .pipe(
-                  startWith(''),
-                  map(value => this._filter2(value || cupo.importador))
-                );
-  
-                // Configura el Observable para el autocompletado del campo 'anio'.
-                this.aniosFiltrados$ = this.aniosControl.valueChanges
-                  .pipe(
-                  startWith(''),
-                  map(value => this._filter(value || cupo.anio))
-                );
-  
-                // Actualiza el valor del control de los campos 'importador' y 'anio'.
-                this.importControl.setValue(cupo.importador);
-                this.aniosControl.setValue(cupo.anio);
-                */
+                });             
               }
 
               updateCupo(updatedCupo: Cupo): void {

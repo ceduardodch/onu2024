@@ -48,7 +48,8 @@
                         <mat-label>Proveedor</mat-label>
 
                         <mat-select placeholder="Proveedor" [(value)]="selectedProveedor" (selectionChange)="onProveedorSeleccionado($event)">
-                            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.name">{{ proveedor.name }}</mat-option>
+                            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.name">
+                                {{ proveedor.name }}</mat-option>
                         </mat-select>
                         <mat-icon class="icon-size-5" matPrefix ></mat-icon>
                     </mat-form-field>
@@ -57,7 +58,8 @@
                         <mat-label>Pais</mat-label>
 
                         <mat-select placeholder="Pais" [(value)]="selectedPais" (selectionChange)="onPaisSeleccionado($event)">
-                            <mat-option *ngFor="let pais of paises" [value]="pais.name">{{ pais.name }}</mat-option>
+                            <mat-option *ngFor="let pais of paises" [value]="pais.name">
+                                {{ pais.name }}</mat-option>
                         </mat-select>
                     </mat-form-field>
 
