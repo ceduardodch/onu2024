@@ -259,9 +259,13 @@ selectFile(event) {
         if (this.grupoSustancia === 'HCFC') {
             this.cupoAsignado = this.cupos.hcfc;
         }
-        if (this.grupoSustancia === 'HFC') {
+        else if (this.grupoSustancia === 'HFC') {
             this.cupoAsignado =  this.cupos.hfc;
         }
+        else {
+            this.cupoAsignado =  0;
+        }
+
 
 
 
