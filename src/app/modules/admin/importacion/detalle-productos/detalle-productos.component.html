@@ -1,7 +1,7 @@
 <div class="popup-container">
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="contents flex-wrap mt-0 px-0 pt-5 shadow-none overflow-scroll">
         <div class="flex w-full">
-            <!--mat-form-field class="px-5 w-1/2">
+            <mat-form-field class="px-5 w-1/2">
                 <mat-label>Producto</mat-label>
                 <input type="text" matInput formControlName="producto" [matAutocomplete]="auto">
                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProductSelected($event.option.value)">
@@ -9,22 +9,7 @@
                         {{sustancia.name}}
                     </mat-option>
                 </mat-autocomplete>
-            </mat-form-field-->
-
-            <mat-form-field appearance="fill" class="px-5 w-1/2"> 
-                <mat-label>Producto</mat-label>                   
-                <input matInput
-                       placeholder="Producto"                           
-                       formControlName="producto"
-                       [formControl]="productosControl"
-                       [matAutocomplete]="autoProdu">
-                <mat-autocomplete #autoProdu="matAutocomplete" (optionSelected)="onProductSelected($event.option.value)">
-                  <mat-option *ngFor="let sustancia of productosFiltrados$ | async" [value]="sustancia">
-                    {{ sustancia.name }}
-                  </mat-option>
-                </mat-autocomplete>                    
-              </mat-form-field>
-              
+            </mat-form-field>
             <div class="px-5 w-1/2">
                 <p class="font-bold">Subpartida</p>
                 <input type="text" formControlName="subpartida" readonly>
@@ -51,14 +36,16 @@
             </div>
         </div>
         <div class="flex w-full">
-            <input type="file" id="fileInput" (change)="selectFile($event)" #fileInput class= "hidden">
-            <!-- Botón personalizado que el usuario presiona para cargar el archivo -->
-            <button mat-icon-button color="primary"  (click)="fileInput.click()" matTooltip="Subir proforma">
+            <button type="button" class="px-5" mat-icon-button color="primary" (click)="selectFile($event)">
                 <mat-icon>cloud_upload</mat-icon>
             </button>
+            <input type="file" id="fileInput" (change)="selectFile($event)" style="display: none">
+
             <p *ngIf="selectedFileName" class="px-5 filename">{{selectedFileName}}</p>
         </div>
-        <button type="submit" class="px-5 save-button" mat-raised-button color="primary">
+        <p *ngIf="isLoading">Cargando...</p>
+
+        <button [disabled]="isLoading" type="submit" class="px-5 save-button" mat-raised-button color="primary">
             Guardar
         </button>
     </form>
