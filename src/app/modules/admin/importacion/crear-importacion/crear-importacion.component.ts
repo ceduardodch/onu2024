@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatOptionModule, MatRippleModule } from '@angular/material/core';
+import {  MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -21,7 +21,6 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AnioService } from '../../anio/anio.service';
@@ -31,6 +30,8 @@ import { PaisService } from '../../pais/pais.service';
 import { ProveedorService } from '../../proveedor/proveedor.service';
 import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { ImportacionService } from '../importacion.service';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-crear-importacion',
@@ -86,7 +87,7 @@ export class CrearImportacionComponent implements OnInit {
     currentType: any;
     selectedFileName: any;
     anios = [];
-    cupos = [];
+    cupos :any;
     importacion :any;
 
     importadoresFiltrados: any[];
@@ -235,7 +236,7 @@ selectFile(event) {
     }
     calculoResumen(event) {
     console.log('calculoResumen event',event);
-        this._cupoService.getCuposByName(event.name).subscribe((data: any[]) => {
+        this._cupoService.getCuposByName(event.id).subscribe((data: any[]) => {
             this.cupos = data;
             console.log(data);
         });
@@ -256,11 +257,15 @@ selectFile(event) {
 
         console.log('this.grupoSustancia',this.grupoSustancia);
         if (this.grupoSustancia === 'HCFC') {
-            this.cupoAsignado = this.cupos[0].hfc;
+            this.cupoAsignado = this.cupos.hcfc;
         }
-        if (this.grupoSustancia === 'HFC') {
-            this.cupoAsignado =  this.cupos[0].hcfc;
+        else if (this.grupoSustancia === 'HFC') {
+            this.cupoAsignado =  this.cupos.hfc;
         }
+        else {
+            this.cupoAsignado =  0;
+        }
+
 
 
 

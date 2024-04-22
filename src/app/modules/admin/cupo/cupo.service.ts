@@ -15,8 +15,8 @@ export class CupoService {
   getCupos(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }
-  getCuposByName(name: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}?name=${name}`);
+  getCuposByName(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
   addCupo(cupo: Cupo): Observable<Cupo> {
