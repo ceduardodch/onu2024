@@ -166,21 +166,23 @@
                       <div class="px-2  w-1/2">
                         <p class="font-bold">Mes</p>
                         <p>{{ fechaAutorizacion | date:'MMMM' }}</p>                    </div>
-                    <mat-form-field color="accent"  class="px-2 w-1/2">
-                        <mat-label class="font-bold">Fecha de solicitud</mat-label>
-                        <input matInput [matDatepicker]="picker1" [(ngModel)]="fechaSolicitud" name="fechaSolicitud">
-                        <mat-hint>DD/MM/YYYY</mat-hint>
-                        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
-                        <mat-datepicker #picker1></mat-datepicker>
-                    </mat-form-field>
-
-                    <mat-form-field color="accent"  class="px-2 w-1/2">
-                        <mat-label class="font-bold">Fecha de autorizacion</mat-label>
-                        <input matInput [matDatepicker]="picker2" [(ngModel)]="fechaAutorizacion" name="fechaAutorizacion">
-                        <mat-hint>DD/MM/YYYY</mat-hint>
-                        <mat-datepicker-toggle matIconSuffix [for]="picker2"   ></mat-datepicker-toggle>
-                        <mat-datepicker #picker2 color="primary"></mat-datepicker>
-                    </mat-form-field>
+                        <mat-form-field color="accent" class="px-2 w-1/2">
+                            <mat-label class="font-bold">Fecha de solicitud</mat-label>
+                            <input matInput [matDatepicker]="picker1" formControlName="fechaSolicitud">
+                            <mat-hint>DD/MM/YYYY</mat-hint>
+                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                          </mat-form-field>
+                          
+                          <mat-form-field color="accent" class="px-2 w-1/2">
+                            <mat-label class="font-bold">Fecha de autorizacion</mat-label>
+                            <input matInput [matDatepicker]="picker2" formControlName="fechaAutorizacion">
+                            <mat-hint>DD/MM/YYYY</mat-hint>
+                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2 color="primary"></mat-datepicker>
+                          </mat-form-field>
+                          
+                          
                 </div>
 
                 <div class="summary-section flex flex-wrap py-5">

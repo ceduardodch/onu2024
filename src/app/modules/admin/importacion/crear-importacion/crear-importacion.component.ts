@@ -87,7 +87,7 @@ export class CrearImportacionComponent implements OnInit {
     currentType: any;
     selectedFileName: any;
     anios = [];
-    cupos :any;
+    cupos = [];
     importacion :any;
 
     importadoresFiltrados: any[];
@@ -236,7 +236,7 @@ selectFile(event) {
     }
     calculoResumen(event) {
     console.log('calculoResumen event',event);
-        this._cupoService.getCuposByName(event.id).subscribe((data: any[]) => {
+        this._cupoService.getCuposByName(event.name).subscribe((data: any[]) => {
             this.cupos = data;
             console.log(data);
         });
@@ -256,12 +256,11 @@ selectFile(event) {
         });
 
         console.log('this.grupoSustancia',this.grupoSustancia);
-        console.log('this.cupos',this.cupos);
         if (this.grupoSustancia === 'HCFC') {
-            this.cupoAsignado = this.cupos.hcfc;
+            this.cupoAsignado = this.cupos[0].hfc;
         }
         if (this.grupoSustancia === 'HFC') {
-            this.cupoAsignado =  this.cupos.hfc;
+            this.cupoAsignado =  this.cupos[0].hcfc;
         }
 
 
