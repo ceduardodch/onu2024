@@ -1,6 +1,6 @@
 import { AsyncPipe, CommonModule, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -16,14 +16,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, forkJoin, startWith } from 'rxjs';
+import { forkJoin, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AnioService } from '../../anio/anio.service';
 import { CupoService } from '../../cupo/cupo.service';
@@ -57,23 +56,18 @@ import { ImportacionService } from '../importacion.service';
 
 export class CrearImportacionComponent implements OnInit {
     selectedButton: string = '';
-    //proveedores: any[];
-    //paises: any[];
-    //importadores: any[];
-    //importadorControl = new FormControl();
+    proveedores: any[];
+    paises: any[];
+    importadores: any[];
+    importadorControl = new FormControl();
     displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq','eliminar'];
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
     fileUrl: string;
 
     fileDataUrl: string;
-
-    //fechaAutorizacion: Date = new Date();
-    //fechaSolicitud: Date;
-
-    fechaAutorizacion = new FormControl();
-    fechaSolicitud = new FormControl();
-
+    fechaAutorizacion: Date = new Date();
+    fechaSolicitud: Date;
     cupoAsignado:Number= 0.00;
 
     cupoRestante:Number=0.00;
@@ -102,21 +96,6 @@ export class CrearImportacionComponent implements OnInit {
     selectedPais: string;
     fileDataId: Number;
 
-    importadores: any[] = [];
-    importadorControl = new FormControl();
-    importadoresFiltrados$: Observable<any[]>; 
-
-    proveedores: any[] = [];
-    proveedoresControl = new FormControl();
-    proveedoresFiltrados$: Observable<any[]>; 
-
-    countrys: any[] = [];
-    paisControl = new FormControl();
-    paisesFiltrados$: Observable<any[]>;
-
-
-    signInForm: FormGroup;
-
     constructor(private _proveedorService: ProveedorService,
                 private _anioService: AnioService,
                 private _paisService: PaisService,
@@ -126,10 +105,7 @@ export class CrearImportacionComponent implements OnInit {
                 private _importacionService: ImportacionService,
                 private route: ActivatedRoute,
                 public dialog: MatDialog,
-                private router: Router,
-
-                private _formBuilder: FormBuilder,
-                private _snackBar: MatSnackBar,
+                private router: Router
 
                ) {
 
@@ -145,26 +121,13 @@ export class CrearImportacionComponent implements OnInit {
                   }
     ngOnInit(): void {
         const id = this.route.snapshot.paramMap.get('id');
-
-        this.signInForm = this._formBuilder.group({                                     
-          importador : ['', [Validators.required]],
-          proveedor: ['', [Validators.required]],
-          pais: ['', [Validators.required]],
-          fechaSolicitud: [null, Validators.required], 
-          fechaAutorizacion: [null, Validators.required],
-        });
-
         console.log('id',id);
         //cargar data maestro detalle para editar importacion existente si id es diferente de null
         if (id !== null && id !== '0') {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
               console.log('data',data);
-
-              this.signInForm.patchValue({
-                fechaAutorizacion: new Date(data[0].authorization_date),
-                fechaSolicitud: new Date(data[0].solicitud_date)                
-              });
-
+                this.fechaAutorizacion = new Date(data[0].authorization_date);
+                this.fechaSolicitud = new Date(data[0].solicitud_date);
                 this.anios = [{name: data[0].years}];
                 this.nroSolicitudVUE.setValue(data[0].vue);
                 this.listaProductos = data[0].details;
@@ -205,64 +168,27 @@ export class CrearImportacionComponent implements OnInit {
         this.loadData().then(() => {
         });
 
-        this._importadorService.getImportadors().subscribe((data: any[]) => {
-          this.importadores = data;
-        });
+        this.importadorControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(valor => this._filtrarImportadores(valor)),
+      )
+      .subscribe(filtrados => this.importadoresFiltrados = filtrados);
 
-        this.importadoresFiltrados$ = this.importadorControl.valueChanges.pipe(
-          startWith(''),
-          map(value => typeof value === 'string' ? value : value.name),
-          map(name => name ? this._filter(name) : this.importadores.slice())
-        );    
-
-        this._proveedorService.getProveedors().subscribe((data: any[]) => {
-          this.proveedores = data;
-        });
-
-        this.proveedoresFiltrados$ = this.proveedoresControl.valueChanges.pipe(
-          startWith(''),
-          map(value => typeof value === 'string' ? value : value.name),
-          map(name => name ? this._filter2(name) : this.proveedores.slice())
-        );    
-
-        this._paisService.getPaises().subscribe((data: any[]) => {
-          this.countrys = data;
-        });
-
-        this.paisesFiltrados$ = this.paisControl.valueChanges.pipe(
-          startWith(''),
-          map(value => typeof value === 'string' ? value : value.name),
-          map(name => name ? this._filter3(name) : this.countrys.slice())
-        );
-
-      }
-
-      private _filter(name: string): any[] {
-        if (!name) {
-          return this.importadores.slice();
-        }
-        const filterValue = name.toLowerCase();
-        return this.importadores.filter(option => option.name.toLowerCase().includes(filterValue));
-      }
-
-      private _filter2(name: string): any[] {
-        if (!name) {
-          return this.proveedores.slice();
-        }
-        const filterValue = name.toLowerCase();
-        return this.proveedores.filter(option => option.name.toLowerCase().includes(filterValue));
-      }
-
-      private _filter3(name: string): any[] {
-        if (!name) {
-          return this.countrys.slice();
-        }
-        const filterValue = name.toLowerCase();
-        return this.countrys.filter(option => option.name.toLowerCase().includes(filterValue));
       }
 
       async loadData() {
-        
+        this._proveedorService.getProveedors().subscribe((data: any[]) => {
+            this.proveedores = data;
+          });
+          this._paisService.getPaises().subscribe((data: any[]) => {
+              this.paises = data;
+              }
+          );
+          this._importadorService.getImportadors().subscribe((data: any[]) => {
+              this.importadores = data;
+              }
+          );
 
           this._anioService.getAniosActivo().subscribe((data: any[]) => {
               this.anios = data;
@@ -271,15 +197,7 @@ export class CrearImportacionComponent implements OnInit {
 
       }
 
-      openSnackBar(message: string, action: string) {
-        this._snackBar.open(message, action, {
-          duration: 2000, // Duración de la notificación
-          horizontalPosition: 'center', // Posición horizontal
-          verticalPosition: 'top', // Posición vertical
-        });
-      }
-
-    selectFile(event) {
+selectFile(event) {
     console.log('Event:', event);
     console.log('Files:', event.target.files);
     this.selectedFile = event.target.files[0];
@@ -308,41 +226,10 @@ export class CrearImportacionComponent implements OnInit {
 }
 
 
-    /*onImportadorSelected(event) {
+    onImportadorSelected(event) {
         console.log('onImportadorSelected',event);
     this.calculoResumen(event);
-    }*/
-
-    onImportadorSelected(event) {
-      //console.log('onImportadorSelected',event);
-  this.calculoResumen(event);
-  if (event?.option?.value) {                
-    this.signInForm.get('importador').setValue(event.option.value);
-    this.calculoResumen(event);
-  } else {                
-    console.error('El evento o la opción seleccionada son indefinidos');
-  }
-  }
-
-  onProveedorSelected(event) {
-    //console.log('onImpSelected',event);
-  this.calculoResumen(event);
-  if (event?.option?.value) {                
-  this.signInForm.get('proveedor').setValue(event.option.value);
-  } else {                
-  console.error('El evento o la opción seleccionada son indefinidos');
-  }
-  }
-
-  //onPaisSelected(event: MatAutocompleteSelectedEvent) {
-  onPaisSelected(event) {
-    if (event?.option?.value) {                
-      this.signInForm.get('pais').setValue(event.option.value);
-    } else {                
-      console.error('El evento o la opción seleccionada son indefinidos');
     }
-  }
-
     displayFn(importador: any): string {
         return importador && importador.name ? importador.name : '';
     }
@@ -410,22 +297,13 @@ export class CrearImportacionComponent implements OnInit {
 
       save() {
         console.log('fechaAutorizacion', this.fechaAutorizacion);
-        if (this.signInForm.valid) {
-          const fechaAutorizacionValue = this.signInForm.get('fechaAutorizacion')?.value;
-          const fechaSolicitudValue = this.signInForm.get('fechaSolicitud')?.value;
-      
-          // Convertimos los valores de los controles a objetos Date si no lo son ya.
-          const fechaAutorizacion = fechaAutorizacionValue instanceof Date ? fechaAutorizacionValue : new Date(fechaAutorizacionValue);
-          const fechaSolicitud = fechaSolicitudValue instanceof Date ? fechaSolicitudValue : new Date(fechaSolicitudValue);
-      
-          // Asegúrate de que ambas fechas son válidas antes de proceder.
-          if (!isNaN(fechaAutorizacion.getTime()) && !isNaN(fechaSolicitud.getTime())) {
-            const nombreDelMes = this.nombresDeMeses[fechaAutorizacion.getMonth()];
-            
-            // Construcción del objeto para la petición.
-            let body = {
-                    "authorization_date": fechaAutorizacion,
-                    "solicitud_date": fechaSolicitud,
+        let fechaAutorizacionDate = new Date(this.fechaAutorizacion);
+        let nombreDelMes = this.nombresDeMeses[fechaAutorizacionDate.getMonth()];
+        console.log('Paso1 Save', this.selectedFile);
+
+                let body = {
+                    "authorization_date": this.fechaAutorizacion,
+                    "solicitud_date": this.fechaSolicitud,
                     "month": nombreDelMes,
                     "cupo_asignado": this.cupoAsignado,
                     "status": this.currentStep,
@@ -450,7 +328,6 @@ export class CrearImportacionComponent implements OnInit {
                         ficha_id: producto.ficha_id
                     }))
                 };
-                
                 console.log(body);
 
                 this._importacionService.addImportacion(body).subscribe({
@@ -464,12 +341,6 @@ export class CrearImportacionComponent implements OnInit {
                         console.error('Error al agregar el importadacion', error);
                     }
                 });
-              } else {
-                console.error('Una o ambas fechas son inválidas.');
-              }
-            } else {
-              console.error('El formulario no es válido.');
-            }
           };
 
 
