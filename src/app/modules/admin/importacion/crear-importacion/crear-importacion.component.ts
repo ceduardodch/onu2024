@@ -65,8 +65,13 @@ export class CrearImportacionComponent implements OnInit {
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
     fileUrl: string;
-    fechaAutorizacion: Date = new Date();
-    fechaSolicitud: Date;
+
+    //fechaAutorizacion: Date = new Date();
+    //fechaSolicitud: Date;
+
+    fechaAutorizacion = new FormControl();
+    fechaSolicitud = new FormControl();
+
     cupoAsignado:Number= 0.00;
 
     cupoRestante:Number=0.00;
@@ -131,13 +136,26 @@ export class CrearImportacionComponent implements OnInit {
                   }
     ngOnInit(): void {
         const id = this.route.snapshot.paramMap.get('id');
+
+        this.signInForm = this._formBuilder.group({                                     
+          importador : ['', [Validators.required]],
+          proveedor: ['', [Validators.required]],
+          pais: ['', [Validators.required]],
+          fechaSolicitud: [null, Validators.required], 
+          fechaAutorizacion: [null, Validators.required],
+        });
+
         console.log('id',id);
         //cargar data maestro detalle para editar importacion existente si id es diferente de null
         if (id !== null && id !== '0') {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
               console.log('data',data);
-                this.fechaAutorizacion = new Date(data[0].authorization_date);
-                this.fechaSolicitud = new Date(data[0].solicitud_date);
+
+              this.signInForm.patchValue({
+                fechaAutorizacion: new Date(data[0].authorization_date),
+                fechaSolicitud: new Date(data[0].solicitud_date)                
+              });
+
                 this.anios = [{name: data[0].years}];
                 this.nroSolicitudVUE.setValue(data[0].vue);
                 this.listaProductos = data[0].details;
@@ -167,13 +185,7 @@ export class CrearImportacionComponent implements OnInit {
           }
 
         this.loadData().then(() => {
-        });
-
-        this.signInForm = this._formBuilder.group({                                     
-          importador : ['', [Validators.required]],
-          proveedor: ['', [Validators.required]],
-          pais: ['', [Validators.required]],
-        });
+        });        
 
         this._importadorService.getImportadors().subscribe((data: any[]) => {
           this.importadores = data;
@@ -231,45 +243,14 @@ export class CrearImportacionComponent implements OnInit {
         return this.countrys.filter(option => option.name.toLowerCase().includes(filterValue));
       }
 
-      async loadData() {
-          /*
-          this._proveedorService.getProveedors().subscribe((data: any[]) => {
-            this.proveedores = data;
-          });
-          this._paisService.getPaises().subscribe((data: any[]) => {
-              this.paises = data;
-              }
-          );
-          this._importadorService.getImportadors().subscribe((data: any[]) => {
-              this.importadores = data;
-              }
-          );*/
+      async loadData() {          
 
           this._anioService.getAniosActivo().subscribe((data: any[]) => {
               this.anios = data;
               }
           );
 
-      }
-      /*selectFile(event) {
-        this.selectedFile = event.target.files[0];
-        this.selectedFileName = event.target.files[0].name;
-      }
-
-      selectFile(event: Event): void {
-        //event.preventDefault();
-        //event.stopPropagation();
-
-        const element = event.currentTarget as HTMLInputElement;
-        let file: File | null = null;
-        
-        if (element.files && element.files[0]) {
-          file = element.files[0];
-        }
-        this.selectedFile = file;
-        this.selectedFileName = file.name;
-        //this.form.patchValue({ ficha: file });
-      }*/
+      }      
 
       selectFile(event: Event): void {
         const element = event.target as HTMLInputElement;
@@ -390,7 +371,12 @@ export class CrearImportacionComponent implements OnInit {
         const prove_n = this.signInForm.get('proveedor').value;
         const pais_n = this.signInForm.get('pais').value;
 
-        let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
+        const fechaAutorizacion: Date = this.signInForm.get('fechaAutorizacion').value;
+        const fechaSolicitud: Date = this.signInForm.get('fechaSolicitud').value;
+
+        //let nombreDelMes = this.nombresDeMeses[this.fechaAutorizacion.getMonth()];
+        let nombreDelMes = fechaAutorizacion ? this.nombresDeMeses[fechaAutorizacion.getMonth()] : '';
+  
         console.log('Paso1 Save', this.selectedFile);
 
         // Preparar promesas para leer fichas como Data URL
@@ -409,8 +395,8 @@ export class CrearImportacionComponent implements OnInit {
             let mainFileReader = new FileReader();
             mainFileReader.onload = () => {
                 let body = {
-                    "authorization_date": this.fechaAutorizacion,
-                    "solicitud_date": this.fechaSolicitud,
+                    "authorization_date": fechaAutorizacion,
+                    "solicitud_date": fechaSolicitud,
                     "month": nombreDelMes,
                     "cupo_asignado": this.cupoAsignado,
                     "status": this.currentStep,
@@ -425,7 +411,7 @@ export class CrearImportacionComponent implements OnInit {
                     "years": this.anios[0]?.name,
                     "pais": pais_n,
                     "proveedor": prove_n,
-                    "grupo": 'prueba',//cambiar aquiiiii
+                    "grupo": this.grupoSustancia,//cambiar aquiiiii
                     "details": this.listaProductos.map((producto, index) => ({
                         cif: producto.cif,
                         fob: producto.fob,
@@ -458,13 +444,5 @@ export class CrearImportacionComponent implements OnInit {
 
       this.cdr.detectChanges();
     }
-    /*
-    private _filtrarImportadores(value: string): any[] {
-      const filterValue = value.toLowerCase();
-      // Filtrar el arreglo de importadores
-      return this.importadores.filter(importador =>
-        importador.name.toLowerCase().includes(filterValue)
-      );
-    }*/
 
 }

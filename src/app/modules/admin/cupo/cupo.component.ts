@@ -146,21 +146,7 @@ export class CuposComponent implements OnInit{
                 verticalPosition: 'top', // Posición vertical
               });
             }
-            /*
-onImportSelected(event: MatAutocompleteSelectedEvent): void {
-  // Actualiza el valor en el formulario con la opción seleccionada
-  this.signInForm.get('importador').setValue(event.option.value);
-  // Si estás en modo de edición, también actualiza el editCupoForm
-  this.editCupoForm.get('importador').setValue(event.option.value);
-}
 
-onAnioSelected(event: MatAutocompleteSelectedEvent): void {
-  // Actualiza el valor en el formulario con la opción seleccionada
-  this.signInForm.get('anio').setValue(event.option.value);
-  // Si estás en modo de edición, también actualiza el editCupoForm
-  this.editCupoForm.get('anio').setValue(event.option.value);
-}
-            }*/
             onImportSelected(event: MatAutocompleteSelectedEvent) {
               if (event?.option?.value) {                
                 this.signInForm.get('importador').setValue(event.option.value);
