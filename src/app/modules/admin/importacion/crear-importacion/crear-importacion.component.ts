@@ -89,6 +89,8 @@ export class CrearImportacionComponent implements OnInit {
     anios = [];
     cupos :any;
     importacion :any;
+    idImportacion: any;
+    status: any;
 
     importadoresFiltrados: any[];
 
@@ -127,9 +129,12 @@ export class CrearImportacionComponent implements OnInit {
         if (id !== null && id !== '0') {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
               console.log('data',data);
+              console.log('data[0].authorization_date',new Date(data[0].authorization_date));
+                this.idImportacion = data[0].id;
                 this.fechaAutorizacion = new Date(data[0].authorization_date);
                 this.fechaSolicitud = new Date(data[0].solicitud_date);
                 this.anios = [{name: data[0].years}];
+                this.status = data[0].status;
                 this.nroSolicitudVUE.setValue(data[0].vue);
                 this.listaProductos = data[0].details;
                 this.selectedProveedor = data[0].proveedor;
@@ -141,7 +146,7 @@ export class CrearImportacionComponent implements OnInit {
                 this.totalPesoKg = data[0].total_pesokg;
                 this._importacionService.downloadFile(data[0].data_file_id).subscribe((data: any) => {
                     console.log('File:', data);
-                    this.selectedFileName = data.name;
+                    this.selectedFileName = "Proforma.pdf";
                     this.fileDataUrl = data.file;
                 });
                 const requests = data[0].details.map(item => {
@@ -350,7 +355,14 @@ selectFile(event) {
 
 
 
-
+          aproveImportacion(): void {
+            const confirmation = confirm('¿Estás seguro de que deseas aprobar el registro?');
+            if (!confirmation) {
+              return;
+            }
+            this._importacionService.aproveImportacion(this.idImportacion).subscribe((data: any) => {
+            });
+        }
     eliminarProducto(productoEliminar) {
 
       this.listaProductos = this.listaProductos.filter(producto => producto !== productoEliminar);

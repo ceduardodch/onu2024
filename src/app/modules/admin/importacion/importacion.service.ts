@@ -35,6 +35,14 @@ export class ImportacionService {
         }
         return this.http.delete(`${this.apiUrl}/${id}`);
       }
+
+        aproveImportacion(id: number): Observable<any> {
+            if (!id || id <= 0) {
+            throw new Error('ID de país no válido');
+            }
+            return this.http.put(`${this.apiUrl}/status/${id}`, {});
+        }
+
       uploadFile(file: any): Observable<any> {
         return this.http.post<any>(`${environment.apiUrl}/upload`, file);
       }

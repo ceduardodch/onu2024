@@ -26,12 +26,15 @@
                     <div class="truncate">{{importacion.vue}}</div>
                     <div class="truncate">{{importacion.importador}}</div>
                     <div class="truncate">{{importacion.proveedor}}</div>
-                    <span [ngClass]="{'tag-red': importacion.grupo === 'HFC', 'tag-blue': importacion.grupo === 'HCFC'}">{{importacion.grupo}}</span>                    <div class="flex items">
+                    <span [ngClass]="{'tag-red': importacion.grupo === 'HFC', 'tag-blue': importacion.grupo === 'HCFC','tag-poliol': importacion.grupo === 'POLIOLES'}">{{importacion.grupo}}</span>                    <div class="flex items">
                         <button mat-icon-button (click)="deleteImportacion(importacion.id)" color="warn">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
                         </button>
                         <button mat-icon-button (click)="editImportacion(importacion.id)" color="warn">
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="aproveImportacion(importacion.id)" color="warn">
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:check'"></mat-icon>
                         </button>
                     </div>
                 </div>

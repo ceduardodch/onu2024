@@ -51,6 +51,16 @@ export class ImportacionComponent implements OnInit{
                     this.importaciones = this.importaciones.filter((importacion: Importacion) => importacion.id !== id.toString());
                 });
             }
+            aproveImportacion(id: number): void {
+                const confirmation = confirm('¿Estás seguro de que deseas aprobar el registro?');
+                if (!confirmation) {
+                  return;
+                }
+                this._importacionService.aproveImportacion(id).subscribe((data: any) => {
+                    this.loadImportaciones();
+                });
+            }
+
 }
 function subscribe(arg0: (importacion: Importacion) => void) {
     throw new Error('Function not implemented.');

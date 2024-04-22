@@ -8,15 +8,15 @@
               <mat-icon>save</mat-icon>
             </button>
             <div class="flex items-center">
-                <button mat-button [ngClass]="{'active-step': currentStep === 'Borrador'}" class="ml-4" matTooltip="Borrador">
+                <button mat-button [ngClass]="{'active-step': status === 'Borrador'}" class="ml-4" matTooltip="Borrador">
                     <mat-icon>keyboard_arrow_right</mat-icon>
                     Borrador
                 </button>
-                <button mat-button class="ml-4" matTooltip="Paso 2">
+                <button mat-button [ngClass]="{'active-step': status === 'Aprobado'}" class="ml-4" matTooltip="Aprobado">
                     <mat-icon>keyboard_arrow_right</mat-icon>
                     Aprobado
                 </button>
-                <button mat-button class="ml-4" matTooltip="Paso 3">
+                <button mat-button [ngClass]="{'active-step': status === 'Validado'}" class="ml-4" matTooltip="Validado">
                     <mat-icon>keyboard_arrow_right</mat-icon>
                     Validado
                 </button>
@@ -147,7 +147,7 @@
     <div class="w-1/3 bg-white float-right  shadow-lg"> <!-- Contenedor derecho, más pequeño y ajustado -->        <div class="flex flex-col space-y-4"> <!-- Añadir espaciado vertical entre elementos -->
         <mat-toolbar class="mb-4 shadow-lg">
                 <div class="status-buttons">
-                    <button [ngClass]="{'selected': selectedButton === 'approved'}" (click)="selectedButton = 'approved'" mat-flat-button color="primary" class="px-6 ml-3">
+                    <button [ngClass]="{'selected': selectedButton === 'approved'}" (click)="selectedButton = 'approved'" mat-flat-button color="primary" class="px-6 ml-3" (click)="aproveImportacion()">
                         Aprobado
                     </button>
                     <button [ngClass]="{'selected': selectedButton === 'rejected'}" (click)="selectedButton = 'rejected'" mat-flat-button color="warn" class="px-6 ml-3">
@@ -167,22 +167,23 @@
                         <p class="font-bold">Mes</p>
                         <p>{{ fechaAutorizacion | date:'MMMM' }}</p>                    </div>
                         <mat-form-field color="accent" class="px-2 w-1/2">
+
                             <mat-label class="font-bold">Fecha de solicitud</mat-label>
-                            <input matInput [matDatepicker]="picker1" formControlName="fechaSolicitud">
+                            <input matInput [matDatepicker]="picker1" [(ngModel)]="fechaSolicitud" name="fechaSolicitud">
                             <mat-hint>DD/MM/YYYY</mat-hint>
                             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                             <mat-datepicker #picker1></mat-datepicker>
                           </mat-form-field>
-                          
+
                           <mat-form-field color="accent" class="px-2 w-1/2">
                             <mat-label class="font-bold">Fecha de autorizacion</mat-label>
-                            <input matInput [matDatepicker]="picker2" formControlName="fechaAutorizacion">
+                            <input matInput [matDatepicker]="picker2" [(ngModel)]="fechaAutorizacion" name="fechaAutorizacion">
                             <mat-hint>DD/MM/YYYY</mat-hint>
                             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                             <mat-datepicker #picker2 color="primary"></mat-datepicker>
                           </mat-form-field>
-                          
-                          
+
+
                 </div>
 
                 <div class="summary-section flex flex-wrap py-5">
