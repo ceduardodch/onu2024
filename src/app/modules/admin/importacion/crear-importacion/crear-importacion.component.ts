@@ -131,8 +131,8 @@ export class CrearImportacionComponent implements OnInit {
               console.log('data',data);
               console.log('data[0].authorization_date',new Date(data[0].authorization_date));
                 this.idImportacion = data[0].id;
-                this.fechaAutorizacion = new Date(data[0].authorization_date.toISOString().split('T')[0]);
-                this.fechaSolicitud = new Date(data[0].solicitud_date.toISOString().split('T')[0]);
+                this.fechaAutorizacion = new Date(data[0].authorization_date.split('T')[0]);
+                this.fechaSolicitud = new Date(data[0].solicitud_date.split('T')[0]);
                 this.anios = [{name: data[0].years}];
                 this.status = data[0].status;
                 this.nroSolicitudVUE.setValue(data[0].vue);
