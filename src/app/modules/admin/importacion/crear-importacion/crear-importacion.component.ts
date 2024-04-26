@@ -130,7 +130,8 @@ export class CrearImportacionComponent implements OnInit {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
               console.log('data',data);
               let dateParts = data[0].authorization_date.split("T")[0].split("-");
-              this.fechaAutorizacion = new Date(Date.UTC(+dateParts[0], +dateParts[1] - 1, +dateParts[2]));
+              let utcDate = new Date(Date.UTC(+dateParts[0], +dateParts[1] - 1, +dateParts[2]));
+              this.fechaAutorizacion = new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate(), 12);
               console.log('data[0].authorization_date', this.fechaAutorizacion.toISOString().split('T')[0]);
               this.idImportacion = data[0].id;
                 this.fechaSolicitud = new Date(data[0].solicitud_date.split('T')[0]);
