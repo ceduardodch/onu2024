@@ -129,7 +129,7 @@ export class CrearImportacionComponent implements OnInit {
         if (id !== null && id !== '0') {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
               console.log('data',data);
-              console.log('data[0].authorization_date',new Date(data[0].authorization_date));
+              console.log('data[0].authorization_date',new Date(data[0].authorization_date.split('T')[0]));
                 this.idImportacion = data[0].id;
                 this.fechaAutorizacion = new Date(data[0].authorization_date.split('T')[0]);
                 this.fechaSolicitud = new Date(data[0].solicitud_date.split('T')[0]);
