@@ -128,13 +128,11 @@ export class CrearImportacionComponent implements OnInit {
         //cargar data maestro detalle para editar importacion existente si id es diferente de null
         if (id !== null && id !== '0') {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
-                console.log('data',data);
-                let dateParts = data[0].authorization_date.split("-");
-                this.fechaAutorizacion = new Date(Date.UTC(Number(dateParts[0]), Number(dateParts[1]) - 1, Number(dateParts[2])));
-                console.log('data[0].authorization_date',this.fechaAutorizacion);
+              console.log('data',data);
+              console.log('data[0].authorization_date',new Date(data[0].authorization_date));
                 this.idImportacion = data[0].id;
-                this.fechaAutorizacion = new Date(new Date(data[0].authorization_date).toLocaleDateString());
-                this.fechaSolicitud = new Date(new Date(data[0].solicitud_date).toLocaleDateString());
+                this.fechaAutorizacion = new Date(data[0].authorization_date.toISOString().split('T')[0]);
+                this.fechaSolicitud = new Date(data[0].solicitud_date.toISOString().split('T')[0]);
                 this.anios = [{name: data[0].years}];
                 this.status = data[0].status;
                 this.nroSolicitudVUE.setValue(data[0].vue);
