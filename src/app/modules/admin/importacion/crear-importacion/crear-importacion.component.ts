@@ -133,8 +133,12 @@ export class CrearImportacionComponent implements OnInit {
               let utcDate = new Date(Date.UTC(+dateParts[0], +dateParts[1] - 1, +dateParts[2]));
               this.fechaAutorizacion = new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate(), 12);
               console.log('data[0].authorization_date', this.fechaAutorizacion.toISOString().split('T')[0]);
+              let datePartsS = data[0].solicitud_date.split("T")[0].split("-");
+              let utcDateS = new Date(Date.UTC(+datePartsS[0], +datePartsS[1] - 1, +datePartsS[2]));
+              this.fechaSolicitud = new Date(utcDateS.getUTCFullYear(), utcDateS.getUTCMonth(), utcDateS.getUTCDate(), 12);
+              console.log('data[0].authorization_date', this.fechaSolicitud.toISOString().split('T')[0]);
+
               this.idImportacion = data[0].id;
-                this.fechaSolicitud = new Date(data[0].solicitud_date.split('T')[0]);
                 this.anios = [{name: data[0].years}];
                 this.status = data[0].status;
                 this.nroSolicitudVUE.setValue(data[0].vue);
