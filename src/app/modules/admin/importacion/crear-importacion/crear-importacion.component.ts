@@ -129,12 +129,12 @@ export class CrearImportacionComponent implements OnInit {
         if (id !== null && id !== '0') {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
               console.log('data',data);
-              console.log('data[0].authorization_date',new Date(data[0].authorization_date));
+              let dateParts = data[0].authorization_date.split("-");
+
+              console.log('data[0].authorization_date',new Date(Date.UTC(+dateParts[0], +dateParts[1] - 1, +dateParts[2])));
                 this.idImportacion = data[0].id;
-                let dateParts = data[0].authorization_date.split("-");
-                this.fechaAutorizacion = new Date(Date.UTC(+dateParts[0], +dateParts[1] - 1, +dateParts[2]));
-                let datePartsS = data[0].authorization_date.split("-");
-                this.fechaSolicitud  = new Date(Date.UTC(+datePartsS[0], +datePartsS[1] - 1, +datePartsS[2]));
+                this.fechaAutorizacion = new Date(new Date(data[0].authorization_date).toLocaleDateString());
+                this.fechaSolicitud = new Date(new Date(data[0].solicitud_date).toLocaleDateString());
                 this.anios = [{name: data[0].years}];
                 this.status = data[0].status;
                 this.nroSolicitudVUE.setValue(data[0].vue);
