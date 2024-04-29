@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../../../enviroments/environment';
 import { Cupo } from './cupo.model';
 
@@ -35,5 +35,21 @@ export class CupoService {
       throw new Error('ID de cupo no válido');
     }
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  searchCupo(searchValue: string): Observable<any[]> {
+    
+    const url = `${this.apiUrl}/search?name=${encodeURIComponent(searchValue)}`;
+    
+    return this.http.get<any[]>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    
+    console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
+    
+    return throwError('Something bad happened; please try again later.');
   }
 }

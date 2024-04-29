@@ -97,7 +97,7 @@ export class CuposComponent implements OnInit{
             });
 
             this._anioService.getAniosActivo().subscribe((data: any[]) => {
-              this.anios = data || [];
+              this.anios = data;
             });
 
             this.aniosFiltrados$ = this.aniosControl.valueChanges.pipe(
