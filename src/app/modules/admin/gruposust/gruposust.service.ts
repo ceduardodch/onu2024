@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { environment } from '../../../../enviroments/environment';
 import { Gruposust } from './gruposust.model';
 
@@ -14,6 +14,12 @@ export class GruposustService {
 
   getGruposusts(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
+  }
+
+  getGruposustsActivo(): Observable<Gruposust[]> {
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(gruposust => gruposust.filter(grupo_sust => grupo_sust.activo))
+  );
   }
 
   addGruposust(gruposust: Gruposust): Observable<Gruposust> {
@@ -32,6 +38,11 @@ export class GruposustService {
       throw new Error('ID de año no válido');
     }
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  toggleActivo(anio: any): void {
+    anio.activo = !anio.activo;
+    // Aquí deberías agregar el código para actualizar la base de datos
   }
 
   searchGruposust(searchValue: string): Observable<any[]> {

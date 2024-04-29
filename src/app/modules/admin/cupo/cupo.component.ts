@@ -96,7 +96,7 @@ export class CuposComponent implements OnInit{
               this.importadors = data || [];
             });
 
-            this._anioService.getAnios().subscribe((data: any[]) => {
+            this._anioService.getAniosActivo().subscribe((data: any[]) => {
               this.anios = data || [];
             });
 
@@ -178,31 +178,26 @@ export class CuposComponent implements OnInit{
               });
             }         
             addCupo(): void {
-              
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
               }
-              const importo = this.signInForm.get('importador').value;
-              const anio = this.signInForm.get('anio').value;
-              const hfc = this.signInForm.get('hfc').value;
-              const hcfc = this.signInForm.get('hcfc').value;
-
-              const importExists = this.cupos.some(cupo => cupo.importador === importo.trim());
-              if (importExists) {
-                this.openSnackBar('El importador ya tiene cupo.', 'Error');
+              
+              const newCupo: Cupo = {
+                importador: this.signInForm.get('importador').value.trim(),
+                anio: this.signInForm.get('anio').value.trim(),
+                hfc: this.signInForm.get('hfc').value.trim(),
+                hcfc: this.signInForm.get('hcfc').value.trim()
+              };
+            
+              // Verifica si ya existe un cupo para el importador y año especificados
+              const cupoExists = this.cupos.some(cupo => cupo.anio === newCupo.anio);
+            
+              if (cupoExists) {
+                this.openSnackBar('Ya existe un cupo asignado para este importador y año.', 'Error');
                 return;
               }
-
-              // Crear un nuevo objeto Anio con el nombre y el estado activo
-              const newCupo: Cupo = {
-                //importador_id: this.newCupo.importador_id,
-                importador: importo, // Asegúrate de que estos valores se establezcan correctamente
-                anio: anio,
-                hfc: hfc.trim(),
-                hcfc: hcfc.trim()
-              };
-
+            
               this._cupoService.addCupo(newCupo).subscribe({
                 next: () => {
                   this.openSnackBar('Cupo agregado exitosamente.', 'Success');
@@ -215,6 +210,7 @@ export class CuposComponent implements OnInit{
                 }
               });
             }
+            
 
               selectCupoForEdit(cupo: Cupo): void {
                 this.selectedCupo = { ...cupo };
@@ -327,7 +323,10 @@ export class CuposComponent implements OnInit{
                     this.filteredCupos = data;
                     this.applyFilter();
                   },
-                  error: (error) => console.error(error)
+                  error: (error) => {
+                    console.error('Error al cargar los cupos', error);
+                    this.openSnackBar('Error al cargar los cupos. Por favor ingrese otro año.', 'Error');
+                  }
                 });
               }
 
