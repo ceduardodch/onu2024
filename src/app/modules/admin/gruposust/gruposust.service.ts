@@ -12,14 +12,14 @@ export class GruposustService {
 
   constructor(private http: HttpClient) { }
 
-  getGruposusts(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/all`).pipe(
+  getGruposusts(): Observable<Gruposust[]> {
+    return this.http.get<Gruposust[]>(`${this.apiUrl}/all`).pipe(
       catchError(this.handleError)
     );
   }
 
   getGruposustsActivo(): Observable<Gruposust[]> {
-    return this.http.get<any>(`${this.apiUrl}/active`).pipe(
+    return this.http.get<Gruposust[]>(`${this.apiUrl}/active`).pipe(
       catchError(this.handleError)
     );
   }
