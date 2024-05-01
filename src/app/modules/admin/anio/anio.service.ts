@@ -12,14 +12,14 @@ export class AnioService {
 
   constructor(private http: HttpClient) { }
 
-  getAnios(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/all`).pipe(
+  getAnios(): Observable<Anio[]> {
+    return this.http.get<Anio[]>(`${this.apiUrl}/all`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getAniosActivo(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/active`).pipe(
+  getAniosActivo(): Observable<Anio[]> {
+    return this.http.get<Anio[]>(`${this.apiUrl}/active`).pipe(
       catchError(this.handleError)
     );
 }
