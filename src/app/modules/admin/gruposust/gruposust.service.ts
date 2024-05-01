@@ -13,7 +13,7 @@ export class GruposustService {
   constructor(private http: HttpClient) { }
 
   getGruposusts(): Observable<Gruposust[]> {
-    return this.http.get<Gruposust[]>(`${this.apiUrl}/all`).pipe(
+    return this.http.get<Gruposust[]>(`${this.apiUrl}`).pipe(
       catchError(this.handleError)
     );
   }

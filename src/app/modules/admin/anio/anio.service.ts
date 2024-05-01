@@ -13,7 +13,7 @@ export class AnioService {
   constructor(private http: HttpClient) { }
 
   getAnios(): Observable<Anio[]> {
-    return this.http.get<Anio[]>(`${this.apiUrl}/all`).pipe(
+    return this.http.get<Anio[]>(`${this.apiUrl}`).pipe(
       catchError(this.handleError)
     );
   }

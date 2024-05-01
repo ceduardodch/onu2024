@@ -13,7 +13,7 @@ export class SustanciaService {
   constructor(private http: HttpClient) { }
 
   getSustancias(): Observable<Sustancia[]> {
-    return this.http.get<Sustancia[]>(`${this.apiUrl}/all`).pipe(
+    return this.http.get<Sustancia[]>(`${this.apiUrl}`).pipe(
       catchError(this.handleError)
     );
   }

@@ -13,7 +13,7 @@ export class ProveedorService {
   constructor(private http: HttpClient) { }
 
   getProveedors(): Observable<Proveedor[]> {
-    return this.http.get<Proveedor[]>(`${this.apiUrl}/all`).pipe(
+    return this.http.get<Proveedor[]>(`${this.apiUrl}`).pipe(
       catchError(this.handleError)
     );
   }
