@@ -8,7 +8,7 @@ import { Gruposust } from './gruposust.model';
   providedIn: 'root'
 })
 export class GruposustService {
-  private apiUrl = environment.apiUrl+'/gruposusts';
+  private apiUrl = environment.apiUrl+'/gruposusts/all';
 
   constructor(private http: HttpClient) { }
 

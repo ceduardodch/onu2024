@@ -8,7 +8,7 @@ import { Anio } from './anio.model';
   providedIn: 'root'
 })
 export class AnioService {
-  private apiUrl = environment.apiUrl+'/anios';
+  private apiUrl = environment.apiUrl+'/anios/all';
 
   constructor(private http: HttpClient) { }
 

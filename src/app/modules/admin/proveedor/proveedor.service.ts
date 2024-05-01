@@ -8,7 +8,7 @@ import { Proveedor } from './proveedor.model';
   providedIn: 'root'
 })
 export class ProveedorService {
-  private apiUrl = environment.apiUrl+'/proveedors';
+  private apiUrl = environment.apiUrl+'/proveedors/all';
 
   constructor(private http: HttpClient) { }
 

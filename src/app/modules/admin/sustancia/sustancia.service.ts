@@ -8,7 +8,7 @@ import { Sustancia } from './sustancia.model';
   providedIn: 'root'
 })
 export class SustanciaService {
-  private apiUrl = environment.apiUrl+'/sustancias';
+  private apiUrl = environment.apiUrl+'/sustancias/all';
 
   constructor(private http: HttpClient) { }
 
