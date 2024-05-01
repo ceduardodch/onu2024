@@ -8,18 +8,18 @@ import { Proveedor } from './proveedor.model';
   providedIn: 'root'
 })
 export class ProveedorService {
-  private apiUrl = environment.apiUrl+'/proveedors/all';
+  private apiUrl = environment.apiUrl+'/proveedors';
 
   constructor(private http: HttpClient) { }
 
-  getProveedors(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/all`).pipe(
+  getProveedors(): Observable<Proveedor[]> {
+    return this.http.get<Proveedor[]>(`${this.apiUrl}/all`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getProveedorActivo(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/active`).pipe(
+  getProveedorActivo(): Observable<Proveedor[]> {
+    return this.http.get<Proveedor[]>(`${this.apiUrl}/active`).pipe(
       catchError(this.handleError)
     );
 }

@@ -8,18 +8,18 @@ import { Sustancia } from './sustancia.model';
   providedIn: 'root'
 })
 export class SustanciaService {
-  private apiUrl = environment.apiUrl+'/sustancias/all';
+  private apiUrl = environment.apiUrl+'/sustancias';
 
   constructor(private http: HttpClient) { }
 
-  getSustancias(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/all`).pipe(
+  getSustancias(): Observable<Sustancia[]> {
+    return this.http.get<Sustancia[]>(`${this.apiUrl}/all`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getSustanciaActivo(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/active`).pipe(
+  getSustanciaActivo(): Observable<Sustancia[]> {
+    return this.http.get<Sustancia[]>(`${this.apiUrl}/active`).pipe(
       catchError(this.handleError)
     );
   }
