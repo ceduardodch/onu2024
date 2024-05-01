@@ -20,7 +20,7 @@ import { Anio } from './anio.model'; // Import the 'anio' class from the appropr
 import { AnioService } from './anio.service';
 
 @Component({
-  selector: 'app-anioes',
+  selector: 'app-anios',
   standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,

@@ -3,7 +3,7 @@ import { AniosComponent } from './anio.component';
 
 const routes: Routes = [
     {
-        path: '', // quita la barra al principio
+        path: 'all', // quita la barra al principio
         component: AniosComponent,
     },
 ];
