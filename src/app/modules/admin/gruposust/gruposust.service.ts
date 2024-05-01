@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../../../enviroments/environment';
 import { Gruposust } from './gruposust.model';
 
@@ -13,13 +13,15 @@ export class GruposustService {
   constructor(private http: HttpClient) { }
 
   getGruposusts(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+    return this.http.get<any>(`${this.apiUrl}/all`).pipe(
+      catchError(this.handleError)
+    );
   }
 
   getGruposustsActivo(): Observable<Gruposust[]> {
-    return this.http.get<any>(this.apiUrl).pipe(
-      map(gruposust => gruposust.filter(grupo_sust => grupo_sust.activo))
-  );
+    return this.http.get<any>(`${this.apiUrl}/active`).pipe(
+      catchError(this.handleError)
+    );
   }
 
   addGruposust(gruposust: Gruposust): Observable<Gruposust> {
