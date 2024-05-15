@@ -35,7 +35,7 @@
 
                         <input type="text" placeholder="Importador" [(value)]="selectedImportador" matInput [formControl]="importadorControl" [matAutocomplete]="auto">
                         <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onImportadorSelected($event.option.value)">
-                            <mat-option *ngFor="let importador of importadores" [value]="importador">
+                            <mat-option *ngFor="let importador of filteredImportadores | async" [value]="importador">
                                 {{importador.name}}
                             </mat-option>
                         </mat-autocomplete>
@@ -44,14 +44,17 @@
                         </button>
                       </mat-form-field>
 
-                    <mat-form-field class="w-full">
+                      <mat-form-field class="w-full">
                         <mat-label>Proveedor</mat-label>
-
-                        <mat-select placeholder="Proveedor" [(value)]="selectedProveedor" (selectionChange)="onProveedorSeleccionado($event)">
-                            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.name">
-                                {{ proveedor.name }}</mat-option>
-                        </mat-select>
-                        <mat-icon class="icon-size-5" matPrefix ></mat-icon>
+                        <input type="text" placeholder="Proveedor" [(value)]="selectedProveedor" matInput [formControl]="proveedorControl" [matAutocomplete]="autoProveedor">
+                        <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onProveedorSeleccionado($event.option.value)">
+                            <mat-option *ngFor="let proveedor of filteredProveedores | async" [value]="proveedor">
+                                {{proveedor.name}}
+                            </mat-option>
+                        </mat-autocomplete>
+                        <button mat-icon-button matSuffix>
+                            <mat-icon>search</mat-icon>
+                        </button>
                     </mat-form-field>
 
                     <mat-form-field class="w-full">

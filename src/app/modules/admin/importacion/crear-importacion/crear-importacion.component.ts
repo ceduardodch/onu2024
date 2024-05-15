@@ -21,7 +21,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { forkJoin, startWith } from 'rxjs';
+import { Observable, forkJoin, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AnioService } from '../../anio/anio.service';
 import { CupoService } from '../../cupo/cupo.service';
@@ -32,6 +32,8 @@ import { DetalleProductosComponent } from '../detalle-productos/detalle-producto
 import { ImportacionService } from '../importacion.service';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { Importador } from '../../importador/importador.model';
+import { Proveedor } from '../../proveedor/proveedor.model';
 
 @Component({
   selector: 'app-crear-importacion',
@@ -61,6 +63,8 @@ export class CrearImportacionComponent implements OnInit {
     paises: any[];
     importadores: any[];
     importadorControl = new FormControl();
+    filteredImportadores: Observable<Importador[]>; // Asegúrate de reemplazar Importador con el tipo correcto
+
     displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq','eliminar'];
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
@@ -92,12 +96,13 @@ export class CrearImportacionComponent implements OnInit {
     idImportacion: any;
     status: any;
 
-    importadoresFiltrados: any[];
 
     selectedProveedor: string;
     selectedImportador: string;
     selectedPais: string;
     fileDataId: Number;
+    proveedorControl = new FormControl();
+    filteredProveedores: Observable<Proveedor[]>; // Reemplaza Proveedor con el tipo correcto
 
     constructor(private _proveedorService: ProveedorService,
                 private _anioService: AnioService,
@@ -112,7 +117,6 @@ export class CrearImportacionComponent implements OnInit {
 
                ) {
 
-                this.importadoresFiltrados = this.importadores;
 
                 }
 
@@ -123,6 +127,8 @@ export class CrearImportacionComponent implements OnInit {
                     });
                   }
     ngOnInit(): void {
+
+
         const id = this.route.snapshot.paramMap.get('id');
         console.log('id',id);
         //cargar data maestro detalle para editar importacion existente si id es diferente de null
@@ -178,27 +184,41 @@ export class CrearImportacionComponent implements OnInit {
           }
 
         this.loadData().then(() => {
+
         });
 
-        this.importadorControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(valor => this._filtrarImportadores(valor)),
-      )
-      .subscribe(filtrados => this.importadoresFiltrados = filtrados);
+
 
       }
-
+    private _filter(value: string): Importador[] {
+        const filterValue = value.toLowerCase();
+        return this.importadores.filter(importador => importador.name.toLowerCase().includes(filterValue));
+    }
+    private _filterProveedores(value: string): Proveedor[] {
+        const filterValue = value.toLowerCase();
+        return this.proveedores.filter(proveedor => proveedor.name.toLowerCase().includes(filterValue));
+    }
       async loadData() {
         this._proveedorService.getProveedors().subscribe((data: any[]) => {
             this.proveedores = data;
-          });
+            this.filteredProveedores = this.proveedorControl.valueChanges
+        .pipe(
+            startWith(''),
+            map(value => this._filterProveedores(value))
+        );
+        });
+
           this._paisService.getPaises().subscribe((data: any[]) => {
               this.paises = data;
               }
           );
           this._importadorService.getImportadors().subscribe((data: any[]) => {
               this.importadores = data;
+              this.filteredImportadores = this.importadorControl.valueChanges
+            .pipe(
+                startWith(''),
+                map(value => this._filter(value))
+            );
               }
           );
 
@@ -305,6 +325,7 @@ selectFile(event) {
         });
       }
       onProveedorSeleccionado(event: MatSelectChange) {
+        console.log('Proveedor seleccionado:', event.value);
         this.proveedorSeleccionado = event.value;
       }
       onPaisSeleccionado(event: MatSelectChange) {
@@ -332,7 +353,7 @@ selectFile(event) {
                     "importador_id": this.importadorControl.value.id,
                     "years": this.anios[0]?.name,
                     "pais": this.paisSeleccionado,
-                    "proveedor": this.proveedorSeleccionado,
+                    "proveedor": this.proveedorControl.value.name,
                     "grupo": this.grupoSustancia,
                     "details": this.listaProductos.map((producto) => ({
                         cif: producto.cif,

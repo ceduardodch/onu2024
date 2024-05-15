@@ -22,6 +22,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SustanciaService } from '../../sustancia/sustancia.service';
 import { ImportacionService } from '../importacion.service';
+import { Sustancia } from '../../sustancia/sustancia.model';
+import { Observable, map, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-detalle-productos',
@@ -44,6 +46,8 @@ templateUrl: './detalle-productos.component.html',
 
 export class DetalleProductosComponent implements OnInit {
     form: FormGroup;
+    productoControl = new FormControl();
+    filteredProductos: Observable<Sustancia[]>;
     selectedFile: File;
     selectedFileName: string;
     sustancias: any[];
@@ -71,17 +75,27 @@ export class DetalleProductosComponent implements OnInit {
     ngOnInit(): void {
         this._sustanciaService.getSustancias().subscribe((data) => {
             this.sustancias = data;
+            this.filteredProductos = this.productoControl.valueChanges
+            .pipe(
+                startWith(''),
+                map(value => this._filterProductos(value))
+            );
         });
     }
-
-    onProductSelected(sustancia) {
-        this.form.patchValue({
-            producto: sustancia.name,
-            subpartida: sustancia.subpartida,
-            grupo: sustancia.grupo_sust,
-            paoSustancia: sustancia.pao,
-
-        });
+    private _filterProductos(value: string): Sustancia[] {
+        const filterValue = value.toLowerCase();
+        return this.sustancias.filter(producto => producto.name.toLowerCase().includes(filterValue));
+    }
+    onProductSelected(productoName: string) {
+        const producto = this.sustancias.find(p => p.name === productoName);
+        if (producto) {
+            this.form.patchValue({
+                producto: producto.name,
+                subpartida: producto.subpartida,
+                grupo: producto.grupo_sust,
+                paoSustancia: producto.pao,
+            });
+        }
     }
 
 
