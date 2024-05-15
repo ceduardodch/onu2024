@@ -6,6 +6,7 @@ export interface User {
     company: string;
     password?: string;
     address?: string;
+    tipo_usr?: string;
     created_at?: string;
     updated_at?: string;
 }

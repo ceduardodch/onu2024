@@ -1,8 +1,9 @@
 export interface User
 {
-    id: string;
+    id: Number;
     name: string;
     email: string;
+    tipo_usr?: string;
     avatar?: string;
     status?: string;
 }

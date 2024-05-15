@@ -3,10 +3,13 @@ import { initialDataResolver } from 'app/app.resolvers';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
 import { CrearImportacionComponent } from './modules/admin/importacion/crear-importacion/crear-importacion.component';
-
+import { CrearImportacionlComponent } from './modules/importadores/importacion/crear-importacionl/crear-importacionl.component';
 export const appRoutes: Route[] = [
     {path: '', pathMatch : 'full', redirectTo: 'sign-in'},
     {path: 'signed-in-redirect', pathMatch : 'full', redirectTo: 'imports'},
+    {path: 'signed-in-redirect-importadores', pathMatch : 'full', redirectTo: 'importas'},
+
+
     {
         path: '',
         component: LayoutComponent,
@@ -36,7 +39,11 @@ export const appRoutes: Route[] = [
             {path: 'sustancias', loadChildren: () => import('app/modules/admin/sustancia/sustancia.routes')},
             {path: 'importadors', loadChildren: () => import('app/modules/admin/importador/importador.routes')},
             {path: 'imports', loadChildren: () => import('app/modules/admin/importacion/importacion.routes')},
-            { path: 'crear-importacion/:id', component: CrearImportacionComponent }
+            {path: 'importas', loadChildren: () => import('app/modules/importadores/importacion/importacion.routes')},
+
+            { path: 'crear-importacion/:id', component: CrearImportacionComponent },
+            { path: 'crear-importacionl/:id', component: CrearImportacionlComponent }
+
         ]
     },
 ];

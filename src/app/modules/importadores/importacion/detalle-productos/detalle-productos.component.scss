@@ -1,0 +1,15 @@
+.save-button {
+    position: absolute;
+    right: 20px;
+    bottom: -30px;
+}
+.popup-container {
+    position: relative;
+    /* Resto de los estilos... */
+}
+.filename {
+    max-width: 400px;  /* Ajusta este valor según tus necesidades */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

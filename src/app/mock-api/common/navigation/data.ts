@@ -83,6 +83,22 @@ export const defaultNavigation: FuseNavigationItem[] = [
 
     }
 ];
+export const importadorNavigation: FuseNavigationItem[] = [
+    {
+        id   : 'importas',
+        title: 'Control de Importaciones',
+        type : 'group',
+        icon : 'heroicons_outline:chart-pie',
+        children: [
+            {
+                id   : 'importas.registro',
+                title: 'Registro de Importaciones',
+                type : 'basic',
+                icon : 'heroicons_outline:clipboard-document-check',
+                link : '/importas',
+            },]
+        },
+];
 
 export const compactNavigation: FuseNavigationItem[] = [
     {

@@ -20,7 +20,7 @@ import { UserService } from './user.service';
 
 @Component({
   selector: 'app-users',
-  standalone: true, 
+  standalone: true,
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
@@ -42,14 +42,14 @@ import { UserService } from './user.service';
 export class UsersComponent implements OnInit{
         users: User[] = []; // Cambiado a array regular para manejar la lista de usuarios
         newUser:User = {
-          name: '', email: '',password: '', phone: '', company: '', address: ''};
+          name: '', email: '',password: '', phone: '', company: '', tipo_usr: ''};
         filteredUsers: User[] = [];
         searchTerm: string = '';
         selectedUser:  User | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
 
-        signInForm: FormGroup; 
+        signInForm: FormGroup;
 
         constructor(
           private _userService: UserService,
@@ -61,13 +61,13 @@ export class UsersComponent implements OnInit{
 
           this.loadUsers();
 
-          this.signInForm = this._formBuilder.group({               
-            name     : ['', [Validators.required]],            
+          this.signInForm = this._formBuilder.group({
+            name     : ['', [Validators.required]],
             email    : ['', [Validators.required]],
-            password     : ['', [Validators.required]],            
+            password     : ['', [Validators.required]],
             phone    : ['', [Validators.required]],
-            company     : ['', [Validators.required]],            
-            address    : ['', [Validators.required]],
+            company     : ['', [Validators.required]],
+            tipo_usr    : ['', [Validators.required]],
           });
 
             }
@@ -81,51 +81,51 @@ export class UsersComponent implements OnInit{
             }
 
             addUser(): void {
-              
+
               if (!this.signInForm.valid) {
                 this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
                 return;
-              }      
-              
+              }
+
                 const name = this.signInForm.get('name').value;
                 const email = this.signInForm.get('email').value;
                 const password = this.signInForm.get('password').value;
                 const phone = this.signInForm.get('phone').value;
                 const company = this.signInForm.get('company').value;
-                const address = this.signInForm.get('address').value;
+                const tipo_usr = this.signInForm.get('tipo_usr').value;
 
               const importExists = this.users.some(usr => usr.name === name.trim());
               if (importExists) {
                 this.openSnackBar('El usuario ya existe.', 'Error');
                 return;
-              }    
-            
+              }
+
               // Crear un nuevo objeto Anio con el nombre y el estado activo
-              const newUser: User = {                
+              const newUser: User = {
                 name: name.trim(),
                 email: email.trim(),
                 password: password.trim(),
                 phone: phone.trim(),
                 company: company.trim(),
-                address: address.trim(),
+                tipo_usr: tipo_usr.trim(),
               };
 
               this._userService.addUser(newUser).subscribe({
                 next: () => {
-                  this.openSnackBar('Usuario agregado exitosamente.', 'Success');                  
+                  this.openSnackBar('Usuario agregado exitosamente.', 'Success');
                   this.signInForm.reset();
-                  this.loadUsers();                  
+                  this.loadUsers();
                 },
                 error: (error) => {
                   console.error('Error al agregar el usuario', error);
-                  this.openSnackBar('Error al agregar el usuario. Por favor intente nuevamente.', 'Error');    
+                  this.openSnackBar('Error al agregar el usuario. Por favor intente nuevamente.', 'Error');
                 }
               });
             }
 
 
               selectUserForEdit(user: User): void {
-                //this.selectedUser = { ...user };               
+                //this.selectedUser = { ...user };
                 console.log('Seleccionando usuario para editar:', user);
                 // Aquí se permite el ID cero como válido.
                 if (user && (user.id || user.id === 0)) {
@@ -134,9 +134,9 @@ export class UsersComponent implements OnInit{
                 console.error('El usuario seleccionado no tiene un ID válido.');
                 }
               }
-            
+
               updateUser(updatedUser: User): void {
-                
+
                 if (!updatedUser.id) {
                   console.error('Error al actualizar: ID de user no proporcionado');
                   return;
@@ -166,12 +166,12 @@ export class UsersComponent implements OnInit{
                   console.error('Error al eliminar: ID de user no proporcionado');
                   return;
                 }
-              
+
                 const confirmation = confirm('¿Estás seguro de que deseas eliminar este user?');
                 if (!confirmation) {
                   return;
                 }
-              
+
                 this._userService.deleteUser(userId).subscribe({
                   next: () => {
                     // Eliminar el user de la lista en el frontend
@@ -184,7 +184,7 @@ export class UsersComponent implements OnInit{
                     console.error('Error al eliminar el user', error);
                   }
                 });
-              }             
+              }
 
               loadUsers(): void {
                 this._userService.getUsers().subscribe({
@@ -207,7 +207,7 @@ export class UsersComponent implements OnInit{
                     )
                   : this.users;
               }
-            
+
               orderBy(field: string): void {
                 // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
                 if (this.currentField === field) {
@@ -216,11 +216,11 @@ export class UsersComponent implements OnInit{
                   this.orderAsc = true;
                   this.currentField = field;
                 }
-              
+
                 this.filteredUsers.sort((a, b) => {
                   const valueA = a[field] ? a[field].toString().toLowerCase() : '';
                   const valueB = b[field] ? b[field].toString().toLowerCase() : '';
-              
+
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {
                     return this.orderAsc ? -1 : 1;
@@ -231,7 +231,7 @@ export class UsersComponent implements OnInit{
                   return 0;
                 });
               }
-            
+
               cancelEdit(): void {
                 this.selectedUser = null;
                 this.searchTerm = '';
