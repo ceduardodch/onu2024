@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FuseNavigationItem } from '@fuse/components/navigation/navigation.types';
+import { UserService } from 'app/core/user/user.service';
 
 @Injectable({providedIn: 'root'})
 export class FuseNavigationService
@@ -10,7 +11,7 @@ export class FuseNavigationService
     /**
      * Constructor
      */
-    constructor()
+    constructor(private _userService: UserService)
     {
     }
 

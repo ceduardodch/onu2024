@@ -21,22 +21,20 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Observable, forkJoin, startWith } from 'rxjs';
+import { forkJoin, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AnioService } from '../../anio/anio.service';
-import { CupoService } from '../../cupo/cupo.service';
-import { ImportadorService } from '../../importador/importador.service';
-import { PaisService } from '../../pais/pais.service';
-import { ProveedorService } from '../../proveedor/proveedor.service';
+import { AnioService } from '../../../admin/anio/anio.service';
+import { CupoService } from '../../../admin/cupo/cupo.service';
+import { ImportadorService } from '../../../admin/importador/importador.service';
+import { PaisService } from '../../../admin/pais/pais.service';
+import { ProveedorService } from '../../../admin/proveedor/proveedor.service';
 import { DetalleProductosComponent } from '../detalle-productos/detalle-productos.component';
 import { ImportacionService } from '../importacion.service';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-import { Importador } from '../../importador/importador.model';
-import { Proveedor } from '../../proveedor/proveedor.model';
 
 @Component({
-  selector: 'app-crear-importacion',
+  selector: 'app-crear-importacionl',
   standalone: true,
   providers: [
   ],
@@ -52,20 +50,18 @@ import { Proveedor } from '../../proveedor/proveedor.model';
     MatPaginatorModule, NgClass, MatSlideToggleModule,MatToolbarModule,
     MatSelectModule, MatOptionModule, MatCheckboxModule,MatStepperModule,
     MatRippleModule, AsyncPipe, CurrencyPipe,MatAutocompleteModule],
-    templateUrl: './crear-importacion.component.html',
-  styleUrl: './crear-importacion.component.scss'
+    templateUrl: './crear-importacionl.component.html',
+  styleUrl: './crear-importacionl.component.scss'
 })
 
 
-export class CrearImportacionComponent implements OnInit {
+export class CrearImportacionlComponent implements OnInit {
     selectedButton: string = '';
     proveedores: any[];
     paises: any[];
     importadores: any[];
     importadorControl = new FormControl();
-    filteredImportadores: Observable<Importador[]>; // Asegúrate de reemplazar Importador con el tipo correcto
-
-    displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq','eliminar'];
+    displayedColumns: string[] = ['producto', 'subpartida', 'cif', 'kg', 'fob','eq'];
     displayedColumnsFT: string[] = ['nombre', 'ficha'];
     listaProductos = []; // Añade esta línea
     fileUrl: string;
@@ -85,24 +81,31 @@ export class CrearImportacionComponent implements OnInit {
     nroSolicitudVUE = new FormControl('', [
         Validators.required,
         Validators.pattern('^\\d{20}P$')      ]);
-        selectedFile: File;
+    selectedFile: File;
+    selectedFile1: File;
+    selectedFile2: File;
+
     dataSource: any[];
     currentStep = 'Borrador';
     currentType: any;
     selectedFileName: any;
+    selectedFileName1: any;
+    selectedFileName2: any;
     anios = [];
     cupos :any;
     importacion :any;
     idImportacion: any;
     status: any;
 
+    importadoresFiltrados: any[];
 
     selectedProveedor: string;
     selectedImportador: string;
     selectedPais: string;
     fileDataId: Number;
-    proveedorControl = new FormControl();
-    filteredProveedores: Observable<Proveedor[]>; // Reemplaza Proveedor con el tipo correcto
+    fileDataId1: Number;
+    fileDataId2: Number;
+
 
     constructor(private _proveedorService: ProveedorService,
                 private _anioService: AnioService,
@@ -117,6 +120,7 @@ export class CrearImportacionComponent implements OnInit {
 
                ) {
 
+                this.importadoresFiltrados = this.importadores;
 
                 }
 
@@ -127,8 +131,6 @@ export class CrearImportacionComponent implements OnInit {
                     });
                   }
     ngOnInit(): void {
-
-
         const id = this.route.snapshot.paramMap.get('id');
         console.log('id',id);
         //cargar data maestro detalle para editar importacion existente si id es diferente de null
@@ -184,41 +186,27 @@ export class CrearImportacionComponent implements OnInit {
           }
 
         this.loadData().then(() => {
-
         });
 
-
+        this.importadorControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(valor => this._filtrarImportadores(valor)),
+      )
+      .subscribe(filtrados => this.importadoresFiltrados = filtrados);
 
       }
-    private _filter(value: string): Importador[] {
-        const filterValue = value.toLowerCase();
-        return this.importadores.filter(importador => importador.name.toLowerCase().includes(filterValue));
-    }
-    private _filterProveedores(value: string): Proveedor[] {
-        const filterValue = value.toLowerCase();
-        return this.proveedores.filter(proveedor => proveedor.name.toLowerCase().includes(filterValue));
-    }
+
       async loadData() {
         this._proveedorService.getProveedors().subscribe((data: any[]) => {
             this.proveedores = data;
-            this.filteredProveedores = this.proveedorControl.valueChanges
-        .pipe(
-            startWith(''),
-            map(value => this._filterProveedores(value))
-        );
-        });
-
+          });
           this._paisService.getPaises().subscribe((data: any[]) => {
               this.paises = data;
               }
           );
           this._importadorService.getImportadors().subscribe((data: any[]) => {
               this.importadores = data;
-              this.filteredImportadores = this.importadorControl.valueChanges
-            .pipe(
-                startWith(''),
-                map(value => this._filter(value))
-            );
               }
           );
 
@@ -229,35 +217,89 @@ export class CrearImportacionComponent implements OnInit {
 
       }
 
-selectFile(event) {
-    console.log('Event:', event);
-    console.log('Files:', event.target.files);
-    this.selectedFile = event.target.files[0];
-    this.selectedFileName = event.target.files[0].name;
-    console.log('Selected file:', this.selectedFile);
+    selectFile(event) {
+        console.log('Event:', event);
+        console.log('Files:', event.target.files);
+        this.selectedFile = event.target.files[0];
+        this.selectedFileName = event.target.files[0].name;
+        console.log('Selected file:', this.selectedFile);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-        let base64File = reader.result as string;
+        const reader = new FileReader();
+        reader.onload = () => {
+            let base64File = reader.result as string;
 
-        // Elimina el prefijo 'data:application/pdf;base64,' de la cadena
-        const prefix = 'data:application/pdf;base64,';
-        if (base64File.startsWith(prefix)) {
-            base64File = base64File.substring(prefix.length);
-        }
+            // Elimina el prefijo 'data:application/pdf;base64,' de la cadena
+            const prefix = 'data:application/pdf;base64,';
+            if (base64File.startsWith(prefix)) {
+                base64File = base64File.substring(prefix.length);
+            }
 
-        this._importacionService.uploadFile(
-            {'name': this.selectedFileName, 'file': base64File}
-        ).subscribe(response => {
-            this.fileDataId= response.file;
-        }, error => {
-            console.error('Error uploading file:', error);
-        });
-    };
-    reader.readAsDataURL(this.selectedFile);
-}
+            this._importacionService.uploadFile(
+                {'name': this.selectedFileName, 'file': base64File}
+            ).subscribe(response => {
+                this.fileDataId= response.file;
+            }, error => {
+                console.error('Error uploading file:', error);
+            });
+        };
+        reader.readAsDataURL(this.selectedFile);
+    }
 
+    selectFile1(event) {
+        console.log('Event:', event);
+        console.log('Files:', event.target.files);
+        this.selectedFile1 = event.target.files[0];
+        this.selectedFileName1 = event.target.files[0].name;
+        console.log('Selected file:', this.selectedFile1);
 
+        const reader = new FileReader();
+        reader.onload = () => {
+            let base64File = reader.result as string;
+
+            // Elimina el prefijo 'data:application/pdf;base64,' de la cadena
+            const prefix = 'data:application/pdf;base64,';
+            if (base64File.startsWith(prefix)) {
+                base64File = base64File.substring(prefix.length);
+            }
+
+            this._importacionService.uploadFile(
+                {'name': this.selectedFileName1, 'file': base64File}
+            ).subscribe(response => {
+                this.fileDataId1= response.file;
+            }, error => {
+                console.error('Error uploading file:', error);
+            });
+        };
+        reader.readAsDataURL(this.selectedFile1);
+    }
+
+    selectFile2(event) {
+        console.log('Event:', event);
+        console.log('Files:', event.target.files);
+        this.selectedFile2 = event.target.files[0];
+        this.selectedFileName2 = event.target.files[0].name;
+        console.log('Selected file:', this.selectedFile2);
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            let base64File = reader.result as string;
+
+            // Elimina el prefijo 'data:application/pdf;base64,' de la cadena
+            const prefix = 'data:application/pdf;base64,';
+            if (base64File.startsWith(prefix)) {
+                base64File = base64File.substring(prefix.length);
+            }
+
+            this._importacionService.uploadFile(
+                {'name': this.selectedFileName2, 'file': base64File}
+            ).subscribe(response => {
+                this.fileDataId2= response.file;
+            }, error => {
+                console.error('Error uploading file:', error);
+            });
+        };
+        reader.readAsDataURL(this.selectedFile2);
+    }
     onImportadorSelected(event) {
         console.log('onImportadorSelected',event);
     this.calculoResumen(event);
@@ -325,49 +367,22 @@ selectFile(event) {
         });
       }
       onProveedorSeleccionado(event: MatSelectChange) {
-        console.log('Proveedor seleccionado:', event.value);
         this.proveedorSeleccionado = event.value;
       }
       onPaisSeleccionado(event: MatSelectChange) {
         this.paisSeleccionado = event.value;
       }
 
-      save() {
-        console.log('fechaAutorizacion', this.fechaAutorizacion);
-        let fechaAutorizacionDate = new Date(this.fechaAutorizacion);
-        let nombreDelMes = this.nombresDeMeses[fechaAutorizacionDate.getMonth()];
-        console.log('Paso1 Save', this.selectedFile);
+      update() {
 
                 let body = {
-                    "authorization_date": this.fechaAutorizacion,
-                    "solicitud_date": this.fechaSolicitud,
-                    "month": nombreDelMes,
-                    "cupo_asignado": this.cupoAsignado,
-                    "status": this.currentStep,
-                    "cupo_restante": this.cupoRestante,
-                    "total_solicitud": this.totalPao,
-                    "total_pesokg": this.totalPesoKg,
-                    "vue": this.nroSolicitudVUE.value,
-                    "data_file_id": this.fileDataId,
-                    "importador": this.importadorControl.value.name,
-                    "importador_id": this.importadorControl.value.id,
-                    "years": this.anios[0]?.name,
-                    "pais": this.paisSeleccionado,
-                    "proveedor": this.proveedorControl.value.name,
-                    "grupo": this.grupoSustancia,
-                    "details": this.listaProductos.map((producto) => ({
-                        cif: producto.cif,
-                        fob: producto.fob,
-                        peso_kg: producto.kg,
-                        pao: producto.pao,
-                        sustancia: producto.producto,
-                        subpartida: producto.subpartida,
-                        ficha_id: producto.ficha_id
-                    }))
+                    "id":this.idImportacion ,
+                    "factura_file_it": this.fileDataId1,
+                    "dai_file_id": this.fileDataId2,
                 };
                 console.log(body);
 
-                this._importacionService.addImportacion(body).subscribe({
+                this._importacionService.updateImportacion(body).subscribe({
                     next: (response) => {
                         console.log('Response received:', response);
 

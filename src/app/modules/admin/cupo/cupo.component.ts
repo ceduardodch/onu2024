@@ -20,7 +20,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { Observable, map } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 
@@ -36,7 +35,7 @@ import { CrearCupo } from './nuevo/crear-cupo';
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
     MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule, CrearCupo,
-    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule, FuseVerticalNavigationComponent
+    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -51,8 +50,8 @@ import { CrearCupo } from './nuevo/crear-cupo';
 })
 export class CuposComponent implements OnInit{
         cupos: Cupo[] = []; // Cambiado a array regular para manejar la lista
-        newCupo:Cupo = { importador_id: 0,
-          importador: '', anio: '', hfc: '', hcfc: ''};
+        newCupo:Cupo = {
+          importador_id: 0,importador: '', anio: '', hfc: '', hcfc: ''};
         filteredCupos: Cupo[] = [];
         searchTerm: string = '';
         selectedCupo:  Cupo | null = null;
@@ -68,8 +67,8 @@ export class CuposComponent implements OnInit{
         importFiltrados$: Observable<any[]>;
 
         signInForm: FormGroup; 
-        editCupoForm: FormGroup;                                    
-        
+        editCupoForm: FormGroup;   
+
         constructor(
           private _cupoService: CupoService,
           private _importadorService: ImportadorService,
@@ -86,6 +85,7 @@ export class CuposComponent implements OnInit{
             this.loadCupos();
 
             this.signInForm = this._formBuilder.group({
+              importador_id: [0, Validators.required],
               importador: ['', Validators.required],
               anio: ['', Validators.required],
               hfc     : ['', [Validators.required]],
@@ -93,11 +93,11 @@ export class CuposComponent implements OnInit{
             });
 
             this._importadorService.getImportadors().subscribe((data: any[]) => {
-              this.importadors = data || [];
+              this.importadors = data;
             });
 
-            this._anioService.getAnios().subscribe((data: any[]) => {
-              this.anios = data || [];
+            this._anioService.getAniosActivo().subscribe((data: any[]) => {
+              this.anios = data;
             });
 
             this.aniosFiltrados$ = this.aniosControl.valueChanges.pipe(
@@ -111,9 +111,14 @@ export class CuposComponent implements OnInit{
               map(value => typeof value === 'string' ? value : value.name),
               map(name => name ? this._filter2(name) : this.importadors.slice())
             );  
+
+            this._cupoService.getCupos().subscribe(data => {
+              this.cupos = data;
+              this.filteredCupos = data;
+            });
   
             this.editCupoForm = this._formBuilder.group({              
-              //importado_id: ['', Validators.required],
+              
               importador: ['', Validators.required],
               anio: ['', Validators.required],
               hfc: ['', Validators.required],
@@ -127,18 +132,17 @@ export class CuposComponent implements OnInit{
                 return this.anios.slice();
               }
               const filterValue = name.toLowerCase();
-              return this.anios.filter(option => option.name.toLowerCase().includes(filterValue));
+              return this.anios.filter(option => option && option.name.toLowerCase().includes(filterValue));
             }
-
+            
             private _filter2(name: string): any[] {
               if (!name) {
                 return this.importadors.slice();
               }
               const filterValue1 = name.toLowerCase();
-              return this.importadors.filter(option => option.name.toLowerCase().includes(filterValue1));
+              return this.importadors.filter(option => option && option.name.toLowerCase().includes(filterValue1));
             }
-
-
+          
             openSnackBar(message: string, action: string) {
               this._snackBar.open(message, action, {
                 duration: 2000, // Duración de la notificación
@@ -147,10 +151,17 @@ export class CuposComponent implements OnInit{
               });
             }
 
-            onImportSelected(event: MatAutocompleteSelectedEvent) {
-              if (event?.option?.value) {                
-                this.signInForm.get('importador').setValue(event.option.value);
-              } else {                
+            
+
+            onImportSelected(event: MatAutocompleteSelectedEvent): void {
+              if (event?.option?.value) {
+                const importador = event.option.value; // Aquí obtienes el objeto completo
+                this.signInForm.get('importador_id').setValue(importador.id);
+                //console.log('importador_id', importador.id); // Establece el ID en el formulario
+                this.signInForm.get('importador').setValue(importador.name);
+                //console.log('importador', importador.name); // Establece el nombre en el formulario para otros usos
+                this.importControl.setValue(importador.name); // Asegura que el input muestre el nombre correctamente
+              } else {
                 console.error('El evento o la opción seleccionada son indefinidos');
               }
             }
@@ -173,128 +184,70 @@ export class CuposComponent implements OnInit{
                   if (result) {
                     this.cupos.push(result);
                     this.cupos = [...this.cupos]; 
-                    this.filteredCupos = this.cupos.slice();                  
+                    this.filteredCupos = this.cupos.slice();   
+                    this.loadCupos();               
                     }                
               });
-            }         
-            addCupo(): void {
-              
-              if (!this.signInForm.valid) {
-                this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
-                return;
+            }                                 
+
+            selectCupoForEdit(cupo: Cupo): void {
+              this.selectedCupo = { ...cupo };              
+   
+              if (cupo) {
+                  // Asignar los valores al formulario para edición
+                  this.editCupoForm.patchValue({
+                      
+                      importador: cupo.importador || '',
+                      anio: cupo.anio || '',
+                      hfc: cupo.hfc || '',
+                      hcfc: cupo.hcfc || ''
+                  });
+          
+                  // Establecer los valores actuales para los campos de autocompletado
+                  this.importControl.setValue(cupo.importador_id);
+                  //console.log('importador_id', cupo.importador_id);
+                  this.importControl.setValue(cupo.importador);
+                  this.aniosControl.setValue(cupo.anio);
+
+              } else {
+                  console.error('Error: No se proporcionó un cupo válido para editar.');
               }
-              const importo = this.signInForm.get('importador').value;
-              const anio = this.signInForm.get('anio').value;
-              const hfc = this.signInForm.get('hfc').value;
-              const hcfc = this.signInForm.get('hcfc').value;
+          }
 
-              const importExists = this.cupos.some(cupo => cupo.importador === importo.trim());
-              if (importExists) {
-                this.openSnackBar('El importador ya tiene cupo.', 'Error');
-                return;
-              }
-
-              // Crear un nuevo objeto Anio con el nombre y el estado activo
-              const newCupo: Cupo = {
-                //importador_id: this.newCupo.importador_id,
-                importador: importo, // Asegúrate de que estos valores se establezcan correctamente
-                anio: anio,
-                hfc: hfc.trim(),
-                hcfc: hcfc.trim()
-              };
-
-              this._cupoService.addCupo(newCupo).subscribe({
-                next: () => {
-                  this.openSnackBar('Cupo agregado exitosamente.', 'Success');
-                  this.signInForm.reset();
-                  this.loadCupos();
-                },
-                error: (error) => {
-                  console.error('Error al agregar el cupo', error);
-                  this.openSnackBar('Error al agregar el cupo. Por favor intente nuevamente.', 'Error');
-                }
-              });
-            }
-
-              selectCupoForEdit(cupo: Cupo): void {
-                this.selectedCupo = { ...cupo };
-                
-                this.aniosControl.setValue(cupo.anio);
-                
-                this.aniosFiltrados$ = this.aniosControl.valueChanges.pipe(
-                  startWith(''), // Inicia con el valor actual
-                  map(value => this._filter(value || '')) // Filtra los países basado en la entrada del usuario
-                );
-                  
-                this.editCupoForm.setValue({
-                  importador: cupo.importador,
-                  anio: cupo.anio,
-                  hfc: cupo.hfc,
-                  hcfc: cupo.hcfc
-                });             
-              }
-
-              updateCupo(updatedCupo: Cupo): void {
-
-                if (!updatedCupo.id) {
-                  console.error('Error al actualizar: ID de cupo no proporcionado');
-                  return;
-                }
-                this._cupoService.updateCupo(updatedCupo.id, updatedCupo).subscribe({
-                  next: (response) => {
-                    // Actualizar la lista de países en el frontend
-                    const index = this.cupos.findIndex(cupo => cupo.id === updatedCupo.id);
-                    if (index !== -1) {
-                      this.cupos[index] = updatedCupo;
-                    }
-                    console.log('Cupo actualizado:', response);
-                    this.selectedCupo = null; // Resetea la selección para cerrar el formulario de edición
-                  },
-                  error: (error) => {
-                    console.error('Error al actualizar el cupo', error);
-                  }
-                });
-              }
-/*
               updateCupo(): void {
-                // Verificar si el formulario de edición es válido
                 if (!this.editCupoForm.valid) {
                   this.openSnackBar('Por favor complete el formulario.', 'Error');
                   return;
                 }
                 
-                // Asumiendo que this.selectedProveedor está actualmente seleccionado para edición
-                if (!this.selectedProveedor || this.selectedProveedor.id == null) {
-                  this.openSnackBar('No se ha seleccionado ningún proveedor.', 'Error');
-                  return;
-                }
-              
-                // Crear un nuevo objeto con los datos actualizados del formulario y el id del proveedor seleccionado
-                const updatedProveedor: Proveedor = {
-                  ...this.selectedProveedor,
-                  ...this.editProveedorForm.value
+                const updatedCupo: Cupo = {
+                  ...this.selectedCupo, // Preserva otros campos existentes
+                  
+                  importador: this.editCupoForm.get('importador').value,
+                  anio: this.editCupoForm.get('anio').value,
+                  hfc: this.editCupoForm.get('hfc').value,
+                  hcfc: this.editCupoForm.get('hcfc').value,
                 };
               
-                // Llamar al servicio para actualizar el proveedor
-                this._proveedorService.updateProveedor(updatedProveedor.id, updatedProveedor).subscribe({
+                this._cupoService.updateCupo(updatedCupo.id, updatedCupo).subscribe({
                   next: (response) => {
-                    // Encontrar y actualizar el proveedor en la lista local
-                    const index = this.proveedors.findIndex(proveedor => proveedor.id === this.selectedProveedor.id);
+                    // Actualiza la lista de cupos en el frontend
+                    const index = this.cupos.findIndex(cupo => cupo.id === updatedCupo.id);
+                    console.log('importador', index);
                     if (index !== -1) {
-                      this.proveedors[index] = updatedProveedor;
+                      this.cupos[index] = updatedCupo;
                     }
-                    console.log('Proveedor actualizado:', response);
-                    this.selectedProveedor = null;
-                    this.editProveedorForm.reset(); // Resetear el formulario de edición
-                    this.openSnackBar('Proveedor actualizado con éxito.', 'Success');
+                    console.log('Cupo actualizado:', response);
+                    this.openSnackBar('Cupo actualizado exitosamente.', 'Success');
+                    this.selectedCupo = null; // Resetear selección para cerrar el formulario de edición
                   },
                   error: (error) => {
-                    console.error('Error al actualizar el proveedor', error);
-                    this.openSnackBar('Error al actualizar el proveedor. Por favor intente nuevamente.', 'Error');
+                    console.error('Error al actualizar el cupo', error);
+                    this.openSnackBar('Error al actualizar el cupo. Por favor intente nuevamente.', 'Error');
                   }
                 });
-              }*/
-
+              }
+              
               deleteCupo(cupoId: number): void {
                 if (!cupoId) {
                   console.error('Error al eliminar: ID de cupo no proporcionado');
@@ -327,7 +280,10 @@ export class CuposComponent implements OnInit{
                     this.filteredCupos = data;
                     this.applyFilter();
                   },
-                  error: (error) => console.error(error)
+                  error: (error) => {
+                    console.error('Error al cargar los cupos', error);
+                    this.openSnackBar('Error al cargar los cupos. Por favor ingrese otro año.', 'Error');
+                  }
                 });
               }
 
@@ -365,8 +321,8 @@ export class CuposComponent implements OnInit{
                   return 0;
                 });
               }
-              cancelEdit(): void {
-                this.selectedCupo = null;
+              cancelEdit(): void {  
+                this.selectedCupo = null;              
                 this.searchTerm = '';
                 this.applyFilter();
               }

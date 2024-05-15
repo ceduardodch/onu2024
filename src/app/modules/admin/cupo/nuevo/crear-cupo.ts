@@ -1,20 +1,15 @@
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { RouterLink } from '@angular/router';
-import { QuillEditorComponent } from 'ngx-quill';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, map, startWith } from 'rxjs';
 import { AnioService } from '../../anio/anio.service';
 import { ImportadorService } from '../../importador/importador.service';
 import { Cupo } from './../cupo.model'; // Import the 'cupo' class from the appropriate file
@@ -26,22 +21,28 @@ import { CupoService } from './../cupo.service';
   imports        : [
     NgIf, NgFor, NgTemplateOutlet, NgClass, MatDivider,
     AsyncPipe, CurrencyPipe,MatIconModule,MatAutocompleteModule,
-    RouterLink, MatButtonModule,MatFormField, ReactiveFormsModule,
-    MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
-    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
-    FormsModule,QuillEditorComponent
+    MatButtonModule,MatFormField, ReactiveFormsModule,
+    MatFormFieldModule,MatInputModule,
+    FormsModule
   ],
   templateUrl: './crear-cupo.html',
 
 })
 export class CrearCupo implements OnInit{
+
+    @Output() itemReady = new EventEmitter();
+
         cupos: Cupo[] = []; // Cambiado a array regular para manejar la lista
-        newCupo:Cupo = { importador_id:0,
-          importador: '', anio: '', hfc: '', hcfc: ''};
+        newCupo:Cupo = {
+          importador_id: 0,importador: '', anio: '', hfc: '', hcfc: ''};
 
-        anios: any[];
-
-        importadors: any[];
+          anios: any[] = [];  
+          aniosControl = new FormControl();
+          aniosFiltrados$: Observable<any[]>;         
+  
+          importadors: any[] = [];  
+          importControl = new FormControl();
+          importFiltrados$: Observable<any[]>;
 
         signInForm: FormGroup;
 
@@ -52,47 +53,58 @@ export class CrearCupo implements OnInit{
           private _formBuilder: FormBuilder,
           private _snackBar: MatSnackBar,
           public dialogRef: MatDialogRef<CrearCupo>,
+          private cdr: ChangeDetectorRef,
 
         ) {}
 
             ngOnInit(): void {
 
-                this._cupoService.getCupos().subscribe({
-                    next: (data) => {
-                      this.cupos = data;
-                    },
-                    error: (error) => console.error(error)
-                  });
+              this.itemReady.emit(true);
 
-                this._importadorService.getImportadors().subscribe({
-                    next: (data) => {
-                        this.importadors = data;
-                    },
-                    error: (error) => {
-                        console.error('Error al cargar importadores', error);
-                        this.openSnackBar('Error al cargar importadores', 'Cerrar');
-                    }
-                });
-
-                this._anioService.getAnios().subscribe({
-                    next: (data) => {
-                        this.anios = data;
-                    },
-                    error: (error) => {
-                        console.error('Error al cargar años', error);
-                        this.openSnackBar('Error al cargar años', 'Cerrar');
-                    }
-                });
-
-            this.signInForm = this._formBuilder.group({
+              this.signInForm = this._formBuilder.group({
+                importador_id: [0, Validators.required],
                 importador: ['', Validators.required],
                 anio: ['', Validators.required],
-                hfc     :new FormControl ('', [Validators.required]),
-                hcfc    :new FormControl ('', [Validators.required]),
+                hfc     : ['', [Validators.required]],
+                hcfc    : ['', [Validators.required]],
               });
-
+  
+              this._importadorService.getImportadors().subscribe((data: any[]) => {
+                this.importadors = data;
+              });
+  
+              this._anioService.getAniosActivo().subscribe((data: any[]) => {
+                this.anios = data;
+              });
+  
+              this.aniosFiltrados$ = this.aniosControl.valueChanges.pipe(
+                startWith(''),
+                map(value => typeof value === 'string' ? value : value.name),
+                map(name => name ? this._filter(name) : this.anios.slice())
+              );
+              
+              this.importFiltrados$ = this.importControl.valueChanges.pipe(
+                startWith(''),
+                map(value => typeof value === 'string' ? value : value.name),
+                map(name => name ? this._filter2(name) : this.importadors.slice())
+              );  
             }
 
+            private _filter(name: string): any[] {
+              if (!name) {
+                return this.anios.slice();
+              }
+              const filterValue = name.toLowerCase();
+              return this.anios.filter(option => option && option.name.toLowerCase().includes(filterValue));
+            }
+            
+            private _filter2(name: string): any[] {
+              if (!name) {
+                return this.importadors.slice();
+              }
+              const filterValue1 = name.toLowerCase();
+              return this.importadors.filter(option => option && option.name.toLowerCase().includes(filterValue1));
+            }
 
             openSnackBar(message: string, action: string) {
               this._snackBar.open(message, action, {
@@ -102,34 +114,65 @@ export class CrearCupo implements OnInit{
               });
             }
 
+            onImportSelected(event: MatAutocompleteSelectedEvent): void {
+              if (event?.option?.value) {
+                const importador = event.option.value; // Aquí obtienes el objeto completo
+                this.signInForm.get('importador_id').setValue(importador.id);                
+                this.signInForm.get('importador').setValue(importador.name);                
+                this.importControl.setValue(importador.name);
+                this.cdr.detectChanges();
+              } else {
+                console.error('El evento o la opción seleccionada son indefinidos');
+              }
+            }
+
+            onAnioSelected(event: MatAutocompleteSelectedEvent) {
+              if (event?.option?.value) {                
+                this.signInForm.get('anio').setValue(event.option.value);
+                this.cdr.detectChanges();
+              } else {                
+                console.error('El evento o la opción seleccionada son indefinidos');
+              }
+            }
+
             onSubmit() {
-                // Primero verifica si el formulario es válido
-                if (this.signInForm.valid) {
-                  // Se usa value del formulario reactivo en lugar de newCupo
-                  const cupoData = this.signInForm.value;
+              if (!this.signInForm.valid) {
+                this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
+                return;
+              }
+            
+              const newCupo: Cupo = {
+                importador_id: this.signInForm.get('importador_id')?.value,
+                importador: this.signInForm.get('importador').value.trim(),
+                anio: this.signInForm.get('anio').value.trim(),
+                hfc: this.signInForm.get('hfc').value.trim(),
+                hcfc: this.signInForm.get('hcfc').value.trim()
+              };
+            
+              // Verifica si ya existe un cupo para el mismo importador y mismo año
+              const cupoExists = this.cupos.some(cupo => cupo.importador_id === newCupo.importador_id && cupo.anio === newCupo.anio);
+            
+              if (cupoExists) {
+                this.openSnackBar('Ya existe un cupo asignado para este importador en el mismo año.', 'Error');
+                return;
+              }
+            
+              this._cupoService.addCupo(newCupo).subscribe({
+                next: () => {
+                  this.openSnackBar('Cupo agregado exitosamente.', 'Success');                  
+                  this.dialogRef.close({ success: true, cupo: newCupo });
 
-                  // Revisar si el importador ya tiene un cupo asignado
-                  const importExists = this.cupos.some(cupo => cupo.importador === cupoData.importador.trim());
-                  if (importExists) {
-                    this.openSnackBar('El importador ya tiene un cupo asignado.', 'Error');
-                    return;
-                  }
-
-                  // Llamar al servicio para agregar el cupo con los datos del formulario
-                  this._cupoService.addCupo(cupoData).subscribe({
-                    next: () => {
-                      this.openSnackBar('Cupo agregado exitosamente.', 'Success');
-                      this.signInForm.reset(); // Limpiar el formulario
-                      this.dialogRef.close(cupoData); // Cerrar el diálogo (si se está utilizando)
-                    },
-                    error: (error) => {
-                      console.error('Error al agregar el cupo', error);
+                },
+                error: (error) => {
+                  console.error('Error al agregar el cupo', error);
+                  // Maneja el error de acuerdo al contenido del mensaje de error específico del backend
+                  if (error.status === 400 && error.error.msg.includes('ya existe un cupo asignado')) {
+                      this.openSnackBar('El importador ya existe con cupo para ese año. Intente con otro año o importador.', 'Error');
+                  } else {
                       this.openSnackBar('Error al agregar el cupo. Por favor intente nuevamente.', 'Error');
-                    }
-                  });
-                } else {
-                  this.openSnackBar('Por favor complete el formulario correctamente.', 'Error');
+                  }
                 }
+              });
               }
 
             isDataComplete(): boolean {

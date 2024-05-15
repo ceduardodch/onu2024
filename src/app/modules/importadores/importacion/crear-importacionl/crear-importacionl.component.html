@@ -4,7 +4,7 @@
 
     <div class="w-3/4 bg-white float-left">
         <mat-toolbar class="mb-4 shadow-lg flex items-center justify-between">
-            <button mat-icon-button aria-label="Guardar" (click)="save()">
+            <button mat-icon-button aria-label="Guardar" (click)="update()">
               <mat-icon>save</mat-icon>
             </button>
             <div class="flex items-center">
@@ -26,16 +26,16 @@
                 <div class="grid grid-cols-2 gap-4 px-5"> <!-- Dos cuadros de texto por fila -->
                     <mat-form-field class="w-full" appearance="fill">
                         <mat-label>Nro Solicitud VUE</mat-label>
-                        <input matInput [formControl]="nroSolicitudVUE" placeholder="Nro Solicitud VUE" maxlength="21">
+                        <input matInput [formControl]="nroSolicitudVUE" placeholder="Nro Solicitud VUE" maxlength="21" readonly>
                         <mat-icon class="icon-size-5" matPrefix svgIcon="heroicons_solid:hashtag"></mat-icon>
                     </mat-form-field>
 
                     <mat-form-field class="w-full">
                         <mat-label>Importador</mat-label>
 
-                        <input type="text" placeholder="Importador" [(value)]="selectedImportador" matInput [formControl]="importadorControl" [matAutocomplete]="auto">
+                        <input type="text" placeholder="Importador" [(value)]="selectedImportador" matInput [formControl]="importadorControl" [matAutocomplete]="auto" readonly>
                         <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onImportadorSelected($event.option.value)">
-                            <mat-option *ngFor="let importador of filteredImportadores | async" [value]="importador">
+                            <mat-option *ngFor="let importador of importadores" [value]="importador">
                                 {{importador.name}}
                             </mat-option>
                         </mat-autocomplete>
@@ -44,23 +44,19 @@
                         </button>
                       </mat-form-field>
 
-                      <mat-form-field class="w-full">
+                    <mat-form-field class="w-full">
                         <mat-label>Proveedor</mat-label>
-                        <input type="text" placeholder="Proveedor" [(value)]="selectedProveedor" matInput [formControl]="proveedorControl" [matAutocomplete]="autoProveedor">
-                        <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onProveedorSeleccionado($event.option.value)">
-                            <mat-option *ngFor="let proveedor of filteredProveedores | async" [value]="proveedor">
-                                {{proveedor.name}}
-                            </mat-option>
-                        </mat-autocomplete>
-                        <button mat-icon-button matSuffix>
-                            <mat-icon>search</mat-icon>
-                        </button>
+                        <mat-select placeholder="Proveedor" [(value)]="selectedProveedor" (selectionChange)="onProveedorSeleccionado($event)" disabled>
+                            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.name">
+                                {{ proveedor.name }}</mat-option>
+                        </mat-select>
+                        <mat-icon class="icon-size-5" matPrefix ></mat-icon>
                     </mat-form-field>
 
                     <mat-form-field class="w-full">
                         <mat-label>Pais</mat-label>
 
-                        <mat-select placeholder="Pais" [(value)]="selectedPais" (selectionChange)="onPaisSeleccionado($event)">
+                        <mat-select placeholder="Pais" [(value)]="selectedPais" (selectionChange)="onPaisSeleccionado($event)" disabled>
                             <mat-option *ngFor="let pais of paises" [value]="pais.name">
                                 {{ pais.name }}</mat-option>
                         </mat-select>
@@ -68,14 +64,26 @@
 
                 </div>
                 <mat-toolbar class="flex items-center space-x-2 my-2">
-                    <button mat-icon-button color="primary" (click)="openDialog()" matTooltip="Agregar producto">
-                        <mat-icon>control_point</mat-icon>
-                    </button>
+
                     <input type="file" #fileInput (change)="selectFile($event)" class="hidden">
-                    <button mat-icon-button color="primary" (click)="fileInput.click()" matTooltip="Subir proforma">
+                    <a *ngIf="selectedFileName"  href="{{fileDataUrl}}" download="{{selectedFileName}}">{{selectedFileName}}</a>
+
+                        <!-- Documento 1 -->
+                    <span class="title" style="color: blue;">Subir DAI</span>
+                    <input type="file" #fileInput1 (change)="selectFile1($event)" class="hidden">
+                    <button mat-icon-button color="primary" (click)="fileInput1.click()" matTooltip="Subir DAI">
                         <mat-icon>cloud_upload</mat-icon>
                     </button>
-                    <a *ngIf="selectedFileName"  href="{{fileDataUrl}}" download="{{selectedFileName}}">{{selectedFileName}}</a>
+                    <a *ngIf="selectedFileName1" href="{{fileDataUrl1}}" download="{{selectedFileName1}}">{{selectedFileName1}}</a>
+
+                    <!-- Documento 2 -->
+                    <span class="title" style="color: blue;">Subir FACTURA</span>
+                    <input type="file" #fileInput2 (change)="selectFile2($event)" class="hidden">
+                    <button mat-icon-button color="primary" (click)="fileInput2.click()" matTooltip="Subir FACTURA">
+                        <mat-icon>cloud_upload</mat-icon>
+                    </button>
+                    <a *ngIf="selectedFileName2" href="{{fileDataUrl2}}" download="{{selectedFileName2}}">{{selectedFileName2}}</a>
+
                 </mat-toolbar>
                 <div class="px-5">
                     <h3>Lista de productos</h3>
@@ -115,14 +123,7 @@
 
                         </ng-container>
 
-                        <ng-container matColumnDef="eliminar">
-                            <th mat-header-cell *matHeaderCellDef>Accion</th>
-                            <td mat-cell *matCellDef="let producto">
-                                <button mat-icon-button color="warn" (click)="eliminarProducto(producto)">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
-                            </td>
-                        </ng-container>
+
 
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
@@ -151,14 +152,7 @@
 
     <div class="w-1/3 bg-white float-right  shadow-lg"> <!-- Contenedor derecho, más pequeño y ajustado -->        <div class="flex flex-col space-y-4"> <!-- Añadir espaciado vertical entre elementos -->
         <mat-toolbar class="mb-4 shadow-lg">
-                <div class="status-buttons">
-                    <button [ngClass]="{'selected': selectedButton === 'approved'}" (click)="selectedButton = 'approved'" mat-flat-button color="primary" class="px-6 ml-3" (click)="aproveImportacion()">
-                        Aprobado
-                    </button>
-                    <button [ngClass]="{'selected': selectedButton === 'rejected'}" (click)="selectedButton = 'rejected'" mat-flat-button color="warn" class="px-6 ml-3">
-                        Rechazado
-                    </button>
-                </div>
+
               </mat-toolbar>
               <div class="px-5">
 
@@ -172,21 +166,20 @@
                         <p class="font-bold">Mes</p>
                         <p>{{ fechaAutorizacion | date:'MMMM' }}</p>                    </div>
                         <mat-form-field color="accent" class="px-2 w-1/2">
-
                             <mat-label class="font-bold">Fecha de solicitud</mat-label>
-                            <input matInput [matDatepicker]="picker1" [(ngModel)]="fechaSolicitud" name="fechaSolicitud">
+                            <input matInput [matDatepicker]="picker1" [(ngModel)]="fechaSolicitud" name="fechaSolicitud" readonly>
                             <mat-hint>DD/MM/YYYY</mat-hint>
-                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker-toggle matSuffix [for]="picker1" [disabled]="true"></mat-datepicker-toggle>
                             <mat-datepicker #picker1></mat-datepicker>
-                          </mat-form-field>
+                        </mat-form-field>
 
-                          <mat-form-field color="accent" class="px-2 w-1/2">
+                        <mat-form-field color="accent" class="px-2 w-1/2">
                             <mat-label class="font-bold">Fecha de autorizacion</mat-label>
-                            <input matInput [matDatepicker]="picker2" [(ngModel)]="fechaAutorizacion" name="fechaAutorizacion">
+                            <input matInput [matDatepicker]="picker2" [(ngModel)]="fechaAutorizacion" name="fechaAutorizacion" readonly>
                             <mat-hint>DD/MM/YYYY</mat-hint>
-                            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker-toggle matSuffix [for]="picker2" [disabled]="true"></mat-datepicker-toggle>
                             <mat-datepicker #picker2 color="primary"></mat-datepicker>
-                          </mat-form-field>
+                        </mat-form-field>
 
 
                 </div>

@@ -8,12 +8,20 @@ import { Gruposust } from './gruposust.model';
   providedIn: 'root'
 })
 export class GruposustService {
-  private apiUrl = environment.apiUrl+'/gruposusts';
+  private apiUrl = `${environment.apiUrl}/gruposusts`;
 
   constructor(private http: HttpClient) { }
 
-  getGruposusts(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+  getGruposusts(): Observable<Gruposust[]> {
+    return this.http.get<Gruposust[]>(`${this.apiUrl}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getGruposustsActivo(): Observable<Gruposust[]> {
+    return this.http.get<Gruposust[]>(`${this.apiUrl}/active`).pipe(
+      catchError(this.handleError)
+    );
   }
 
   addGruposust(gruposust: Gruposust): Observable<Gruposust> {
@@ -32,6 +40,11 @@ export class GruposustService {
       throw new Error('ID de año no válido');
     }
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  toggleActivo(anio: any): void {
+    anio.activo = !anio.activo;
+    // Aquí deberías agregar el código para actualizar la base de datos
   }
 
   searchGruposust(searchValue: string): Observable<any[]> {

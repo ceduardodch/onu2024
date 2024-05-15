@@ -18,6 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { FuseVerticalNavigationComponent } from '@fuse/components/navigation';
 import { Observable, map } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import { GruposustService } from '../gruposust/gruposust.service';
@@ -31,7 +32,7 @@ import { GruposustService } from '../gruposust/gruposust.service';
     AsyncPipe, CurrencyPipe,FormsModule,MatIconModule,MatAutocompleteModule,
     RouterLink, MatButtonModule, CdkScrollable,MatFormField, ReactiveFormsModule,
     MatFormFieldModule,MatInputModule,MatSelectModule,MatSlideToggleModule,
-    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,
+    MatCheckboxModule, MatProgressSpinnerModule,MatSnackBarModule,FuseVerticalNavigationComponent,
   ],
   animations: [
     trigger('fadeOutRight', [
@@ -82,7 +83,7 @@ export class SustanciasComponent implements OnInit{
             cupo_prod: [false],    
           });
 
-          this._gruposustService.getGruposusts().subscribe((data: any[]) => {
+          this._gruposustService.getGruposustsActivo().subscribe((data: any[]) => {
             this.gruposusts = data;
           });
 
@@ -121,12 +122,6 @@ export class SustanciasComponent implements OnInit{
             }
 
             onGrupoSelected(event: MatAutocompleteSelectedEvent) {
-              /*if (event?.option?.value) {
-                this.newSustancia.grupo_sust = event.option.value;
-              } else {
-                // Manejo de error: se seleccionó una opción no válida o el evento está indefinido.
-                console.error('El evento o la opción seleccionada son indefinidos');
-              }*/
               if (event?.option?.value) {                
                 this.signInForm.get('grupo_sust').setValue(event.option.value);
               } else {                

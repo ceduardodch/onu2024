@@ -3,10 +3,10 @@
         <div class="flex w-full">
             <mat-form-field class="px-5 w-1/2">
                 <mat-label>Producto</mat-label>
-                <input type="text" matInput [formControl]="productoControl" [matAutocomplete]="autoProducto">
-                <mat-autocomplete #autoProducto="matAutocomplete" (optionSelected)="onProductSelected($event.option.value)">
-                    <mat-option *ngFor="let producto of filteredProductos | async" [value]="producto.name">
-                        {{producto.name}}
+                <input type="text" matInput formControlName="producto" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProductSelected($event.option.value)">
+                    <mat-option *ngFor="let sustancia of sustancias" [value]="sustancia">
+                        {{sustancia.name}}
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>

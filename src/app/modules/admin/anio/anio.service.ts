@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../../../enviroments/environment';
 import { Anio } from './anio.model';
 
@@ -8,17 +8,19 @@ import { Anio } from './anio.model';
   providedIn: 'root'
 })
 export class AnioService {
-  private apiUrl = environment.apiUrl+'/anios';
+  private apiUrl = `${environment.apiUrl}/anios`;
 
   constructor(private http: HttpClient) { }
 
-  getAnios(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+  getAnios(): Observable<Anio[]> {
+    return this.http.get<Anio[]>(`${this.apiUrl}`).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  getAniosActivo(): Observable<any> {
-    return this.http.get<any>(this.apiUrl).pipe(
-        map(anios => anios.filter(anio => anio.activo))
+  getAniosActivo(): Observable<Anio[]> {
+    return this.http.get<Anio[]>(`${this.apiUrl}/active`).pipe(
+      catchError(this.handleError)
     );
 }
 

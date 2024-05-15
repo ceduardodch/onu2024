@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Proveedor } from './proveedor.model';
+import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../../../enviroments/environment';
+import { Proveedor } from './proveedor.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +12,17 @@ export class ProveedorService {
 
   constructor(private http: HttpClient) { }
 
-  getProveedors(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+  getProveedors(): Observable<Proveedor[]> {
+    return this.http.get<Proveedor[]>(`${this.apiUrl}`).pipe(
+      catchError(this.handleError)
+    );
   }
+
+  getProveedorActivo(): Observable<Proveedor[]> {
+    return this.http.get<Proveedor[]>(`${this.apiUrl}/active`).pipe(
+      catchError(this.handleError)
+    );
+}
   addProveedor(proveedor: Proveedor): Observable<Proveedor> {
     return this.http.post<Proveedor>(this.apiUrl, proveedor);
   }
@@ -31,4 +39,21 @@ export class ProveedorService {
     }
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  searchProveedor(searchValue: string): Observable<any[]> {
+    
+    const url = `${this.apiUrl}/search?name=${encodeURIComponent(searchValue)}`;
+    
+    return this.http.get<any[]>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    
+    console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
+    
+    return throwError('Something bad happened; please try again later.');
+  }
+
 }

@@ -60,28 +60,25 @@ export class AuthService
      */
     signIn(credentials: { usuario: string; password: string }): Observable<any>
     {
-        // Throw error, if the user is already logged in
-       // if ( this._authenticated )
-       // {
-       //     return throwError('Usuario esta logeado.');
-       // }
-
         return this._httpClient.post(this.apiUrl, credentials).pipe(
             switchMap((response: any) =>
             {
                 console.log(response);
-                // Store the access token in the local storage
-                //this.accessToken = response.accessToken;
 
-                // Set the authenticated flag to true
+                if (!response || !response.user) {
+                    throw new Error('No user data in response');
+                }
+
                 this._authenticated = true;
 
-                // Store the user on the user service
                 this._userService.user = response.user;
 
-                // Return a new observable with the response
-                return of(response);
+                return of(response.user);
             }),
+            catchError(error => {
+                console.error('Error during sign in:', error);
+                return throwError(error);
+            })
         );
     }
 

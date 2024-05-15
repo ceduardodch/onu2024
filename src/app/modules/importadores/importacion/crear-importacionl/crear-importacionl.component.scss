@@ -1,0 +1,18 @@
+.mat-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.mat-header-cell, .mat-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-column-producto, .mat-column-subpartida, .mat-column-cif, .mat-column-kg, .mat-column-fob, .mat-column-eq {
+  width: 16.66%; /* Example width - adjust as necessary for your layout */
+}
+.active-step {
+  background-color: #c1edcb;
+  color: white;
+}
