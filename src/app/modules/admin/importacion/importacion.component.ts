@@ -16,6 +16,7 @@ import { ImportacionService } from './importacion.service';
 })
 export class ImportacionComponent implements OnInit{
     importaciones: any[];
+    searchTerm: string = '';
 
 
         constructor(private _importacionService: ImportacionService,       private router: Router,) { }
@@ -60,8 +61,11 @@ export class ImportacionComponent implements OnInit{
                     this.loadImportaciones();
                 });
             }
+            applyFilter(): void {
+                this._importacionService.getImportacion().subscribe((data: any) => {
+                  this.importaciones = data.filter((importacion: Importacion) => importacion.importador.toLowerCase().includes(this.searchTerm.toLowerCase()));
+                });
+              }
 
 }
-function subscribe(arg0: (importacion: Importacion) => void) {
-    throw new Error('Function not implemented.');
-}
+

@@ -58,6 +58,7 @@ import { Proveedor } from '../../proveedor/proveedor.model';
 
 
 export class CrearImportacionComponent implements OnInit {
+    id: any;
     selectedButton: string = '';
     proveedores: any[];
     paises: any[];
@@ -99,6 +100,7 @@ export class CrearImportacionComponent implements OnInit {
 
     selectedProveedor: string;
     selectedImportador: string;
+    selectedImportadorId: Number;
     selectedPais: string;
     fileDataId: Number;
     proveedorControl = new FormControl();
@@ -131,6 +133,7 @@ export class CrearImportacionComponent implements OnInit {
 
         const id = this.route.snapshot.paramMap.get('id');
         console.log('id',id);
+        this.id = id;
         //cargar data maestro detalle para editar importacion existente si id es diferente de null
         if (id !== null && id !== '0') {
             this._importacionService.getImportacionById(Number(id)).subscribe((data: any) => {
@@ -151,11 +154,13 @@ export class CrearImportacionComponent implements OnInit {
                 this.listaProductos = data[0].details;
                 this.selectedProveedor = data[0].proveedor;
                 this.selectedImportador = data[0].importador;
+                this.selectedImportadorId   = data[0].importador_id;
                 this.selectedPais = data[0].country;
                 this.cupoAsignado = data[0].cupo_asignado;
                 this.cupoRestante = data[0].cupo_restante;
                 this.totalPao = data[0].total_solicitud;
                 this.totalPesoKg = data[0].total_pesokg;
+                this.grupoSustancia = data[0].grupo;
                 this._importacionService.downloadFile(data[0].data_file_id).subscribe((data: any) => {
                     console.log('File:', data);
                     this.selectedFileName = "Proforma.pdf";
@@ -182,6 +187,7 @@ export class CrearImportacionComponent implements OnInit {
 
             });
           }
+
 
         this.loadData().then(() => {
 
@@ -266,24 +272,38 @@ selectFile(event) {
         return importador && importador.name ? importador.name : '';
     }
     calculoResumen(event) {
+        if (!event) {
+            this._cupoService.getCuposByName(this.selectedImportadorId.toString()).subscribe((data: any[]) => {
+                this.cupos = data;
+                console.log('_cupoService !event',data);
+            });
+            console.log('this.selectedImportador',this.selectedImportador);
+            this._importacionService.getImportacionByImportador(this.selectedImportador).subscribe((data: any[]) => {
+                console.log(data);
+                this.importacion = data;
+            });
+        }
+        else {
+
     console.log('calculoResumen event',event);
         this._cupoService.getCuposByName(event.id).subscribe((data: any[]) => {
             this.cupos = data;
-            console.log(data);
+            console.log('_cupoService else',data);
         });
         this._importacionService.getImportacionByImportador(event.name).subscribe((data: any[]) => {
             console.log(data);
             this.importacion = data;
         });
+    }
         let totalCIF = 0.00;
         let totalKg = 0.00;
         let totalFOB = 0.00;
         let totalPAO = 0.00;
         this.listaProductos.forEach((element) => {
-            totalCIF += element.cif;
-            totalKg += element.kg;
-            totalFOB += element.fob;
-            totalPAO += element.pao;
+            totalCIF += Number(element.cif);
+            totalKg += Number(element.kg);
+            totalFOB += Number(element.fob);
+            totalPAO += Number(element.pao);
         });
 
         console.log('this.grupoSustancia',this.grupoSustancia);
@@ -301,6 +321,7 @@ selectFile(event) {
 
 
         this.totalPesoKg =totalKg ;
+        console.log('' + this.cupoAsignado + ' - ' + this.importacion.total_solicitud + ' - ' + totalPAO);
         this.cupoRestante = Number(this.cupoAsignado) - Number(this.importacion.total_solicitud)- Number(totalPAO);
         this.totalPao = totalPAO;
 
@@ -319,7 +340,6 @@ selectFile(event) {
                 this.dataSource = this.listaProductos;
 
                 this.grupoSustancia = result.grupo;
-            this.calculoResumen(this.importadorControl.value);
 
           }
         });
@@ -333,53 +353,84 @@ selectFile(event) {
       }
 
       save() {
-        console.log('fechaAutorizacion', this.fechaAutorizacion);
-        let fechaAutorizacionDate = new Date(this.fechaAutorizacion);
-        let nombreDelMes = this.nombresDeMeses[fechaAutorizacionDate.getMonth()];
-        console.log('Paso1 Save', this.selectedFile);
+        if (this.id !== null && this.id !== '0') {
+            this.updateImportacion();
+        }
+        else {
+            this.saveImportacion();
+        }
 
-                let body = {
-                    "authorization_date": this.fechaAutorizacion,
-                    "solicitud_date": this.fechaSolicitud,
-                    "month": nombreDelMes,
-                    "cupo_asignado": this.cupoAsignado,
-                    "status": this.currentStep,
-                    "cupo_restante": this.cupoRestante,
-                    "total_solicitud": this.totalPao,
-                    "total_pesokg": this.totalPesoKg,
-                    "vue": this.nroSolicitudVUE.value,
-                    "data_file_id": this.fileDataId,
-                    "importador": this.importadorControl.value.name,
-                    "importador_id": this.importadorControl.value.id,
-                    "years": this.anios[0]?.name,
-                    "pais": this.paisSeleccionado,
-                    "proveedor": this.proveedorControl.value.name,
-                    "grupo": this.grupoSustancia,
-                    "details": this.listaProductos.map((producto) => ({
-                        cif: producto.cif,
-                        fob: producto.fob,
-                        peso_kg: producto.kg,
-                        pao: producto.pao,
-                        sustancia: producto.producto,
-                        subpartida: producto.subpartida,
-                        ficha_id: producto.ficha_id
-                    }))
-                };
-                console.log(body);
-
-                this._importacionService.addImportacion(body).subscribe({
-                    next: (response) => {
-                        console.log('Response received:', response);
-
-                        alert('Importación agregada con éxito');
-                        this.router.navigate(['/imports']);
-                    },
-                    error: (error) => {
-                        console.error('Error al agregar el importadacion', error);
-                    }
-                });
           };
+updateImportacion() {
+    let body = {
+    "id": this.idImportacion,
+    "cupo_restante": this.cupoRestante,
+    "total_solicitud": this.totalPao,
+    "total_pesokg": this.totalPesoKg
+    };
+    this.calculoResumen(this.importadorControl.value);
 
+
+    this._importacionService.updateImportacion( body).subscribe({
+        next: (response) => {
+            console.log('Response received:', response);
+            alert('Importación actualizada con éxito');
+            this.router.navigate(['/imports']);
+        },
+        error: (error) => {
+            console.error('Error al actualizar la importación', error);
+        }
+    });
+
+}
+
+saveImportacion() {
+    console.log('fechaAutorizacion', this.fechaAutorizacion);
+    let fechaAutorizacionDate = new Date(this.fechaAutorizacion);
+    let nombreDelMes = this.nombresDeMeses[fechaAutorizacionDate.getMonth()];
+    console.log('Paso1 Save', this.selectedFile);
+
+            let body = {
+                "authorization_date": this.fechaAutorizacion,
+                "solicitud_date": this.fechaSolicitud,
+                "month": nombreDelMes,
+                "cupo_asignado": this.cupoAsignado,
+                "status": this.currentStep,
+                "cupo_restante": this.cupoRestante,
+                "total_solicitud": this.totalPao,
+                "total_pesokg": this.totalPesoKg,
+                "vue": this.nroSolicitudVUE.value,
+                "data_file_id": this.fileDataId,
+                "importador": this.importadorControl.value.name,
+                "importador_id": this.importadorControl.value.id,
+                "years": this.anios[0]?.name,
+                "pais": this.paisSeleccionado,
+                "proveedor": this.proveedorControl.value.name,
+                "grupo": this.grupoSustancia,
+                "details": this.listaProductos.map((producto) => ({
+                    cif: producto.cif,
+                    fob: producto.fob,
+                    peso_kg: producto.kg,
+                    pao: producto.pao,
+                    sustancia: producto.producto,
+                    subpartida: producto.subpartida,
+                    ficha_id: producto.ficha_id
+                }))
+            };
+            console.log(body);
+
+            this._importacionService.addImportacion(body).subscribe({
+                next: (response) => {
+                    console.log('Response received:', response);
+
+                    alert('Importación agregada con éxito');
+                    this.router.navigate(['/imports']);
+                },
+                error: (error) => {
+                    console.error('Error al agregar el importadacion', error);
+                }
+            });
+        }
 
 
           aproveImportacion(): void {

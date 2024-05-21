@@ -66,6 +66,7 @@ export class DetalleProductosComponent implements OnInit {
             kg: new FormControl('', Validators.required),
             fob: new FormControl('', Validators.required),
             pao: new FormControl(''),
+            pcgSustancia: new FormControl(''),
             ficha: new FormControl(''),
             ficha_id: new FormControl(''),
 
@@ -94,6 +95,7 @@ export class DetalleProductosComponent implements OnInit {
                 subpartida: producto.subpartida,
                 grupo: producto.grupo_sust,
                 paoSustancia: producto.pao,
+                pcgSustancia: producto.pcg
             });
         }
     }
@@ -145,8 +147,17 @@ export class DetalleProductosComponent implements OnInit {
     }
 
     onKgChange(value: string) {
-        const result = Number(value) * this.form.value.paoSustancia;
-        this.form.patchValue({ pao: result });
+        console.log(this.form.value);
+
+        if (this.form.value.grupo === 'HFC') {
+            const result = Number(value) * this.form.value.pcgSustancia;
+            this.form.patchValue({ pao: result });
+        }
+        else {
+            const result = Number(value) * this.form.value.paoSustancia;
+            this.form.patchValue({ pao: result });
+        }
+
     }
     onSubmit() {
         console.log(this.form.value);
