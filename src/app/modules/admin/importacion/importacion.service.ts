@@ -48,7 +48,7 @@ export class ImportacionService {
       }
 
       updateImportacion(importacion: any): Observable<any> {
-        return this.http.put<any>(`${this.apiUrl}/${importacion.id}`, importacion);
+        return this.http.put<any>(`${this.apiUrl}/`, importacion);
       }
 
       downloadFile(fileId: number): Observable<any> {
