@@ -338,8 +338,9 @@ selectFile(event) {
                 this.fileUrl= URL.createObjectURL(result.ficha);
                 this.listaProductos = [...this.listaProductos, result];
                 this.dataSource = this.listaProductos;
-
                 this.grupoSustancia = result.grupo;
+                this.calculoResumen(this.importadorControl.value);
+
 
           }
         });

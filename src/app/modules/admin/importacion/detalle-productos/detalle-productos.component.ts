@@ -150,7 +150,7 @@ export class DetalleProductosComponent implements OnInit {
         console.log(this.form.value);
 
         if (this.form.value.grupo === 'HFC') {
-            const result = Number(value) * this.form.value.pcgSustancia;
+            const result = Number(value) * this.form.value.pcgSustancia/1000;
             this.form.patchValue({ pao: result });
         }
         else {
