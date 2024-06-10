@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../enviroments/environment';
@@ -19,8 +19,10 @@ export class ImportacionService {
   addImportacion(importacion: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, importacion);
   }
-  getImportacionByImportador(importador: string): Observable<any> {
-    return this.http.get<Importacion>(`${this.apiUrl}/cuposolicitud/${importador}`);
+  getImportacionByImportador(importador: string, filtro: string): Observable<any> {
+    let params = new HttpParams().set('filtro', filtro);
+
+    return this.http.get<Importacion>(`${this.apiUrl}/cuposolicitud/${importador}`, { params: params });
     }
     getImportacionById(id: number): Observable<any> {
     if (!id || id <= 0) {

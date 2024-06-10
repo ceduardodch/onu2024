@@ -278,7 +278,7 @@ selectFile(event) {
                 console.log('_cupoService !event',data);
             });
             console.log('this.selectedImportador',this.selectedImportador);
-            this._importacionService.getImportacionByImportador(this.selectedImportador).subscribe((data: any[]) => {
+            this._importacionService.getImportacionByImportador(this.selectedImportador,this.grupoSustancia).subscribe((data: any[]) => {
                 console.log(data);
                 this.importacion = data;
             });
@@ -290,7 +290,7 @@ selectFile(event) {
             this.cupos = data;
             console.log('_cupoService else',data);
         });
-        this._importacionService.getImportacionByImportador(event.name).subscribe((data: any[]) => {
+        this._importacionService.getImportacionByImportador(event.name,this.grupoSustancia ).subscribe((data: any[]) => {
             console.log(data);
             this.importacion = data;
         });
