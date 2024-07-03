@@ -16,45 +16,50 @@ export class ImportacionService {
   getImportacion(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }
+
   addImportacion(importacion: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, importacion);
   }
+
   getImportacionByImportador(importador: string, filtro: string): Observable<any> {
     let params = new HttpParams().set('filtro', filtro);
 
     return this.http.get<Importacion>(`${this.apiUrl}/cuposolicitud/${importador}`, { params: params });
     }
+
     getImportacionById(id: number): Observable<any> {
-    if (!id || id <= 0) {
+
+      if (!id || id <= 0) {
       throw new Error('ID de importación no válido');
     }
+
     return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  deleteImportacion(id: number): Observable<any> {
+    if (!id || id <= 0) {
+      throw new Error('ID de país no válido');
     }
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 
-    deleteImportacion(id: number): Observable<any> {
-        if (!id || id <= 0) {
-          throw new Error('ID de país no válido');
-        }
-        return this.http.delete(`${this.apiUrl}/${id}`);
-      }
+  aproveImportacion(id: number): Observable<any> {
+    if (!id || id <= 0) {
+      throw new Error('ID de país no válido');
+    }
+    return this.http.put(`${this.apiUrl}/status/${id}`, {});
+  }
 
-        aproveImportacion(id: number): Observable<any> {
-            if (!id || id <= 0) {
-            throw new Error('ID de país no válido');
-            }
-            return this.http.put(`${this.apiUrl}/status/${id}`, {});
-        }
+  uploadFile(file: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/upload`, file);
+  }
 
-      uploadFile(file: any): Observable<any> {
-        return this.http.post<any>(`${environment.apiUrl}/upload`, file);
-      }
+  updateImportacion(importacion: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/`, importacion);
+  }
 
-      updateImportacion(importacion: any): Observable<any> {
-        return this.http.put<any>(`${this.apiUrl}/`, importacion);
-      }
-
-      downloadFile(fileId: number): Observable<any> {
-        return this.http.get<any>(`${environment.apiUrl}/upload/${fileId}`);
-      }
+  downloadFile(fileId: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/upload/${fileId}`);
+  }
 
 }

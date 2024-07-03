@@ -1,41 +1,33 @@
+.tag {
+  display: inline-block;
+  padding: .1em .3em .1em;
+  font-size: 0.85em;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+}
+
 .tag-red {
-    display: inline-block;
-    padding: .1em .3em .1em;
-    font-size: 60%;
-    font-weight: 700;
-    line-height: 1;
-    color: #fff;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: .25em;
-    background-color: #5675ed;
-  }
+  background-color: #5675ed;
+}
 
-  .tag-blue {
-    display: inline-block;
-    padding: .1em .3em .1em;
-    font-size: 60%;
-    font-weight: 700;
-    line-height: 1;
-    color: #fff;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: .25em;
-    background-color: #0ff90b;
-  }
+.tag-blue {
+  background-color: #0ff90b;
+}
 
-  .tag-poliol {
-    display: inline-block;
-    padding: .1em .3em .1em;
-    font-size: 60%;
-    font-weight: 700;
-    line-height: 1;
-    color: #fff;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: .25em;
-    background-color: #c6df08;
+.tag-poliol {
+  background-color: #c6df08;
+}
+
+.create-importacion-button {
+  display: flex;
+  align-items: center;
+
+  span {
+    margin-left: 5px;
   }
+}

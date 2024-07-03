@@ -1,49 +1,104 @@
 <div>
     <mat-toolbar class="mb-4 shadow-lg flex items-center justify-between">
-        <button (click)="createImportacion()" mat-icon-button aria-label="Guardar">
-          <mat-icon>control_point</mat-icon>
+        <button
+            (click)="createImportacion()"
+            mat-icon-button
+            aria-label="Guardar"
+            class="create-importacion-button"
+        >
+            <mat-icon>control_point</mat-icon>
+            <span>Nueva Solicitud</span>
         </button>
         <div class="p-4 flex items-center border rounded">
-            <mat-icon matPrefix svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
-            <input type="text" placeholder=" Buscar " [(ngModel)]="searchTerm" (input)="applyFilter()" class="flex-1">
+            <mat-icon
+                matPrefix
+                svgIcon="heroicons_solid:magnifying-glass"
+            ></mat-icon>
+            <input
+                type="text"
+                placeholder=" Buscar "
+                [(ngModel)]="searchTerm"
+                (input)="applyFilter()"
+                class="flex-1"
+            />
         </div>
     </mat-toolbar>
-    <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
-        <ng-container *ngIf="(importaciones) as importaciones">
-            <div class="grid grid-cols-8 gap-4 py-4 px-6 md:px-12 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5" matSort matSortDisableClear>
-                <div [mat-sort-header]="'name'">Estado</div>
-                <div [mat-sort-header]="'email'">Año</div>
-                <div [mat-sort-header]="'phone'">Mes</div>
-                <div [mat-sort-header]="'company'">Vue</div>
-                <div [mat-sort-header]="'company'">Importador</div>
-                <div [mat-sort-header]="'company'">Proveedor</div>
-                <div [mat-sort-header]="'company'">Grupo</div>
 
-                <div>Acciones</div> <!-- Columna para acciones -->
-            </div>
-            <!-- Rows -->
-            <ng-container *ngFor="let importacion of importaciones">
-                <div class="grid grid-cols-8 items-center gap-4 py-2 px-7 md:px-12 border-b">
-                    <div class="truncate">{{importacion.status}}</div>
-                    <div class="truncate">{{importacion.years}}</div>
-                    <div class="truncate">{{importacion.month}}</div>
-                    <div class="truncate">{{importacion.vue}}</div>
-                    <div class="truncate">{{importacion.importador}}</div>
-                    <div class="truncate">{{importacion.proveedor}}</div>
-                    <span [ngClass]="{'tag-red': importacion.grupo === 'HFC', 'tag-blue': importacion.grupo === 'HCFC','tag-poliol': importacion.grupo === 'POLIOLES'}">{{importacion.grupo}}</span>                    <div class="flex items">
-                        <button mat-icon-button (click)="deleteImportacion(importacion.id)" color="warn">
-                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
-                        </button>
-                        <button mat-icon-button (click)="editImportacion(importacion.id)" color="warn">
-                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
-                        </button>
-                        <button mat-icon-button (click)="aproveImportacion(importacion.id)" color="warn">
-                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:check'"></mat-icon>
-                        </button>
-                    </div>
-                </div>
+    <div *ngIf="dataSource" class="mat-elevation-z8">
+        <table mat-table [dataSource]="dataSource" matSort>
+            <ng-container matColumnDef="solicitud_date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Fecha de solicitud
+                </th>
+                <td mat-cell *matCellDef="let row">{{ row.solicitud_date }}</td>
             </ng-container>
 
-        </ng-container>
+            <ng-container matColumnDef="authorization_date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Fecha de autorizacion
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    {{ row.authorization_date }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="vue">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    No. de solicitud VUE
+                </th>
+                <td mat-cell *matCellDef="let row">{{ row.vue }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="month">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Mes</th>
+                <td mat-cell *matCellDef="let row">{{ row.month }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="importador">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Importador
+                </th>
+                <td mat-cell *matCellDef="let row">{{ row.importador }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="grupo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Tipo de solicitud
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <span
+                        class="tag"
+                        [ngClass]="{
+                            'tag-red': row.grupo === 'HFC',
+                            'tag-blue': row.grupo === 'HCFC',
+                            'tag-poliol': row.grupo === 'POLIOLES'
+                        }"
+                    >
+                        {{ row.grupo }}
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header >
+                    Estado
+                </th>
+                <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+            </ng-container>
+
+            <tr mat-header-row sticky *matHeaderRowDef="columnsToDisplay"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
+        </table>
+    </div>
+
+    <div
+        class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto"
+    >
+        <mat-paginator
+            [pageSize]="10"
+            [pageSizeOptions]="[5, 10, 50, 100, 200]"
+            aria-label="Select page"
+        >
+        </mat-paginator>
     </div>
 </div>
