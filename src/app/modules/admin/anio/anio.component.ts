@@ -49,8 +49,8 @@ export class AniosComponent implements OnInit{
         selectedAnio:  Anio | null = null;
         orderAsc: boolean = true;
         currentField: string = '';
-                
-        signInForm: FormGroup;        
+
+        signInForm: FormGroup;
 
         constructor(
           private _anioService: AnioService,
@@ -63,7 +63,7 @@ export class AniosComponent implements OnInit{
             this.loadAnios();
 
             this.signInForm = this._formBuilder.group({
-              name     : ['', [Validators.required]],            
+              name     : ['', [Validators.required]],
               activo: [false],
             });
 
@@ -79,7 +79,7 @@ export class AniosComponent implements OnInit{
 
             onActivoChange(event: MatSlideToggleChange, anio: Anio): void {
               anio.activo = event.checked;
-            }            
+            }
 
             addAnio(): void {
               const name = this.signInForm.get('name').value;
@@ -87,35 +87,35 @@ export class AniosComponent implements OnInit{
                 this.openSnackBar('Ingrese el año.', 'Error');
                 return;
               }
-            
+
               const yearExists = this.anios.some(anio => anio.name === name.trim());
               if (yearExists) {
                 this.openSnackBar('El año ya existe.', 'Error');
                 return;
               }
-            
+
               // Crear un nuevo objeto Anio con el nombre y el estado activo
               const newAnio: Anio = {
                 name: name.trim(),
                 activo: this.signInForm.get('activo').value
               };
-            
+
               // Usar el servicio AnioService para enviar los datos
               this._anioService.addAnio(newAnio).subscribe({
-                next: () => {                                    
-                  this.openSnackBar('Año agregado exitosamente.', 'Success');                  
+                next: () => {
+                  this.openSnackBar('Año agregado exitosamente.', 'Success');
                   this.signInForm.reset();
                   this.loadAnios();
                 },
-                error: (error) => {                  
+                error: (error) => {
                   console.error('Error al agregar el año', error);
                   this.openSnackBar('Error al agregar el año. Intente de nuevo.', 'Error');
                 }
               });
               }
-            
+
               selectAnioForEdit(anio: Anio): void {
-                //this.selectedAnio = { ...anio };               
+                //this.selectedAnio = { ...anio };
               console.log('Seleccionando año para editar:', anio);
               // Aquí se permite el ID cero como válido.
               if (anio && (anio.id || anio.id === 0)) {
@@ -124,15 +124,15 @@ export class AniosComponent implements OnInit{
                 console.error('El año seleccionado no tiene un ID válido.');
               }
               }
-            
+
               updateAnio(updatedAnio: Anio): void {
-                
+
                 if (!updatedAnio.id) {
                   console.error('Error al actualizar: ID de año no proporcionado');
                   return;
                 }
                 this._anioService.updateAnio(updatedAnio.id, updatedAnio).subscribe({
-                  next: (response) => {                    
+                  next: (response) => {
                     const index = this.anios.findIndex(anio => anio.id === updatedAnio.id);
                     if (index !== -1) {
                       this.anios[index] = {...updatedAnio, ...response};
@@ -142,7 +142,7 @@ export class AniosComponent implements OnInit{
                     this.filteredAnios = this.anios;
 
                     console.log('Año actualizado:', response);
-                    this.selectedAnio = null; 
+                    this.selectedAnio = null;
                   },
                   error: (error) => {
                     console.error('Error al actualizar el año', error);
@@ -155,14 +155,14 @@ export class AniosComponent implements OnInit{
                   console.error('Error al eliminar: ID de año no proporcionado');
                   return;
                 }
-              
+
                 const confirmation = confirm('¿Estás seguro de que deseas eliminar este año?');
                 if (!confirmation) {
                   return;
                 }
-              
+
                 this._anioService.deleteAnio(anioId).subscribe({
-                  next: () => {                    
+                  next: () => {
                     this.loadAnios();
                     this.anios = this.anios.filter(anio => anio.id !== anioId);
                     this.openSnackBar('Año eliminado exitosamente.', '');
@@ -172,7 +172,7 @@ export class AniosComponent implements OnInit{
                     console.error('Error al eliminar el año', error);
                   }
                 });
-              }             
+              }
 
               loadAnios(): void {
                 this._anioService.getAnios().subscribe({
@@ -188,11 +188,11 @@ export class AniosComponent implements OnInit{
               applyFilter(): void {
                 this.filteredAnios = this.searchTerm
                   ? this.anios.filter(anio =>
-                      anio.name.toLowerCase().includes(this.searchTerm.toLowerCase())                       
+                      anio.name.toLowerCase().includes(this.searchTerm.toLowerCase())
                     )
                   : this.anios;
               }
-            
+
               orderBy(field: string): void {
                 // Si el campo actual es igual al nuevo, cambia la dirección, si no, establece la dirección a ascendente
                 if (this.currentField === field) {
@@ -201,11 +201,11 @@ export class AniosComponent implements OnInit{
                   this.orderAsc = true;
                   this.currentField = field;
                 }
-              
+
                 this.filteredAnios.sort((a, b) => {
                   const valueA = a[field] ? a[field].toString().toLowerCase() : '';
                   const valueB = b[field] ? b[field].toString().toLowerCase() : '';
-              
+
                   // Comparar los valores para el ordenamiento
                   if (valueA < valueB) {
                     return this.orderAsc ? -1 : 1;
@@ -220,5 +220,5 @@ export class AniosComponent implements OnInit{
                 this.selectedAnio = null;
                 this.searchTerm = '';
                 this.applyFilter();
-              }                
+              }
 }

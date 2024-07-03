@@ -22,7 +22,7 @@ export class AnioService {
     return this.http.get<Anio[]>(`${this.apiUrl}/active`).pipe(
       catchError(this.handleError)
     );
-}
+  }
 
   addAnio(anio: Anio): Observable<Anio> {
     return this.http.post<Anio>(this.apiUrl, anio);
@@ -34,10 +34,12 @@ export class AnioService {
     }
     return this.http.put<Anio>(`${this.apiUrl}/${id}`, anio);
   }
+
   toggleActivo(anio: any): void {
     anio.activo = !anio.activo;
     // Aquí deberías agregar el código para actualizar la base de datos
-}
+  }
+
   deleteAnio(id: number): Observable<any> {
     if (!id || id <= 0) {
       throw new Error('ID de año no válido');
@@ -46,18 +48,18 @@ export class AnioService {
   }
 
   searchAnio(searchValue: string): Observable<any[]> {
-    
+
     const url = `${this.apiUrl}/search?name=${encodeURIComponent(searchValue)}`;
-    
+
     return this.http.get<any[]>(url).pipe(
       catchError(this.handleError)
     );
   }
 
   private handleError(error: HttpErrorResponse) {
-    
+
     console.error(`Backend returned code ${error.status}, body was: ${error.error}`);
-    
+
     return throwError('Something bad happened; please try again later.');
   }
 }
