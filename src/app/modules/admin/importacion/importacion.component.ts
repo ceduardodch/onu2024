@@ -34,7 +34,8 @@ export class ImportacionComponent implements OnInit {
     // 'proveedor',
     // 'country',
     'status',
-    'grupo'
+    'grupo',
+    'acciones'
   ];
   dataSource: MatTableDataSource<Importacion>;
 
