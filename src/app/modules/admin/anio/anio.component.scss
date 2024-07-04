@@ -41,16 +41,16 @@
 .bg-card {
     @apply bg-blue-100; // Suponiendo que bg-card debe ser un azul claro, cambia según necesites
   }
-  
+
   // Estilos para iconos específicos si no estás utilizando una librería que ya los tenga
   .icon-size-5 {
     @apply w-5 h-5; // Ajusta el tamaño de acuerdo a lo que necesitas
   }
-  
+
   .text-primary-500 {
     @apply text-green-500; // Cambia el color por el que deseas para la clase text-primary
   }
-  
+
   .text-secondary {
     @apply text-gray-400; // Cambia el color por el que deseas para la clase text-secondary
   }
@@ -60,29 +60,29 @@
       @apply w-full; // Asegura que ocupe el ancho completo del contenedor
     }
   }
-  
+
   // Personalizar el mat-paginator si es necesario
   mat-paginator {
     @apply my-2; // Añade un margen vertical si es necesario
   }
-  
+
   // Para los botones de Angular Material, puedes hacer lo siguiente:
   button.mat-icon-button {
     @apply ml-2; // Añade un margen izquierdo si los botones están muy juntos
   }
-  
+
   // Aquí, puedes definir cómo quieres que se vea el botón "Nuevo"
   button.mat-icon-button.new-button {
     @apply flex items-center justify-center bg-blue-500 text-white;
   }
-  
+
   @layer components {
     .btn-primary {
       @apply py-2 px-5 bg-violet-500 text-white font-semibold rounded-full shadow-md hover:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-400 focus:ring-opacity-75;
     }
   }
 
-  .custom-button {
+.custom-button {
   padding: 0.75rem 1.5rem; /* Padding de 12px en la parte superior e inferior, 24px en los lados */
   margin-left: 0.75rem; /* Margen izquierdo de 12px */
   background-color: #3f51b5; /* Color de fondo */
@@ -119,7 +119,7 @@
 
 
 //////////////////////////agregar nuevo
-/// 
+///
 .add-new-year-section {
   position: sticky;
   top: 0;

@@ -1,16 +1,16 @@
-export interface Importacion
-{
-    id: string;
-    vue : string;
-    importador: string;
-    proveedor: string;
-    pais: string;
-    ano: number;
-    mes: number;
-    fechaSolicitud: string;
-    fechaAutorizacion: string;
-    proforma: any[];
-    status: boolean;
+export interface Importacion {
+  id: number;
+  vue: string;
+  importador: string;
+  proveedor?: string;
+  country?: string;
+  years: string;
+  month: string;
+  solicitud_date: string;
+  authorization_date: string;
+//   proforma: any[];
+  status: string;
+  grupo: string;
 }
 
 export interface ImportacionPagination

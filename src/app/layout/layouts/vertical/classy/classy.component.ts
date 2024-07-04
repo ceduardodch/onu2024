@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
@@ -20,6 +20,7 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
     selector     : 'classy-layout',
     templateUrl  : './classy.component.html',
+    styleUrl     : './classy.component.scss',
     encapsulation: ViewEncapsulation.None,
     standalone   : true,
     imports      : [FuseLoadingBarComponent, FuseVerticalNavigationComponent, UserComponent, NgIf, MatIconModule, MatButtonModule, FuseFullscreenComponent, SearchComponent, ShortcutsComponent, MessagesComponent, RouterOutlet],
@@ -29,6 +30,9 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
     isScreenSmall: boolean;
     navigation: Navigation;
     user: User;
+
+    isNavigationOpened: boolean;
+
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -41,6 +45,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
         private _userService: UserService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _fuseNavigationService: FuseNavigationService,
+        private _changeDetectorRef: ChangeDetectorRef,
     )
     {
     }
@@ -90,6 +95,15 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
                 // Check if the screen is small
                 this.isScreenSmall = !matchingAliases.includes('md');
             });
+
+    }
+
+    ngAfterViewInit(): void
+    {
+        // Check the initial status of the navigation
+        this.checkNavigationStatus('mainNavigation');
+
+        this._changeDetectorRef.detectChanges();
     }
 
     /**
@@ -116,10 +130,27 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
         // Get the navigation
         const navigation = this._fuseNavigationService.getComponent<FuseVerticalNavigationComponent>(name);
 
-        if ( navigation )
+        if (navigation)
         {
             // Toggle the opened status
             navigation.toggle();
+            this.isNavigationOpened = navigation.opened;
+        }
+    }
+
+    /**
+     * Check navigation status
+     *
+     * @param name
+     */
+    checkNavigationStatus(name: string): void
+    {
+        // Get the navigation
+        const navigation = this._fuseNavigationService.getComponent<FuseVerticalNavigationComponent>(name);
+
+        if (navigation)
+        {
+            this.isNavigationOpened = navigation.opened;
         }
     }
 }

@@ -3,7 +3,7 @@
 
 <!-- Navigation -->
 <fuse-vertical-navigation
-    class="dark bg-gray-900 print:hidden"
+    class="dark bg-gray-900 print:hidden custom-nav-position"
     [mode]="isScreenSmall ? 'over' : 'side'"
     [name]="'mainNavigation'"
     [navigation]="navigation.default"
@@ -63,10 +63,16 @@
     <div class="relative flex flex-0 items-center w-full h-16 px-4 md:px-6 z-49 shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
         <!-- Navigation toggle button -->
         <button
-            mat-icon-button
+            class="hide_left_menu_button"
+            area-label="Ocultar menú"
+            mat-flat-button
             (click)="toggleNavigation('mainNavigation')">
+
             <mat-icon [svgIcon]="'heroicons_outline:bars-3'"></mat-icon>
+            <span *ngIf="!isNavigationOpened">Menú</span>
+            <span *ngIf="isNavigationOpened">Ocultar menú</span>
         </button>
+
     </div>
 
     <!-- Content -->

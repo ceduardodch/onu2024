@@ -43,7 +43,9 @@
                     <div class="col-span-1">{{sustancia.grupo_sust}}</div>
 
                     <div class="flex items-center justify-start col-span-1">
-                        <mat-slide-toggle [(ngModel)]="sustancia.activo" disabled/>
+                        <!-- <mat-slide-toggle [(ngModel)]="sustancia.activo" disabled/> -->
+                        <mat-icon *ngIf="sustancia.activo">check</mat-icon>
+                        <mat-icon *ngIf="!sustancia.activo">block</mat-icon>
                     </div>
 
 

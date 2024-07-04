@@ -7,7 +7,7 @@ import { CrearImportacionlComponent } from './modules/importadores/importacion/c
 export const appRoutes: Route[] = [
     {path: '', pathMatch : 'full', redirectTo: 'sign-in'},
     {path: 'signed-in-redirect', pathMatch : 'full', redirectTo: 'imports'},
-    {path: 'signed-in-redirect-importadores', pathMatch : 'full', redirectTo: 'importas'},
+    {path: 'signed-in-redirect-importadores', pathMatch : 'full', redirectTo: 'imports'},
 
 
     {
