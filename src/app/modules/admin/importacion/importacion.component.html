@@ -86,6 +86,21 @@
                 <td mat-cell *matCellDef="let row">{{ row.status }}</td>
             </ng-container>
 
+            <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="deleteImportacion(row.id)" color="warn">
+                        <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:trash'"></mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="editImportacion(row.id)" color="primary">
+                        <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:pencil-square'"></mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="approveImportacion(row.id)" color="accent">
+                        <mat-icon class="icon-size-6" [svgIcon]="'heroicons_mini:check'"></mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
             <tr mat-header-row sticky *matHeaderRowDef="columnsToDisplay"></tr>
             <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
         </table>
